@@ -33,3 +33,6 @@ dist-ssr
 e2e/__screenshots__/
 test-results/
 playwright-report/
+
+# Local environment files
+.env*
