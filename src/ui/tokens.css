@@ -1,0 +1,93 @@
+/* c0mpiler design tokens (ported from Elderwise).
+   Type floor is 16px (--text-xs); nothing in the UI should render smaller.
+   Spacing is in px so the 18px root (set in App.css) does not inflate gaps. */
+
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../assets/fonts/Fraunces-500.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../assets/fonts/Fraunces-600.woff2") format("woff2");
+}
+
+:root {
+  /* Brand */
+  --color-accent: #0ea5a4;
+  --color-accent-strong: #0b7f7e;
+  --color-accent-soft: #d6f3f2;
+
+  /* Bands: solid for fills, soft for backgrounds, ink for text on soft */
+  --band-good: #16a34a;
+  --band-good-soft: #dcfce7;
+  --band-good-ink: #166534;
+  --band-moderate: #d97706;
+  --band-moderate-soft: #fef3c7;
+  --band-moderate-ink: #92400e;
+  --band-limited: #dc2626;
+  --band-limited-soft: #fee2e2;
+  --band-limited-ink: #991b1b;
+  --status-neutral-soft: #e9ecf1;
+  --status-neutral-ink: #3b4756;
+
+  /* Neutrals */
+  --bg: #f7f5f1;
+  --surface: #ffffff;
+  --surface-muted: #f1ede6;
+  --border: #e4ded4;
+  --text: #1b2430;
+  --text-muted: #56606c;
+  --text-subtle: #7a8491;
+  --live-bg: #1b2430;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-8: 48px;
+
+  /* Layout rhythm */
+  --stage-pad-y: clamp(24px, 2.5vh, 40px);
+  --stage-pad-x: clamp(32px, 3.7vw, 64px);
+  --pane-gap: clamp(24px, 2vw, 40px);
+  --section-gap: clamp(20px, 2vh, 32px);
+  --control-h: 56px;
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+  --focus-ring-inset: -3px;
+
+  /* Shape */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-pill: 999px;
+  --card-radius: 20px;
+  --shadow-card: 0 1px 3px rgba(27, 36, 48, 0.06), 0 1px 2px rgba(27, 36, 48, 0.04);
+  --shadow-lift: 0 6px 16px rgba(27, 36, 48, 0.1);
+  --card-shadow: 0 1px 2px rgba(27, 36, 48, 0.06), 0 8px 24px rgba(27, 36, 48, 0.06);
+
+  /* Type */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --text-xs: 1rem;
+  --text-sm: 1.125rem;
+  --text-md: 1.25rem;
+  --text-lg: 1.5rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+  --text-3xl: 2.75rem;
+  --text-title: clamp(32px, 2.4vw, 40px);
+  --text-stat: clamp(36px, 2.6vw, 44px);
+  --text-hero: clamp(56px, 4vw, 72px);
+
+  --content-max: 1040px;
+}
