@@ -1,5 +1,7 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
+mod agent;
+
 use serde::Serialize;
 use tauri::Manager;
 
@@ -31,6 +33,7 @@ fn app_info() -> AppInfo {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .manage(agent::AgentState::new())
         .setup(|app| {
             // Version comes from Cargo (bumped in lockstep with package.json and
             // tauri.conf.json) so the window title shows the running build.
@@ -39,7 +42,11 @@ pub fn run() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![app_info])
+        .invoke_handler(tauri::generate_handler![
+            app_info,
+            agent::agent_status,
+            agent::agent_turn
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application")
 }

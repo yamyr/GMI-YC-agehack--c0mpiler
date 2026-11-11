@@ -33,3 +33,10 @@ dist-ssr
 e2e/__screenshots__/
 test-results/
 playwright-report/
+
+# Local environment files
+.env*
+
+# Machine-local Claude Code config (e.g. GBrain project wiring)
+.claude/settings.local.json
+CLAUDE.local.md
