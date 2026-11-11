@@ -147,6 +147,6 @@ Features follow Spec Kit: specify, clarify, plan, tasks, analyze, and implement.
 
 ## What's next
 
-The next step is to replace scripted conversations with live agent conversations while keeping human confirmation and a scripted fallback. Voice input, real payments and calendars, persistent storage, and expert-owned AI workflows beyond the demo need further implementation and validation.
+The three conversations can already run live through the optional Codex agent. The next step is to generate the profile, brief and workflow drafts live as well, still behind human confirmation and with a scripted fallback. Voice input, real payments and calendars, persistent storage, and expert-owned AI workflows beyond the demo need further implementation and validation.
 
 The outcome we want to measure is dollars earned by people over 65.
