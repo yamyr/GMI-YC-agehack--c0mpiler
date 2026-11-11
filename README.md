@@ -1,63 +1,149 @@
 # Agely
-15-min expert to create meaning for senior adults edging retirement or retired
 
-Desktop app built on **Tauri 2** (Rust shell) + **React 19 / TypeScript / Vite 7**, using Bun.
-Foundation ported from `yademy/elderwise-hbs` (tooling, design tokens, error boundary, CI).
+**Experience shouldn't retire.**
 
-## Prerequisites
+Agely is an expert network where older adults turn decades of experience into paid, 15-minute sessions. Our longer-term goal is an AI engine each expert owns: a growing collection of their approved questions, checks, and workflows.
 
-- [Bun](https://bun.sh) ≥ 1.3
-- Rust stable: `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
-- macOS: Xcode Command Line Tools (`xcode-select --install`)
-- Other platforms: see <https://tauri.app/start/prerequisites/>
+This hackathon prototype follows Margaret, a retired procurement director, and Dev, a hardware founder, from their first conversations to a completed session and Margaret's first saved workflow.
 
-## Develop
+## The problem
 
-```sh
-bun install
-bun run tauri dev     # native window, Vite on :1420 with HMR
-bun run dev           # browser-only preview (native calls degrade gracefully)
-```
+Retirement does not erase the judgment someone has built over a career. We want to give older adults a way to keep contributing and earning without having to build a website, write a sales profile, or navigate a complicated marketplace.
 
-## Run the demo
+On the other side, a founder facing an unfamiliar decision may need a short conversation with someone who has handled that problem before.
 
-`bun run tauri dev` opens the **Margaret meets Dev** walkthrough: Margaret onboards by talking to an
-agent, sets her price, Dev's agent drafts a brief, Agely matches them and explains why, they book and
-pay, and Margaret's engine learns a workflow. All data is scripted and nothing external is connected.
-Use the chapter list to jump around, and **Restart** to begin again.
+## Our approach
 
-Presenter script and validation steps: [`specs/001-demo-walkthrough/quickstart.md`](specs/001-demo-walkthrough/quickstart.md).
+An agent helps an expert describe what they know, draft a profile, and choose a price. A buyer describes a problem, reviews a brief, and sees why an expert fits. Sessions are priced in 15-minute units.
 
-## Spec-driven development
+After a session, a debrief turns the expert's approach into a proposed workflow. The expert reviews it before adding it to their engine. The aim is to preserve their working knowledge while they remain in control of what gets shared.
 
-Features follow [GitHub Spec Kit](https://github.com/github/spec-kit): `/speckit-specify` → `/speckit-clarify` →
-`/speckit-plan` → `/speckit-tasks` → `/speckit-analyze` → `/speckit-implement`. Principles live in
-[`.specify/memory/constitution.md`](.specify/memory/constitution.md); feature artifacts in `specs/`.
+People make the decisions. Agents propose profiles, prices, matches, and workflows; people confirm publication, booking, and approval.
 
-## Check
+## Try the demo
 
-```sh
-bunx tsc --noEmit     # typecheck
-bun run test          # Vitest unit tests
-bun run e2e           # Playwright (Chromium, stubbed Tauri IPC — see e2e/tauriStub.ts)
-cargo fmt   --manifest-path src-tauri/Cargo.toml --check
-cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings
-cargo test  --manifest-path src-tauri/Cargo.toml
-```
+The walkthrough is available on `main`. It uses fictional people and scripted conversations, so you can explore the full story without accounts, API keys, or external services.
 
-## Build
+1. **Margaret onboards.** Margaret Okafor, 68, describes 34 years in procurement and supplier management. Review her draft profile, edit a competency, and publish it.
+2. **Margaret sets her price.** Review the suggested $60–$90 per 15 minutes and its reasons, then confirm or change the range.
+3. **Dev describes his problem.** Dev Patel is preparing for his first contract-manufacturing agreement. Review his brief and $50–$100 budget per 15 minutes.
+4. **Agely explains the match.** See which of Margaret's competencies fit and where their price ranges overlap. Other experts appear with reasons they did not match.
+5. **They agree on a session.** Dev proposes 30 minutes at $75 per 15 minutes, or $150 total. Margaret accepts, and the demo shows a booking and simulated payment hold.
+6. **Margaret's engine grows.** Mark the session as held, walk through the debrief, and approve a reusable workflow. The engine shows one session, one workflow, and $150 in simulated earnings.
 
-```sh
-bun run tauri build   # installers land in src-tauri/target/release/bundle/
-```
+Use the chapter list to jump to any part of the story. **Back** preserves your progress, and **Restart** returns to the beginning.
 
-## Layout
+The [presenter guide](specs/001-demo-walkthrough/quickstart.md) includes a full dry run and validation steps.
 
-| Path | What |
+## What works today
+
+| Part | Prototype behavior |
 | --- | --- |
-| `src/` | React frontend. `ui/tokens.css` is the design source of truth; `lib/native.ts` wraps Tauri IPC. |
-| `src-tauri/` | Rust shell. Commands live in `src/lib.rs`; permissions in `capabilities/default.json`. |
-| `e2e/` | Playwright specs; add canned IPC responses to `tauriStub.ts` for each new command. |
-| `.github/workflows/` | `ci.yml` (frontend, e2e, macOS Rust) and `fast-feedback.yml` (quick PR signal). |
+| Expert onboarding | Scripted interview, editable profile, explicit publication, and configurable price range. |
+| Buyer brief | Editable problem, session length, and budget, with confirmation before matching. |
+| Matching | Client-side competency matching and price-overlap calculations, with explanations and no-match states. |
+| Booking | Proposal validation, acceptance or decline, and a session summary. |
+| Expert engine | Scripted debrief, workflow approval, and session and earnings summaries. |
+| Navigation | Chapter jumps, back, restart, and validation of invalid prices and proposals. |
 
-Versions in `package.json`, `src-tauri/tauri.conf.json` and `src-tauri/Cargo.toml` must match — a unit test enforces it.
+Conversations stand in for a future voice interview. There is no microphone or live agent in this walkthrough. Payments, meeting links, and earnings are simulated; no money moves and no meeting is created. Identity and credentials are self-declared. Demo edits stay in memory and reset when the app restarts.
+
+## Designed for older adults
+
+The expert's main path uses a conversation with suggested replies. Typing is available as an alternative. Shared design tokens set a minimum text size of 16px and primary control height of 56px. The interface provides visible keyboard focus and names the person whose turn it is.
+
+Drafts remain drafts until the person confirms them. Every match explains its reasoning, and scripted data stays visibly labelled. The demo also declines requests for legal, medical, or financial advice.
+
+These principles are recorded in the [project constitution](.specify/memory/constitution.md).
+
+## Built with
+
+- Tauri 2 and Rust for the desktop shell and native commands.
+- React 19, TypeScript, and Vite 7 for the interface and client-side domain logic.
+- Bun for dependency management and scripts.
+- Vitest for unit tests and Playwright for browser journeys at desktop and minimum window sizes.
+- GitHub Actions for frontend, browser, workflow, and Rust checks.
+
+The foundation was ported from `yademy/elderwise-hbs`.
+
+## Run locally
+
+Install [Bun](https://bun.sh). Version `1.3.10` matches `package.json` and CI.
+
+```sh
+git clone https://github.com/yamyr/GMI-YC-agehack--c0mpiler.git
+cd GMI-YC-agehack--c0mpiler
+bun install --frozen-lockfile
+bun run dev
+```
+
+Open `http://localhost:1420` to run the walkthrough in your browser. Browser mode does not require the Rust toolchain.
+
+For the native desktop window, install Rust stable through [rustup](https://rustup.rs) and the [Tauri platform prerequisites](https://tauri.app/start/prerequisites/). On macOS, install Xcode Command Line Tools with `xcode-select --install`. Then run:
+
+```sh
+bun run tauri dev
+```
+
+Run browser development and native development separately because both use port `1420`.
+
+## Validate changes
+
+Run the frontend checks and production build:
+
+```sh
+bunx tsc --noEmit
+bun run test
+bun run build
+```
+
+Install Chromium, typecheck the browser tests, and run them:
+
+```sh
+bunx playwright install chromium
+bunx tsc -p e2e/tsconfig.json
+bun run e2e
+```
+
+Playwright starts its own Vite server on port `1493` and uses [stubbed Tauri IPC](e2e/tauriStub.ts). To choose another port, run `E2E_PORT=1494 bun run e2e`. Port `1420` is reserved for development.
+
+After `bun run build` creates `dist/`, run the Rust checks on a machine with the Tauri platform prerequisites:
+
+```sh
+cargo fmt --manifest-path src-tauri/Cargo.toml --check
+cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings
+cargo test --manifest-path src-tauri/Cargo.toml
+```
+
+[Full CI](.github/workflows/ci.yml) checks the frontend on Ubuntu and runs Chromium and Rust checks on macOS. [Fast feedback](.github/workflows/fast-feedback.yml) checks workflows, frontend types and unit tests, and Rust formatting. Wait for full CI to pass before merging.
+
+## Build an installer
+
+```sh
+bun run tauri build
+```
+
+Tauri builds the frontend and native app, then writes platform-specific bundles to `src-tauri/target/release/bundle/`.
+
+For a frontend-only production preview, run `bun run build` followed by `bun run preview`.
+
+## Explore the repository
+
+| Path | Purpose |
+| --- | --- |
+| `src/demo/` | Walkthrough screens, fictional personas, domain rules, state, and scripted services. |
+| `src/ui/` | Shared design tokens and the React error boundary. |
+| `src/lib/` | Tauri IPC wrapper and error handling. |
+| `src-tauri/` | Rust shell, native commands, permissions, and desktop configuration. |
+| `e2e/` | Playwright journeys, edge cases, layout checks, and the Tauri IPC stub. |
+| `specs/001-demo-walkthrough/` | Demo specification, data model, contracts, tasks, and presenter guide. |
+| `.specify/` | Spec Kit templates, scripts, and the project constitution. |
+| `docs/tooling/` | Notes on the project's optional development tools. |
+
+Features follow Spec Kit: specify, clarify, plan, tasks, analyze, and implement. Use `src/ui/tokens.css` for shared visual values. Keep versions in `package.json`, `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml` in sync; a unit test checks them.
+
+## What's next
+
+The next step is to replace scripted conversations with live agent conversations while keeping human confirmation and a scripted fallback. Voice input, real payments and calendars, persistent storage, and expert-owned AI workflows beyond the demo need further implementation and validation.
+
+The outcome we want to measure is dollars earned by people over 65.
