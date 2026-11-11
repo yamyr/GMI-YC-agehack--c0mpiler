@@ -13,6 +13,6 @@ test("reads native build info through the Tauri bridge", async ({ page }) => {
   const problems = collectProblems(page);
   await installTauriStub(page);
   await page.goto("/");
-  await expect(page.getByText("c0mpiler v0.0.0-e2e")).toBeVisible();
+  await expect(page.getByText("Agely v0.0.0-e2e")).toBeVisible();
   expect(problems).toEqual([]);
 });

@@ -20,7 +20,7 @@ declare global {
 }
 
 export const CANNED_RESPONSES: Readonly<Record<string, unknown>> = {
-  app_info: { name: "c0mpiler", version: "0.0.0-e2e" },
+  app_info: { name: "Agely", version: "0.0.0-e2e" },
 };
 
 export function collectProblems(page: Page): readonly string[] {

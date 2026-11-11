@@ -3,6 +3,9 @@
 use serde::Serialize;
 use tauri::Manager;
 
+/// Display name shown in the UI and window title.
+pub const PRODUCT_NAME: &str = "Agely";
+
 /// Build metadata the frontend can show (e.g. in an About panel) to confirm
 /// which native build is running.
 #[derive(Debug, Serialize, PartialEq, Eq)]
@@ -14,7 +17,7 @@ pub struct AppInfo {
 
 fn app_info_value() -> AppInfo {
     AppInfo {
-        name: env!("CARGO_PKG_NAME"),
+        name: PRODUCT_NAME,
         version: env!("CARGO_PKG_VERSION"),
     }
 }
@@ -32,7 +35,7 @@ pub fn run() {
             // Version comes from Cargo (bumped in lockstep with package.json and
             // tauri.conf.json) so the window title shows the running build.
             if let Some(window) = app.get_webview_window("main") {
-                window.set_title(&format!("c0mpiler v{}", env!("CARGO_PKG_VERSION")))?;
+                window.set_title(&format!("{PRODUCT_NAME} v{}", env!("CARGO_PKG_VERSION")))?;
             }
             Ok(())
         })
@@ -46,9 +49,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn app_info_reports_cargo_metadata() {
+    fn app_info_reports_product_name_and_cargo_version() {
         let info = app_info_value();
-        assert_eq!(info.name, "c0mpiler");
+        assert_eq!(info.name, "Agely");
         assert_eq!(info.version, env!("CARGO_PKG_VERSION"));
     }
 
