@@ -1,4 +1,4 @@
-/* c0mpiler design tokens (ported from Elderwise).
+/* Agely design tokens (ported from Elderwise).
    Type floor is 16px (--text-xs); nothing in the UI should render smaller.
    Spacing is in px so the 18px root (set in App.css) does not inflate gaps. */
 

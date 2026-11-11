@@ -1,4 +1,4 @@
-# GMI-YC-agehack--c0mpiler
+# Agely
 15-min expert to create meaning for senior adults edging retirement or retired
 
 Desktop app built on **Tauri 2** (Rust shell) + **React 19 / TypeScript / Vite 7**, using Bun.

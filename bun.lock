@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "c0mpiler",
+      "name": "agely",
       "dependencies": {
         "@tauri-apps/api": "~2.12.1",
         "@tauri-apps/plugin-opener": "~2.7.0",

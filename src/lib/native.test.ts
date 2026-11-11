@@ -20,8 +20,8 @@ describe("native bridge", () => {
 
   it("invokes app_info inside Tauri", async () => {
     (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__ = {};
-    invoke.mockResolvedValue({ name: "c0mpiler", version: "0.1.0" });
-    await expect(getAppInfo()).resolves.toEqual({ name: "c0mpiler", version: "0.1.0" });
+    invoke.mockResolvedValue({ name: "Agely", version: "0.1.0" });
+    await expect(getAppInfo()).resolves.toEqual({ name: "Agely", version: "0.1.0" });
     expect(invoke).toHaveBeenCalledWith("app_info");
   });
 });

@@ -61,7 +61,7 @@ describe("the boundary's state transition", () => {
       return "";
     };
     const copy = flatten(rendered);
-    expect(copy).toContain("c0mpiler could not start");
+    expect(copy).toContain("Agely could not start");
     expect(copy).toContain("SecurityError: storage is blocked");
     expect(copy).toContain("Reload");
   });

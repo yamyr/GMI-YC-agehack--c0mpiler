@@ -39,14 +39,14 @@ export class AppErrorBoundary extends Component<
   }
 
   override componentDidCatch(error: unknown, info: ErrorInfo) {
-    console.error("c0mpiler failed to render:", error, info.componentStack);
+    console.error("Agely failed to render:", error, info.componentStack);
   }
 
   override render() {
     if (this.state.message === "") return this.props.children;
     return (
       <main className="app-crash" role="alert">
-        <h1>c0mpiler could not start</h1>
+        <h1>Agely could not start</h1>
         <p>
           Something went wrong while drawing the screen. Nothing has
           been sent anywhere.

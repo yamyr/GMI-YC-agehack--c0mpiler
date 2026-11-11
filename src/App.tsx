@@ -24,7 +24,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <span className="brand">c0mpiler</span>
+        <span className="brand">Agely</span>
       </header>
       <main className="app-main">
         <h1 className="hero-title">Fifteen minutes to what matters next.</h1>

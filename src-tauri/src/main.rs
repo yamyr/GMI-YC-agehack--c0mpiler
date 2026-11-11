@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    c0mpiler_lib::run()
+    agely_lib::run()
 }
