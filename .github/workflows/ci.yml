@@ -44,9 +44,13 @@ jobs:
       - name: production build
         run: bun run build
 
+  # macOS: Playwright's Chromium needs no system packages here. On Ubuntu the
+  # --with-deps step depends on apt mirrors, which have been unreachable on the
+  # hosted runner image (apt exit 100), failing runs before any test executed.
   e2e:
     name: e2e (Chromium)
-    runs-on: ubuntu-latest
+    runs-on: macos-15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v5
 
@@ -59,7 +63,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: install Playwright Chromium
-        run: bunx playwright install --with-deps chromium
+        run: bunx playwright install chromium
 
       - name: typecheck e2e
         run: bunx tsc -p e2e/tsconfig.json
