@@ -47,6 +47,7 @@ jobs:
   e2e:
     name: e2e (Chromium)
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v5
 
@@ -58,8 +59,17 @@ jobs:
       - name: install dependencies
         run: bun install --frozen-lockfile
 
+      # The system-dependency step uses apt, whose mirrors occasionally fail on
+      # hosted runners; retry instead of failing the whole run.
       - name: install Playwright Chromium
-        run: bunx playwright install --with-deps chromium
+        timeout-minutes: 15
+        run: |
+          for attempt in 1 2 3; do
+            bunx playwright install --with-deps chromium && exit 0
+            echo "Playwright install failed (attempt $attempt); retrying in 20s" >&2
+            sleep 20
+          done
+          exit 1
 
       - name: typecheck e2e
         run: bunx tsc -p e2e/tsconfig.json
