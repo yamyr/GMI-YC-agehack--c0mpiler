@@ -1,0 +1,206 @@
+/* === Tokens === */
+@import "./ui/tokens.css";
+
+/* === Base === */
+:root {
+  font-family: var(--font-body);
+  font-size: 112.5%;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  background-color: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  overscroll-behavior-y: contain;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+.app {
+  /* dvh is correct in WKWebView; the vh line stays as the fallback. */
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow-x: clip;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+  padding: var(--space-2) var(--stage-pad-x);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--color-accent-strong);
+}
+
+.app-main {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--stage-pad-y) var(--stage-pad-x);
+}
+
+.hero-title {
+  font-size: var(--text-hero);
+  margin: 0 0 var(--space-4);
+}
+
+.lede {
+  font-size: var(--text-lg);
+  color: var(--text-muted);
+  max-width: 40ch;
+  margin: 0 0 var(--space-6);
+}
+
+.app-footer {
+  padding: var(--space-3) var(--stage-pad-x);
+  color: var(--text-subtle);
+  font-size: var(--text-xs);
+}
+
+/* === Forms / controls === */
+button {
+  min-height: var(--control-h);
+  padding: 0 var(--space-5);
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text);
+  background: var(--surface);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+  touch-action: manipulation;
+}
+
+button.primary {
+  background: var(--color-accent-strong);
+  border-color: var(--color-accent-strong);
+  color: #ffffff;
+}
+
+button.primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-accent-strong) 85%, black);
+  border-color: color-mix(in srgb, var(--color-accent-strong) 85%, black);
+}
+
+button.secondary {
+  background: var(--surface);
+  border-color: var(--color-accent-strong);
+  color: var(--color-accent-strong);
+}
+
+button.secondary:hover:not(:disabled) {
+  background: var(--color-accent-soft);
+}
+
+button.quiet {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-muted);
+}
+
+button.quiet:hover:not(:disabled) {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+button.danger {
+  background: var(--surface);
+  border-color: var(--band-limited);
+  color: var(--band-limited-ink);
+}
+
+button.danger:hover:not(:disabled) {
+  background: var(--band-limited-soft);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"],
+select,
+textarea {
+  font-family: inherit;
+  font-size: var(--text-sm);
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  min-height: var(--control-h);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-accent-strong);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* === Crash screen (AppErrorBoundary) === */
+.app-crash {
+  max-width: min(38rem, 100%);
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5);
+  padding-left: max(var(--space-5), env(safe-area-inset-left));
+  padding-right: max(var(--space-5), env(safe-area-inset-right));
+}
+
+.app-crash__detail {
+  color: var(--text-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

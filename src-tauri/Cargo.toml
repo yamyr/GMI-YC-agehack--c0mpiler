@@ -1,0 +1,21 @@
+[package]
+name = "c0mpiler"
+version = "0.0.1"
+description = "c0mpiler — a 15-minute expert that helps adults nearing or in retirement find meaning"
+authors = ["c0mpiler contributors"]
+edition = "2021"
+
+[lib]
+# The `_lib` suffix keeps the lib name distinct from the bin name
+# (see https://github.com/rust-lang/cargo/issues/8519).
+name = "c0mpiler_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
