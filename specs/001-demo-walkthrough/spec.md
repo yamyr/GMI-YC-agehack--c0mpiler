@@ -140,8 +140,9 @@ held, complete the debrief, approve the workflow, and see the engine and earning
   not accepted and a plain-language message explains why.
 - Dev's brief asks for legal, medical or financial advice: the brief cannot be confirmed until that
   request is removed, and the buyer's agent explains that Agely does not offer such advice.
-- Margaret goes back and changes her published profile or price: the profile returns to draft and
-  must be published again, and the match is recomputed.
+- Margaret goes back and changes a skill on her published profile: the profile returns to draft and
+  must be published again. If she changes a confirmed price, the price must be confirmed again. In
+  both cases she is not matchable until she does, and the match is recomputed.
 - Margaret declines Dev's proposal: Dev is told, no payment is held, and he can propose again.
 - A proposal price outside the overlap range is flagged before it is sent.
 - The window is resized to the minimum supported size: no text is cut off and every control

@@ -49,6 +49,7 @@ type DemoAction =
   // Dev (human decisions)
   | { type: "editBrief"; patch: Partial<Pick<Brief, "problem" | "units" | "budget">> }
   | { type: "confirmBrief" }             // rejected if invalid or restricted advice
+  | { type: "setProposalUnits"; units: number }    // 1–4 (15–60 minutes)
   | { type: "setProposalPrice"; pricePerUnit: number }
   | { type: "sendProposal" };            // rejected if outside overlap
 ```
@@ -64,8 +65,9 @@ type DemoAction =
 4. `confirmBrief` fails on invalid budget, empty problem, or restricted advice.
 5. `sendProposal` fails if the price is outside the overlap; `declineProposal` clears the sent
    proposal, holds no payment, and returns to step 8 with a message for Dev.
-6. Any change to Margaret's competencies or price after publishing sets `published = false`
-   (profile back to draft, must be published again) and the match is recomputed.
+6. Any change to Margaret's competencies after publishing sets `published = false` (back to
+   draft); any price change after `confirmPrice` clears the confirmed price. Either way she is not
+   matchable until she publishes/confirms again, and the match is recomputed.
 9. Suggested replies are the primary way Margaret changes her profile and price; each reply's
    effect equals the equivalent typed action (`editCompetency`, `removeCompetency`, `setPrice`).
 7. `restart` from any step returns a state deep-equal to the initial state.
