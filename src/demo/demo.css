@@ -383,3 +383,20 @@ details.typed summary:focus-visible {
 .segmented button[aria-pressed="false"] {
   border-color: var(--border);
 }
+
+/* ── Live agent (spec 002) ──────────────────────────────── */
+
+.badge--live {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+}
+
+.thinking {
+  margin: var(--space-4) 0 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.live-panel {
+  margin-top: var(--space-4);
+}

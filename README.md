@@ -35,6 +35,8 @@ Use the chapter list to jump to any part of the story. **Back** preserves your p
 
 The [presenter guide](specs/001-demo-walkthrough/quickstart.md) includes a full dry run and validation steps.
 
+**Live agent (optional, no API key).** If the [Codex CLI](https://github.com/openai/codex) is installed and signed in with ChatGPT on the computer running the desktop app, the three conversations (Margaret's interview, Dev's brief chat and Margaret's debrief) are generated live. Each agent turn offers three suggested replies, or you can type your own. Setup takes three commands: `npm install -g @openai/codex`, `codex login`, `bun run tauri dev`. Without Codex the scripted conversations run as above. See [docs/live-agent.md](docs/live-agent.md).
+
 ## What works today
 
 | Part | Prototype behavior |
@@ -45,8 +47,9 @@ The [presenter guide](specs/001-demo-walkthrough/quickstart.md) includes a full 
 | Booking | Proposal validation, acceptance or decline, and a session summary. |
 | Expert engine | Scripted debrief, workflow approval, and session and earnings summaries. |
 | Navigation | Chapter jumps, back, restart, and validation of invalid prices and proposals. |
+| Live agent (optional) | The three conversations can be generated live through the local Codex CLI, using its ChatGPT sign-in and no API key. Each turn offers three suggested replies, with retry and a scripted fallback. Drafts that follow stay scripted. |
 
-Conversations stand in for a future voice interview. There is no microphone or live agent in this walkthrough. Payments, meeting links, and earnings are simulated; no money moves and no meeting is created. Identity and credentials are self-declared. Demo edits stay in memory and reset when the app restarts.
+Conversations stand in for a future voice interview; there is no microphone. Conversations are scripted unless the optional live agent is available, and the profile, brief and workflow drafts are always scripted. Payments, meeting links, and earnings are simulated; no money moves and no meeting is created. Identity and credentials are self-declared. Demo edits stay in memory and reset when the app restarts.
 
 ## Designed for older adults
 

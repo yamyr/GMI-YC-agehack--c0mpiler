@@ -1,5 +1,7 @@
 import { Conversation } from "../chrome/Conversation";
 import type { ConversationId } from "../domain/types";
+import { LiveConversation } from "../live/LiveConversation";
+import { isLiveActive } from "../state/reducer";
 import type { ScreenProps } from "./shared";
 
 const COPY: Readonly<Record<ConversationId, { readonly title: string; readonly lead: string; readonly agent: string }>> = {
@@ -27,12 +29,16 @@ export function InterviewScreen({ state, dispatch, id }: ScreenProps & { readonl
     <div>
       <h2 tabIndex={-1}>{copy.title}</h2>
       <p className="lead">{copy.lead}</p>
-      <Conversation
-        turns={conversation.turns}
-        shown={conversation.shown}
-        agentName={copy.agent}
-        onNextTurn={() => dispatch({ type: "showNextTurn" })}
-      />
+      {isLiveActive(state, id) ? (
+        <LiveConversation id={id} conversation={state.live.conversations[id]} agentName={copy.agent} dispatch={dispatch} />
+      ) : (
+        <Conversation
+          turns={conversation.turns}
+          shown={conversation.shown}
+          agentName={copy.agent}
+          onNextTurn={() => dispatch({ type: "showNextTurn" })}
+        />
+      )}
     </div>
   );
 }

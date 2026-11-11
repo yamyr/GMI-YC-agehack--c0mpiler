@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Transcript } from "../chrome/Conversation";
 import type { Competency } from "../domain/types";
 import { PROFILE_PROMPT, PROFILE_REPLIES } from "../script/margaret";
-import { NoticeLine, type ScreenProps } from "./shared";
+import { NoticeLine, type ScreenProps, ScriptedDraftNote } from "./shared";
 
 function sourceText(competency: Competency): string {
   return competency.source.kind === "interview"
@@ -41,6 +41,7 @@ export function ProfileScreen({ state, dispatch }: ScreenProps) {
         </span>
       </p>
 
+      <ScriptedDraftNote state={state} after="interview" />
       <div className="card">
         <h3>
           {margaret.name}, {margaret.age}

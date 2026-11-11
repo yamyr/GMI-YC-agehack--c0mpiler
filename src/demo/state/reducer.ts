@@ -20,6 +20,8 @@ import { DEBRIEF_TURNS, PROPOSED_WORKFLOW } from "../script/debrief";
 import { BRIEF_TURNS, DEV_BRIEF } from "../script/dev";
 import { OTHER_EXPERTS } from "../script/experts";
 import { INTERVIEW_TURNS, MARGARET_DRAFT, PRICE_REPLIES, PRICE_SUGGESTION, PROFILE_REPLIES } from "../script/margaret";
+import { emptyLive, failTurn, finish, receiveTurn, reply, requestTurn, useScripted } from "../live/state";
+import type { AgentTurn, LiveConversation } from "../live/types";
 import type { DemoServices, MeetingLink, PaymentHold } from "../services/types";
 import { sessionStart } from "./dates";
 import { type Chapter, type StepId, STEPS, firstStepOf, stepIndexOf } from "./steps";
@@ -52,6 +54,16 @@ export interface DemoState {
   readonly session: Session | null;
   readonly workflow: Workflow;
   readonly notice: Notice | null;
+  /** Spec 002: live agent conversations. */
+  readonly live: LiveState;
+}
+
+export interface LiveState {
+  /** Ready and not turned off by the presenter (FR-002, FR-004). */
+  readonly enabled: boolean;
+  /** Monotonic across restarts and jumps so a late response can never match a new request. */
+  readonly nextRequestId: number;
+  readonly conversations: Readonly<Record<ConversationId, LiveConversation>>;
 }
 
 /** contracts/demo-actions.md */
@@ -76,13 +88,29 @@ export type DemoAction =
   | { readonly type: "acceptProposal" }
   | { readonly type: "declineProposal" }
   | { readonly type: "markSessionHeld" }
-  | { readonly type: "approveWorkflow" };
+  | { readonly type: "approveWorkflow" }
+  // spec 002: live agent
+  | { readonly type: "setLiveEnabled"; readonly enabled: boolean }
+  | { readonly type: "liveRequest"; readonly conversation: ConversationId }
+  | { readonly type: "liveTurnReceived"; readonly conversation: ConversationId; readonly requestId: number; readonly turn: AgentTurn }
+  | { readonly type: "liveTurnFailed"; readonly conversation: ConversationId; readonly requestId: number; readonly message: string }
+  | { readonly type: "liveReply"; readonly conversation: ConversationId; readonly text: string }
+  | { readonly type: "liveFinish"; readonly conversation: ConversationId }
+  | { readonly type: "liveUseScripted"; readonly conversation: ConversationId };
 
 const MIN_PUBLISHED_SKILLS = 3;
 const MAX_UNITS = 4;
 
 function conversation(id: ConversationId, turns: readonly ConversationTurn[]): Conversation {
   return { id, turns, shown: 0 };
+}
+
+function freshLive(enabled: boolean, nextRequestId: number): LiveState {
+  return {
+    enabled,
+    nextRequestId,
+    conversations: { interview: emptyLive("live"), brief: emptyLive("live"), debrief: emptyLive("live") },
+  };
 }
 
 export function initialState(now: Date): DemoState {
@@ -103,7 +131,19 @@ export function initialState(now: Date): DemoState {
     session: null,
     workflow: PROPOSED_WORKFLOW,
     notice: null,
+    live: freshLive(false, 1),
   };
+}
+
+/** The conversation runs live: live mode is on and the presenter hasn't fallen back to the script. */
+export function isLiveActive(state: DemoState, id: ConversationId): boolean {
+  return state.live.enabled && state.live.conversations[id].mode === "live";
+}
+
+/** A live conversation actually happened (drives the "scripted draft" notes, FR-013). */
+export function wasLive(state: DemoState, id: ConversationId): boolean {
+  const c = state.live.conversations[id];
+  return c.mode === "live" && c.lines.length > 0;
 }
 
 // ── Derived values ──────────────────────────────────────────────────────────
@@ -122,6 +162,7 @@ export function deriveEngine(state: DemoState): Engine {
 }
 
 function conversationDone(state: DemoState, id: ConversationId): boolean {
+  if (isLiveActive(state, id)) return state.live.conversations[id].ended;
   const c = state.conversations[id];
   return c.shown >= c.turns.length;
 }
@@ -216,6 +257,10 @@ const STEP_DEFAULTS: Readonly<Record<StepId, readonly DemoAction[]>> = {
 
 const ALL_REPLIES: readonly SuggestedReply[] = [...PROFILE_REPLIES, ...PRICE_REPLIES];
 
+function withLive(state: DemoState, id: ConversationId, c: LiveConversation, nextRequestId = state.live.nextRequestId): DemoState {
+  return { ...state, live: { ...state.live, nextRequestId, conversations: { ...state.live.conversations, [id]: c } } };
+}
+
 function error(state: DemoState, text: string): DemoState {
   return { ...state, notice: { kind: "error", text } };
 }
@@ -244,14 +289,18 @@ export function createReducer(services: DemoServices) {
         return { ...state, step: state.step - 1, notice: null };
 
       case "restart":
-        return initialState(state.now);
+        return { ...initialState(state.now), live: freshLive(state.live.enabled, state.live.nextRequestId) };
 
       case "jumpTo": {
         const target = firstStepOf(action.chapter);
-        let next = initialState(state.now);
+        let next: DemoState = { ...initialState(state.now), live: freshLive(state.live.enabled, state.live.nextRequestId) };
         for (let i = 0; i < target; i += 1) {
           const step = STEPS[i];
           if (step === undefined) break;
+          if (step.conversation !== undefined && next.live.enabled) {
+            // Jumping past a conversation fills it from the script, not the live agent.
+            next = withLive(next, step.conversation, useScripted(next.live.conversations[step.conversation]));
+          }
           next = STEP_DEFAULTS[step.id].reduce(reduce, { ...next, step: i });
         }
         return { ...next, step: target, notice: null };
@@ -424,6 +473,50 @@ export function createReducer(services: DemoServices) {
 
       case "approveWorkflow":
         return { ...state, workflow: { ...state.workflow, status: "approved" }, notice: null };
+
+      case "setLiveEnabled": {
+        if (state.live.enabled === action.enabled) return state;
+        let next: DemoState = { ...state, live: { ...state.live, enabled: action.enabled } };
+        if (action.enabled) {
+          // A conversation the presenter already started from the script stays scripted.
+          for (const id of ["interview", "brief", "debrief"] as const) {
+            const c = next.live.conversations[id];
+            if (state.conversations[id].shown > 0 && c.lines.length === 0) next = withLive(next, id, useScripted(c));
+          }
+        }
+        return next;
+      }
+
+      case "liveRequest": {
+        const c = state.live.conversations[action.conversation];
+        if (c.pending !== null || c.ended || c.mode !== "live") return state;
+        const id = state.live.nextRequestId;
+        return withLive(state, action.conversation, requestTurn(c, id), id + 1);
+      }
+
+      case "liveTurnReceived": {
+        const c = state.live.conversations[action.conversation];
+        const next = receiveTurn(c, action.requestId, action.turn);
+        return next === c ? state : withLive(state, action.conversation, next);
+      }
+
+      case "liveTurnFailed": {
+        const c = state.live.conversations[action.conversation];
+        const next = failTurn(c, action.requestId, action.message);
+        return next === c ? state : withLive(state, action.conversation, next);
+      }
+
+      case "liveReply": {
+        const id = state.live.nextRequestId;
+        const next = reply(state.live.conversations[action.conversation], action.text, id);
+        return next === null ? state : withLive(state, action.conversation, next, id + 1);
+      }
+
+      case "liveFinish":
+        return withLive(state, action.conversation, finish(state.live.conversations[action.conversation]));
+
+      case "liveUseScripted":
+        return withLive(state, action.conversation, useScripted(state.live.conversations[action.conversation]));
     }
   }
   return reduce;

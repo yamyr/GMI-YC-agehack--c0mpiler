@@ -1,4 +1,4 @@
-import type { ScreenProps } from "./shared";
+import { type ScreenProps, ScriptedDraftNote } from "./shared";
 
 function Section({ title, items }: { readonly title: string; readonly items: readonly string[] }) {
   return (
@@ -24,6 +24,7 @@ export function WorkflowScreen({ state, dispatch }: ScreenProps) {
         <span className={`badge ${approved ? "badge--done" : "badge--draft"}`}>{approved ? "Approved" : "Proposed"}</span>
       </p>
       <p className="lead">The agent wrote this from Margaret's debrief. It becomes part of her engine only if she approves it.</p>
+      <ScriptedDraftNote state={state} after="debrief" />
       <div className="card">
         <Section title="Questions Margaret asks" items={workflow.questions} />
         <Section title="Checks she runs" items={workflow.checks} />

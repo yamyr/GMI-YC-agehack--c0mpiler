@@ -1,6 +1,10 @@
-import { useEffect, useReducer, useRef } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { DemoChrome } from "./chrome/DemoChrome";
 import "./demo.css";
+import { getAgentStatus } from "./live/client";
+import { LiveAgentContext, type LiveAgentControls } from "./live/context";
+import { CHECKING_STATUS, type AgentStatus } from "./live/types";
+import { useLiveRunner } from "./live/useLiveRunner";
 import { AcceptScreen } from "./screens/AcceptScreen";
 import { BriefScreen } from "./screens/BriefScreen";
 import { EngineScreen } from "./screens/EngineScreen";
@@ -53,6 +57,25 @@ function Screen({ id, ...props }: ScreenProps & { readonly id: StepId }) {
 /** Presenter-driven walkthrough (spec 001). Offline; all data scripted. */
 export function DemoApp() {
   const [state, dispatch] = useReducer(reducer, new Date(), initialState);
+
+  // Spec 002: readiness runs in the background and never blocks the start screen (FR-001, FR-002).
+  const [status, setStatus] = useState<AgentStatus>(CHECKING_STATUS);
+  const [on, setOn] = useState(true);
+  const checked = useRef(false);
+  useEffect(() => {
+    if (checked.current) return; // StrictMode runs effects twice in development.
+    checked.current = true;
+    void getAgentStatus(false).then(setStatus);
+  }, []);
+  const recheck = useCallback(() => {
+    setStatus(CHECKING_STATUS);
+    void getAgentStatus(true).then(setStatus);
+  }, []);
+  useEffect(() => {
+    dispatch({ type: "setLiveEnabled", enabled: status.state === "ready" && on });
+  }, [status.state, on]);
+  useLiveRunner(state, dispatch);
+  const controls = useMemo<LiveAgentControls>(() => ({ status, on, setOn, recheck }), [status, on, recheck]);
   const id = stepInfo(state).id;
   const stageRef = useRef<HTMLDivElement>(null);
 
@@ -67,11 +90,13 @@ export function DemoApp() {
   }, [state.step]);
 
   return (
+    <LiveAgentContext.Provider value={controls}>
     <DemoChrome state={state} dispatch={dispatch}>
       <div ref={stageRef}>
         {/* Keyed by step and restart-sensitive fields so typed drafts reset with the story. */}
         <Screen key={`${state.step}`} id={id} state={state} dispatch={dispatch} />
       </div>
     </DemoChrome>
+    </LiveAgentContext.Provider>
   );
 }

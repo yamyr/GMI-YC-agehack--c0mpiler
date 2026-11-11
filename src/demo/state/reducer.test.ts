@@ -322,3 +322,71 @@ describe("US3: book, pay, debrief, engine", () => {
     expect(stepIndex(stepInfo(state).id)).toBeLessThanOrEqual(stepIndex("profile"));
   });
 });
+
+describe("002: live conversations", () => {
+  const TURN = { message: "Tell me about your career.", options: ["One", "Two", "Three"], done: false };
+  const live = (state: DemoState) => run(state, { type: "setLiveEnabled", enabled: true });
+  const onInterview = () => run(live(initialState(NOW)), { type: "next" });
+
+  it("is off by default and can be switched on", () => {
+    expect(initialState(NOW).live.enabled).toBe(false);
+    expect(live(initialState(NOW)).live.enabled).toBe(true);
+  });
+
+  it("gates a live conversation step on the live conversation ending", () => {
+    let state = run(onInterview(), { type: "liveRequest", conversation: "interview" });
+    const id = state.live.conversations.interview.pending?.requestId ?? -1;
+    state = run(state, { type: "liveTurnReceived", conversation: "interview", requestId: id, turn: TURN });
+    expect(canAdvance(state)).toBe(false);
+    state = run(state, { type: "liveReply", conversation: "interview", text: "I ran procurement." });
+    expect(state.live.conversations.interview.pending).not.toBeNull();
+    const second = state.live.conversations.interview.pending?.requestId ?? -1;
+    state = run(state, { type: "liveTurnReceived", conversation: "interview", requestId: second, turn: TURN });
+    state = run(state, { type: "liveFinish", conversation: "interview" });
+    expect(canAdvance(state)).toBe(true);
+    expect(stepInfo(run(state, { type: "next" })).id).toBe("profile");
+  });
+
+  it("ignores a response for a request that is no longer pending", () => {
+    const state = run(onInterview(), { type: "liveRequest", conversation: "interview" });
+    const stale = run(state, { type: "liveTurnReceived", conversation: "interview", requestId: 999, turn: TURN });
+    expect(stale).toEqual(state);
+  });
+
+  it("falls back to the scripted conversation and its gating", () => {
+    const state = run(onInterview(), { type: "liveUseScripted", conversation: "interview" });
+    expect(state.live.conversations.interview.mode).toBe("scripted");
+    expect(canAdvance(state)).toBe(false);
+    expect(canAdvance(revealAll(state))).toBe(true);
+  });
+
+  it("uses scripted gating when live mode is off", () => {
+    const state = run(initialState(NOW), { type: "next" });
+    expect(canAdvance(revealAll(state))).toBe(true);
+  });
+
+  it("discards pending turns on restart and keeps live mode on", () => {
+    const pending = run(onInterview(), { type: "liveRequest", conversation: "interview" });
+    const restarted = run(pending, { type: "restart" });
+    expect(restarted.live.enabled).toBe(true);
+    expect(restarted.live.conversations.interview).toMatchObject({ lines: [], pending: null });
+    expect(restarted.live.nextRequestId).toBeGreaterThan(1);
+  });
+
+  it("puts earlier conversations in scripted mode when jumping in live mode", () => {
+    const state = run(live(initialState(NOW)), { type: "jumpTo", chapter: "Debrief" });
+    expect(state.live.conversations.interview.mode).toBe("scripted");
+    expect(state.live.conversations.brief.mode).toBe("scripted");
+    expect(state.live.conversations.debrief.mode).toBe("live");
+    expect(canAdvance(run(state, { type: "back" }))).toBe(true);
+  });
+});
+
+describe("002: live mode arriving mid-walkthrough", () => {
+  it("leaves a conversation that already started from the script scripted", () => {
+    const started = run(initialState(NOW), { type: "next" }, { type: "showNextTurn" });
+    const enabled = run(started, { type: "setLiveEnabled", enabled: true });
+    expect(enabled.live.conversations.interview.mode).toBe("scripted");
+    expect(enabled.live.conversations.brief.mode).toBe("live");
+  });
+});
