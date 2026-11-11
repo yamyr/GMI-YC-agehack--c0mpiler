@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import { DemoApp } from "./demo/DemoApp";
 import { toMessage } from "./lib/errors";
 import { type AppInfo, getAppInfo } from "./lib/native";
 
@@ -24,17 +25,10 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <span className="brand">Agely</span>
+        <h1 className="brand">Agely</h1>
       </header>
       <main className="app-main">
-        <h1 className="hero-title">Fifteen minutes to what matters next.</h1>
-        <p className="lede">
-          A short, guided conversation for adults approaching or enjoying
-          retirement.
-        </p>
-        <button type="button" className="primary">
-          Begin
-        </button>
+        <DemoApp />
       </main>
       <footer className="app-footer">
         {error !== null

@@ -19,6 +19,11 @@ export default defineConfig({
       name: "desktop-1440x900",
       use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 } },
     },
+    {
+      // Minimum window size from src-tauri/tauri.conf.json (SC-004).
+      name: "min-960x640",
+      use: { ...devices["Desktop Chrome"], viewport: { width: 960, height: 640 } },
+    },
   ],
   webServer: {
     command: `bun run dev --port ${port} --strictPort`,

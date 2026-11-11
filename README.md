@@ -19,6 +19,21 @@ bun run tauri dev     # native window, Vite on :1420 with HMR
 bun run dev           # browser-only preview (native calls degrade gracefully)
 ```
 
+## Run the demo
+
+`bun run tauri dev` opens the **Margaret meets Dev** walkthrough: Margaret onboards by talking to an
+agent, sets her price, Dev's agent drafts a brief, Agely matches them and explains why, they book and
+pay, and Margaret's engine learns a workflow. All data is scripted and nothing external is connected.
+Use the chapter list to jump around, and **Restart** to begin again.
+
+Presenter script and validation steps: [`specs/001-demo-walkthrough/quickstart.md`](specs/001-demo-walkthrough/quickstart.md).
+
+## Spec-driven development
+
+Features follow [GitHub Spec Kit](https://github.com/github/spec-kit): `/speckit-specify` → `/speckit-clarify` →
+`/speckit-plan` → `/speckit-tasks` → `/speckit-analyze` → `/speckit-implement`. Principles live in
+[`.specify/memory/constitution.md`](.specify/memory/constitution.md); feature artifacts in `specs/`.
+
 ## Check
 
 ```sh
