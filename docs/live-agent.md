@@ -39,8 +39,10 @@ suggested replies. Pick one, or type your own.
 
 ## Choosing the model
 
-ChatGPT plans allow different models in Codex. If you don't choose one, Agely tries these in
-order and uses the first that answers: `gpt-5.4-mini`, `gpt-5.5`, `codex-auto-review`.
+ChatGPT plans allow different models in Codex. If you don't choose one, Agely first tries the
+`model` set in your own Codex config (`~/.codex/config.toml`), then `gpt-5.4-mini`, `gpt-5.5` and
+`codex-auto-review`, and uses the first that answers. Turns use **low** reasoning effort to stay
+around 10 seconds; set `AGELY_CODEX_EFFORT=medium` (or `minimal` / `high`) to change it.
 
 To pick one yourself:
 

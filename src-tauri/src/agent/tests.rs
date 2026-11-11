@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use super::locate::find_codex;
 use super::output::{parse_turn, schema_json, MAX_MESSAGE_CHARS, MAX_OPTION_CHARS};
 use super::prompt::build_prompt;
-use super::status::{candidate_models, is_model_rejected, is_signed_in};
+use super::status::{candidate_models, configured_model, is_model_rejected, is_signed_in};
 use super::types::{AgentBrief, ErrorCode, Speaker, TranscriptLine};
 
 fn brief(max_turns: u32) -> AgentBrief {
@@ -157,14 +157,58 @@ fn detects_a_model_the_plan_rejects() {
 #[test]
 fn candidate_models_honour_the_override() {
     assert_eq!(
-        candidate_models(Some("gpt-6.1")),
+        candidate_models(Some("gpt-6.1"), Some("gpt-6.1-sol")),
         vec!["gpt-6.1".to_string()]
     );
-    assert_eq!(candidate_models(Some("  ")), candidate_models(None));
     assert_eq!(
-        candidate_models(None),
+        candidate_models(Some("  "), None),
+        candidate_models(None, None)
+    );
+    assert_eq!(
+        candidate_models(None, None),
         vec!["gpt-5.4-mini", "gpt-5.5", "codex-auto-review"]
     );
+}
+
+#[test]
+fn candidate_models_try_the_users_codex_model_first_without_duplicates() {
+    assert_eq!(
+        candidate_models(None, Some("gpt-6.1-sol")),
+        vec![
+            "gpt-6.1-sol",
+            "gpt-5.4-mini",
+            "gpt-5.5",
+            "codex-auto-review"
+        ]
+    );
+    assert_eq!(
+        candidate_models(None, Some("gpt-5.5")),
+        vec!["gpt-5.5", "gpt-5.4-mini", "codex-auto-review"]
+    );
+}
+
+#[test]
+fn reads_the_top_level_model_from_codex_config() {
+    let toml = "model = \"gpt-6.1-sol\"\nmodel_reasoning_effort = \"high\"\n\n[profiles.fast]\nmodel = \"other\"\n";
+    assert_eq!(configured_model(toml).as_deref(), Some("gpt-6.1-sol"));
+    assert_eq!(configured_model("[profiles.x]\nmodel = \"nested\"\n"), None);
+    assert_eq!(
+        configured_model("# model = \"commented\"\nmodel='single'\n").as_deref(),
+        Some("single")
+    );
+    assert_eq!(configured_model(""), None);
+}
+
+#[test]
+fn exec_args_use_the_requested_reasoning_effort() {
+    let args = super::run::exec_args(Path::new("/tmp/x"), "m", "low");
+    let joined = args.join(" ");
+    assert!(
+        joined.contains("-c model_reasoning_effort=\"low\""),
+        "{joined}"
+    );
+    assert!(joined.contains("--ignore-user-config"));
+    assert!(joined.contains("--sandbox read-only"));
 }
 
 // ── locate.rs ────────────────────────────────────────────────────────────────

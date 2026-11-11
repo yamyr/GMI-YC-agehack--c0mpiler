@@ -38,6 +38,11 @@ codex exec --ignore-user-config --ignore-rules --skip-git-repo-check --ephemeral
   and keeps the first that answers for the session. The status names the model in use (FR-005).
 - **Rationale**: Plans differ; probing finds a working model with no manual setup, and the env var
   makes the choice explicit for anyone who knows their plan.
+- **Update (same day)**: after the user re-logged in to Codex, their configured `gpt-6.1-sol`
+  became available (the listed defaults stayed rejected). Candidates now start with the top-level
+  `model` from `$CODEX_HOME/config.toml` (only that value is read; the rest of the config stays
+  ignored). Turns pass `model_reasoning_effort="low"` (override `AGELY_CODEX_EFFORT`): ~9–10 s per
+  turn vs the user's `high` default. Real run: ready + first interview turn in 17 s.
 
 ## R4. Locating the binary from a GUI app
 

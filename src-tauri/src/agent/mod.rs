@@ -41,6 +41,23 @@ fn env(name: &str) -> Option<String> {
     std::env::var(name).ok()
 }
 
+/// Reasoning effort for live turns: low keeps a turn around 10 s. Override with AGELY_CODEX_EFFORT.
+fn effort() -> String {
+    env("AGELY_CODEX_EFFORT")
+        .map(|e| e.trim().to_string())
+        .filter(|e| matches!(e.as_str(), "minimal" | "low" | "medium" | "high"))
+        .unwrap_or_else(|| "low".into())
+}
+
+/// The model from the user's Codex config ($CODEX_HOME or ~/.codex), tried first.
+fn user_codex_model() -> Option<String> {
+    let home = env("CODEX_HOME")
+        .map(PathBuf::from)
+        .or_else(|| env("HOME").map(|h| PathBuf::from(h).join(".codex")))?;
+    let text = std::fs::read_to_string(home.join("config.toml")).ok()?;
+    status::configured_model(&text)
+}
+
 fn locate_codex() -> Option<PathBuf> {
     let home = env("HOME").map(PathBuf::from);
     locate::find_codex(
@@ -73,10 +90,13 @@ fn check(bin: Option<PathBuf>) -> (AgentStatus, Option<Ready>) {
         Err(run::RunError::Spawn(e)) => return (status::error(&e), None),
     }
 
-    let candidates = status::candidate_models(env("AGELY_CODEX_MODEL").as_deref());
+    let candidates = status::candidate_models(
+        env("AGELY_CODEX_MODEL").as_deref(),
+        user_codex_model().as_deref(),
+    );
     for model in &candidates {
         let out_file = scratch.path().join("probe.txt");
-        let mut args = run::exec_args(scratch.path(), model);
+        let mut args = run::exec_args(scratch.path(), model, &effort());
         args.extend([
             "-o".into(),
             out_file.display().to_string(),
@@ -131,7 +151,7 @@ fn run_turn(bin: PathBuf, model: String, request: TurnRequest) -> Result<AgentTu
         .iter()
         .filter(|l| l.speaker == Speaker::Agent)
         .count() as u32;
-    let mut args = run::exec_args(scratch.path(), &model);
+    let mut args = run::exec_args(scratch.path(), &model, &effort());
     args.extend([
         "--output-schema".into(),
         schema.display().to_string(),

@@ -14,11 +14,46 @@ pub fn is_model_rejected(output: &str) -> bool {
         || output.contains("model_not_found")
 }
 
-pub fn candidate_models(env_model: Option<&str>) -> Vec<String> {
-    match env_model.map(str::trim).filter(|m| !m.is_empty()) {
-        Some(model) => vec![model.to_string()],
-        None => DEFAULT_CANDIDATES.iter().map(|m| m.to_string()).collect(),
+/// `AGELY_CODEX_MODEL` alone when set; otherwise the model from the user's own Codex config
+/// first (their plan allows it), then the defaults, without duplicates.
+pub fn candidate_models(env_model: Option<&str>, configured: Option<&str>) -> Vec<String> {
+    if let Some(model) = env_model.map(str::trim).filter(|m| !m.is_empty()) {
+        return vec![model.to_string()];
     }
+    let mut models: Vec<String> = configured
+        .map(str::trim)
+        .filter(|m| !m.is_empty())
+        .map(str::to_string)
+        .into_iter()
+        .collect();
+    for model in DEFAULT_CANDIDATES {
+        if !models.iter().any(|m| m == model) {
+            models.push(model.to_string());
+        }
+    }
+    models
+}
+
+/// The top-level `model = "..."` in Codex's config.toml (before any `[table]`). We only read this
+/// one value; the rest of the user's config is ignored on purpose (`--ignore-user-config`).
+pub fn configured_model(config_toml: &str) -> Option<String> {
+    for line in config_toml.lines() {
+        let line = line.trim();
+        if line.starts_with('[') {
+            return None;
+        }
+        let Some(rest) = line.strip_prefix("model") else {
+            continue;
+        };
+        let Some(value) = rest.trim_start().strip_prefix('=') else {
+            continue;
+        };
+        let value = value.trim().trim_matches(|c| c == '"' || c == '\'');
+        if !value.is_empty() {
+            return Some(value.to_string());
+        }
+    }
+    None
 }
 
 pub fn ready(model: &str) -> AgentStatus {

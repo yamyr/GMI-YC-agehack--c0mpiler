@@ -57,7 +57,7 @@ impl Drop for Scratch {
 
 /// Arguments shared by every `codex exec` call: no user config or rules, no saved session,
 /// read-only sandbox in the scratch folder, apps/browser/computer use disabled.
-pub fn exec_args(workdir: &Path, model: &str) -> Vec<String> {
+pub fn exec_args(workdir: &Path, model: &str, effort: &str) -> Vec<String> {
     let mut args: Vec<String> = [
         "exec",
         "--ignore-user-config",
@@ -81,6 +81,8 @@ pub fn exec_args(workdir: &Path, model: &str) -> Vec<String> {
         workdir.display().to_string(),
         "-m".into(),
         model.into(),
+        "-c".into(),
+        format!("model_reasoning_effort=\"{effort}\""),
     ]);
     args
 }
