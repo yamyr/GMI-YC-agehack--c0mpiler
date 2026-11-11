@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { formatRange } from "../domain/price";
 import { BRIEF_NOTE } from "../script/dev";
-import { NoticeLine, type ScreenProps, parseDollars } from "./shared";
+import { NoticeLine, type ScreenProps, ScriptedDraftNote, parseDollars } from "./shared";
 
 /** FR-013–FR-015: the agent's draft brief, editable, confirmed by Dev. */
 export function BriefScreen({ state, dispatch }: ScreenProps) {
@@ -24,6 +24,7 @@ export function BriefScreen({ state, dispatch }: ScreenProps) {
         </span>
       </p>
 
+      <ScriptedDraftNote state={state} after="brief" />
       <div className="field">
         <label htmlFor="brief-problem">The problem, in one sentence</label>
         <textarea

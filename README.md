@@ -26,6 +26,10 @@ agent, sets her price, Dev's agent drafts a brief, Agely matches them and explai
 pay, and Margaret's engine learns a workflow. All data is scripted and nothing external is connected.
 Use the chapter list to jump around, and **Restart** to begin again.
 
+**Live agent (optional, no API key):** with the [Codex CLI](https://github.com/openai/codex) installed and signed in
+(`npm install -g @openai/codex && codex login`), the three conversations are generated live with three
+suggested replies per turn. See [`docs/live-agent.md`](docs/live-agent.md).
+
 Presenter script and validation steps: [`specs/001-demo-walkthrough/quickstart.md`](specs/001-demo-walkthrough/quickstart.md).
 
 ## Spec-driven development

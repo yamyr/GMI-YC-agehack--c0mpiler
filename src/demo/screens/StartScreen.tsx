@@ -1,7 +1,11 @@
+import { LiveAgentPanel } from "../live/LiveAgentPanel";
+import { useLiveAgent } from "../live/context";
 import type { ScreenProps } from "./shared";
 
 /** FR-001: introduces both people and says plainly that nothing is connected. */
 export function StartScreen({ dispatch }: ScreenProps) {
+  const { status, on } = useLiveAgent();
+  const live = status.state === "ready" && on;
   return (
     <div>
       <h2 tabIndex={-1}>Experience shouldn't retire.</h2>
@@ -22,9 +26,12 @@ export function StartScreen({ dispatch }: ScreenProps) {
         </div>
       </div>
       <p className="notice notice--info">
-        All data is scripted. No agents, payments or calendars are connected. People make every decision; agents
-        only suggest.
+        {live
+          ? "All data is scripted except the three conversations, which come from a live agent. No payments or calendars are connected."
+          : "All data is scripted. No agents, payments or calendars are connected."}{" "}
+        People make every decision; agents only suggest.
       </p>
+      <LiveAgentPanel />
       <div className="actions">
         <button type="button" className="primary" onClick={() => dispatch({ type: "next" })}>
           Start the walkthrough
