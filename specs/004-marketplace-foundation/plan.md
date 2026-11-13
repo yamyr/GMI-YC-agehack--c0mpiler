@@ -168,17 +168,18 @@ No violation needs an entry in Complexity Tracking.
 - R15: the route table and splitting the shell into screens, before T017.
 - R17: `AuthPort.forget` with contract tests, before `deleteAccount`.
 - R16 and R18 inside the booking and honesty stories.
+- R14: the exemption for `src/product/` in the translation check, an English-only notice in the
+  shell, and a translation pass as the last task of story 5.
 - Adding `/demo/#/app` to `scripts/site-check.mjs`, so the product is in the website check.
 
-### Decision needed from the owner
+### Owner decision recorded
 
-One: whether the product's sentences may be exempt from #20's translation-completeness check
-until story 5 (R14). Everything else in this review is decided.
+Translations: English first (R14). The product's sentences are exempt from the completeness
+check until story 5, and the shell says it is English-only when another language is selected.
 
 ## Phases
 
-- **Phase 0, research**: [research.md](research.md). Eighteen decisions; one point in R14 waits
-  on the owner.
+- **Phase 0, research**: [research.md](research.md). Eighteen decisions, none left open.
 - **Phase 1, design**: [data-model.md](data-model.md), [contracts/ports.md](contracts/ports.md),
   [contracts/use-cases.md](contracts/use-cases.md), [quickstart.md](quickstart.md).
 - **Phase 2, tasks**: `/speckit-tasks`, ordered by user story so each story can ship alone.

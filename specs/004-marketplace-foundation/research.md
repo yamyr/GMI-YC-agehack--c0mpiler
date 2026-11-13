@@ -148,12 +148,10 @@ The decisions below were added by the plan review of 2026-11-14, after phases 1 
 - **Rationale**: #20 changes `src/App.tsx`, `src/main.tsx` and four of the domain files this
   feature must also change (R12), and adds a `locale` argument to them. Building the screens
   first would mean rewriting every string and resolving the same conflicts twice.
-- **Open point for the owner**: #20's checks expect every source sentence to have a draft in each
-  language. If that applies to `src/product/`, each new screen needs about 18 draft translations
-  of every sentence. Recommended: the product's sentences are registered but exempt from the
-  completeness check until story 5, then translated in one pass. This needs the owner's yes,
-  because it leaves the product English-only for a while inside an app that offers other
-  languages.
+- **Translations (decided by the owner, 2026-11-14)**: English first. The product's sentences
+  are registered for translation but exempt from #20's completeness check until story 5, then
+  translated in one pass. Until then the product is English-only inside an app that offers other
+  languages, and the product shell says so when another language is selected.
 - **Alternatives considered**: Merging this branch first forces #20 to absorb the conflicts and
   translate a moving target.
 
