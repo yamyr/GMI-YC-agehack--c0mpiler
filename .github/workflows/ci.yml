@@ -110,3 +110,16 @@ jobs:
 
       - name: tests
         run: cargo test --manifest-path src-tauri/Cargo.toml
+
+  # Constitution principle VI: every Rust dependency's licence is on the allowlist in
+  # src-tauri/deny.toml, comes from crates.io, and has no known vulnerability.
+  licences:
+    name: licences and advisories
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: cargo deny
+        uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          manifest-path: src-tauri/Cargo.toml
