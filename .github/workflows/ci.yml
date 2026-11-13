@@ -25,7 +25,7 @@ jobs:
     name: frontend checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: install Bun
         uses: oven-sh/setup-bun@v2
@@ -52,7 +52,7 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: install Bun
         uses: oven-sh/setup-bun@v2
@@ -78,7 +78,7 @@ jobs:
 
       - name: upload traces
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: e2e-results
           path: |
@@ -90,7 +90,7 @@ jobs:
     name: rust checks (macOS)
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -122,7 +122,7 @@ jobs:
     name: licences and advisories
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: cargo deny
         uses: EmbarkStudios/cargo-deny-action@v2
