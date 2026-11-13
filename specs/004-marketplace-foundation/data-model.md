@@ -10,7 +10,7 @@ Money is integer cents unless marked "whole dollars per 15 minutes".
 | id | string | |
 | email | string | Lower-cased and trimmed; unique |
 | name | string | What the person asks to be called; may be empty until the interview |
-| roles | set of `expert`, `buyer` | At least one; adding a role is an explicit action (FR-002) |
+| roles | set of `expert`, `buyer` | Empty until the person chooses one after their first sign-in; adding a role is an explicit action (FR-002) |
 | activeRole | `expert` or `buyer` | Must be in `roles`; always shown |
 | createdAt | instant | |
 

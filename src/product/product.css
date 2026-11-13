@@ -1,0 +1,41 @@
+/* The signed-in product. Uses the walkthrough's classes and src/ui/tokens.css; only what is new
+   lives here. */
+
+.product-notice {
+  margin-bottom: var(--space-4);
+}
+
+/* A dashed border marks a stand-in, as it marks drafts and demo data elsewhere in Agely. */
+.stand-in {
+  margin: var(--space-4) 0;
+  padding: var(--space-3) var(--space-4);
+  border: 2px dashed var(--text-muted);
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+}
+
+.stand-in p {
+  margin: 0;
+}
+
+.stand-in__code {
+  margin-top: var(--space-2);
+  font-size: var(--text-lg);
+}
+
+.stand-in__code strong {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+.services {
+  margin-top: var(--space-6);
+}
+
+.services h2 {
+  font-size: var(--text-lg);
+}
+
+.services li + li {
+  margin-top: var(--space-2);
+}

@@ -8,23 +8,23 @@ the task that makes it pass. `[P]` marks tasks that touch different files and ca
 
 ## Phase 1: Setup
 
-- [ ] T001 Create `src/product/` folders (`model`, `ports`, `ports/contract`, `standins`, `usecases`, `calendar`, `screens`) and `src/product/copy.ts` with the stand-in labels (FR-022, FR-027).
-- [ ] T002 Route `#/app` to a placeholder `ProductApp` from `src/main.tsx`, leaving the walkthrough the default; hide the entry inside Tauri (FR-023, FR-025). Add `site/_redirects` for `/app`.
+- [x] T001 Create `src/product/` folders (`model`, `ports`, `ports/contract`, `standins`, `usecases`, `calendar`, `screens`) and `src/product/copy.ts` with the stand-in labels (FR-022, FR-027).
+- [x] T002 Route `#/app` to a placeholder `ProductApp` from `src/main.tsx`, leaving the walkthrough the default; hide the entry inside Tauri (FR-023, FR-025). Add `site/_redirects` for `/app`.
 
 ## Phase 2: Foundation (blocks every story)
 
-- [ ] T003 [P] Model types, ids and cents helpers with unit tests in `src/product/model/` (data-model.md; FR-020).
-- [ ] T004 [P] Skill catalogue and keyword lookup with unit tests in `src/product/model/catalogue.ts` (R6).
-- [ ] T005 [P] Port interfaces and `ServiceStatus` in `src/product/ports/` (contracts/ports.md).
-- [ ] T006 [P] `StorePort` contract suite in `src/product/ports/contract/store.ts`, then the stand-in in `src/product/standins/store.ts` over a key-value interface (R3; FR-008).
-- [ ] T007 [P] `AuthPort` contract suite, then the stand-in with on-screen codes, expiry and single use (R4; FR-001).
-- [ ] T008 [P] `PaymentsPort` contract suite, then the stand-in with idempotent holds and a decline switch (R8; FR-015, FR-016).
-- [ ] T009 [P] `MeetingsPort` contract suite, then the stand-in with stable placeholder links (FR-017).
-- [ ] T010 [P] `AgentPort` contract suite, then the rule-based stand-in for profile, price and brief drafts (R5).
-- [ ] T011 Use-case context (`ports`, `now`, acting account) and the shared `not-signed-in` and `not-yours` checks with tests in `src/product/usecases/context.ts` (R7, R11; FR-004).
-- [ ] T012 Product shell: service-status banner, try-out notice, role indicator, sign-out, in `src/product/ProductApp.tsx`, using `src/ui/tokens.css` (FR-002, FR-022, FR-024, FR-027).
+- [x] T003 [P] Model types, ids and cents helpers with unit tests in `src/product/model/` (data-model.md; FR-020).
+- [x] T004 [P] Skill catalogue and keyword lookup with unit tests in `src/product/model/catalogue.ts` (R6).
+- [x] T005 [P] Port interfaces and `ServiceStatus` in `src/product/ports/` (contracts/ports.md).
+- [x] T006 [P] `StorePort` contract suite in `src/product/ports/contract/store.ts`, then the stand-in in `src/product/standins/store.ts` over a key-value interface (R3; FR-008).
+- [x] T007 [P] `AuthPort` contract suite, then the stand-in with on-screen codes, expiry and single use (R4; FR-001).
+- [x] T008 [P] `PaymentsPort` contract suite, then the stand-in with idempotent holds and a decline switch (R8; FR-015, FR-016).
+- [x] T009 [P] `MeetingsPort` contract suite, then the stand-in with stable placeholder links (FR-017).
+- [x] T010 [P] `AgentPort` contract suite, then the rule-based stand-in for profile, price and brief drafts (R5).
+- [x] T011 Use-case context (`ports`, `now`, acting account) and the shared `not-signed-in` and `not-yours` checks with tests in `src/product/usecases/context.ts` (R7, R11; FR-004).
+- [x] T012 Product shell: service-status banner, try-out notice, role indicator, sign-out, in `src/product/ProductApp.tsx`, using `src/ui/tokens.css` (FR-002, FR-022, FR-024, FR-027).
 
-**Checkpoint**: every stand-in passes its contract suite; `#/app` renders the shell.
+**Checkpoint**: every stand-in passes its contract suite; `#/app` renders the shell. Reached on 2026-11-14: 60 unit tests and `e2e/product-shell.spec.ts` (8 tests) pass.
 
 ## Phase 3: User Story 1 - An expert's profile is kept (P1)
 
@@ -33,7 +33,7 @@ the task that makes it pass. `[P]` marks tasks that touch different files and ca
 - [ ] T013 [P] [US1] Use-case tests for `addRole`, `saveProfileDraft`, `publishProfile`, `unpublishProfile`, `confirmPrice`, including not-owner refusals (contracts/use-cases.md).
 - [ ] T014 [US1] Implement those use cases in `src/product/usecases/profile.ts` (FR-005, FR-006).
 - [ ] T015 [P] [US1] Playwright journey `e2e/product-expert.spec.ts`: sign in with a stand-in code, interview, edit a skill, publish, confirm a price, reload, sign in again, unpublish and republish.
-- [ ] T016 [US1] Sign-in screens (request code, confirm code) in `src/product/screens/` (FR-001).
+- [x] T016 [US1] Sign-in screens (request code, confirm code) (FR-001). Built into `src/product/ProductApp.tsx` with the shell; move to `src/product/screens/` when the other story 1 screens arrive.
 - [ ] T017 [US1] Interview, profile and price screens for a real expert, reusing the walkthrough's conversation and card styles (FR-005, FR-006; principle I).
 - [ ] T018 [US1] Expert home and account screens, with roles, sign-out and account deletion (FR-002, FR-003).
 

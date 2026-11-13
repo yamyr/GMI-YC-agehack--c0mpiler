@@ -1,0 +1,3 @@
+# The signed-in product lives in the app bundle under a hash route; give it a short address.
+/app /demo/#/app 302
+/app/ /demo/#/app 302
