@@ -1,3 +1,5 @@
+import { createTranslator, type Locale } from "../../../site/i18n/core.js";
+import { seedExpert, seedBrief, seedWorkflow, seedTurns, seedReply } from "../../i18n/seeds";
 import { detectRestrictedAdvice, restrictedAdviceMessage } from "../domain/advice";
 import { matchBrief } from "../domain/match";
 import { validateRange } from "../domain/price";
@@ -41,6 +43,7 @@ export interface Session {
 export interface DemoState {
   /** Index into STEPS. */
   readonly step: number;
+  readonly locale: Locale;
   /** "Today" for the walkthrough; fixed for the whole run so restart and jump are deterministic. */
   readonly now: Date;
   readonly conversations: Readonly<Record<ConversationId, Conversation>>;
@@ -113,23 +116,25 @@ function freshLive(enabled: boolean, nextRequestId: number): LiveState {
   };
 }
 
-export function initialState(now: Date): DemoState {
+export function initialState(now: Date, locale: Locale = "en"): DemoState {
+  const t = createTranslator(locale);
   return {
+    locale,
     step: 0,
     now,
     conversations: {
-      interview: conversation("interview", INTERVIEW_TURNS),
-      brief: conversation("brief", BRIEF_TURNS),
-      debrief: conversation("debrief", DEBRIEF_TURNS),
+      interview: conversation("interview", seedTurns(INTERVIEW_TURNS, t)),
+      brief: conversation("brief", seedTurns(BRIEF_TURNS, t)),
+      debrief: conversation("debrief", seedTurns(DEBRIEF_TURNS, t)),
     },
-    margaret: MARGARET_DRAFT,
+    margaret: seedExpert(MARGARET_DRAFT, t),
     exchanges: { profile: [], price: [] },
     priceDraft: PRICE_SUGGESTION.range,
     priceConfirmed: false,
-    brief: DEV_BRIEF,
+    brief: seedBrief(DEV_BRIEF, t),
     proposal: { units: DEV_BRIEF.units, pricePerUnit: 75, sent: false },
     session: null,
-    workflow: PROPOSED_WORKFLOW,
+    workflow: seedWorkflow(PROPOSED_WORKFLOW, t),
     notice: null,
     live: freshLive(false, 1),
   };
@@ -149,7 +154,8 @@ export function wasLive(state: DemoState, id: ConversationId): boolean {
 // ── Derived values ──────────────────────────────────────────────────────────
 
 export function currentMatch(state: DemoState): MatchResult {
-  return matchBrief(state.brief, [state.margaret, ...OTHER_EXPERTS]);
+  const t = createTranslator(state.locale);
+  return matchBrief(state.brief, [state.margaret, ...OTHER_EXPERTS.map((expert) => seedExpert(expert, t))], state.locale);
 }
 
 export function deriveEngine(state: DemoState): Engine {
@@ -219,7 +225,7 @@ const BLOCKED_REASONS: Readonly<Record<StepId, string>> = {
 export function blockedReason(state: DemoState): string | null {
   if (canAdvance(state)) return null;
   const step = STEPS[state.step];
-  return step === undefined ? null : BLOCKED_REASONS[step.id];
+  return step === undefined ? null : createTranslator(state.locale)(BLOCKED_REASONS[step.id]);
 }
 
 export function stepInfo(state: DemoState) {
@@ -266,19 +272,25 @@ function error(state: DemoState, text: string): DemoState {
 }
 
 /** Invariant 6: a skill change after publishing sends the profile back to draft. */
+function profileDraftMessage(locale: Locale): string {
+  const t = createTranslator(locale);
+  return t("Your profile is back to draft. Publish it again when you're happy with it.");
+}
+
 function withCompetencies(state: DemoState, competencies: Expert["competencies"]): DemoState {
   const wasPublished = state.margaret.published;
   return {
     ...state,
     margaret: { ...state.margaret, competencies, published: false },
     notice: wasPublished
-      ? { kind: "info", text: "Your profile is back to draft. Publish it again when you're happy with it." }
+      ? { kind: "info", text: profileDraftMessage(state.locale) }
       : null,
   };
 }
 
 export function createReducer(services: DemoServices) {
   function reduce(state: DemoState, action: DemoAction): DemoState {
+    const t = createTranslator(state.locale);
     switch (action.type) {
       case "next":
         if (!canAdvance(state) || state.step >= STEPS.length - 1) return state;
@@ -289,11 +301,11 @@ export function createReducer(services: DemoServices) {
         return { ...state, step: state.step - 1, notice: null };
 
       case "restart":
-        return { ...initialState(state.now), live: freshLive(state.live.enabled, state.live.nextRequestId) };
+        return { ...initialState(state.now, state.locale), live: freshLive(state.live.enabled, state.live.nextRequestId) };
 
       case "jumpTo": {
         const target = firstStepOf(action.chapter);
-        let next: DemoState = { ...initialState(state.now), live: freshLive(state.live.enabled, state.live.nextRequestId) };
+        let next: DemoState = { ...initialState(state.now, state.locale), live: freshLive(state.live.enabled, state.live.nextRequestId) };
         for (let i = 0; i < target; i += 1) {
           const step = STEPS[i];
           if (step === undefined) break;
@@ -315,7 +327,8 @@ export function createReducer(services: DemoServices) {
       }
 
       case "replyToAgent": {
-        const reply = ALL_REPLIES.find((r) => r.id === action.replyId);
+        const authored = ALL_REPLIES.find((r) => r.id === action.replyId);
+        const reply = authored === undefined ? undefined : seedReply(authored, t);
         if (reply === undefined) return state;
         const effect = reply.effect;
         const applied =
@@ -327,7 +340,7 @@ export function createReducer(services: DemoServices) {
                 ? reduce(state, { type: "setPrice", range: effect.range })
                 : { ...state, notice: null };
         if (applied.notice?.kind === "error") return applied;
-        const bucket = PROFILE_REPLIES.includes(reply) ? "profile" : "price";
+        const bucket = PROFILE_REPLIES.some((entry) => entry.id === reply.id) ? "profile" : "price";
         const turns: readonly ConversationTurn[] = [
           ...applied.exchanges[bucket],
           { speaker: "margaret", text: reply.text },
@@ -338,9 +351,9 @@ export function createReducer(services: DemoServices) {
 
       case "editCompetency": {
         const label = action.label.trim();
-        if (label === "") return error(state, "A skill needs a name. Type a few words, or remove the skill instead.");
+        if (label === "") return error(state, t("A skill needs a name. Type a few words, or remove the skill instead."));
         if (!state.margaret.competencies.some((c) => c.id === action.id)) {
-          return error(state, "That skill isn't on the profile any more.");
+          return error(state, t("That skill isn't on the profile any more."));
         }
         return withCompetencies(
           state,
@@ -350,7 +363,7 @@ export function createReducer(services: DemoServices) {
 
       case "removeCompetency":
         if (!state.margaret.competencies.some((c) => c.id === action.id)) {
-          return error(state, "That skill isn't on the profile any more.");
+          return error(state, t("That skill isn't on the profile any more."));
         }
         return withCompetencies(
           state,
@@ -358,7 +371,7 @@ export function createReducer(services: DemoServices) {
         );
 
       case "redoInterview": {
-        const fresh = initialState(state.now);
+        const fresh = initialState(state.now, state.locale);
         return {
           ...state,
           step: stepIndexOf("interview"),
@@ -373,12 +386,12 @@ export function createReducer(services: DemoServices) {
 
       case "publishProfile":
         if (state.margaret.competencies.length < MIN_PUBLISHED_SKILLS) {
-          return error(state, `Keep at least ${MIN_PUBLISHED_SKILLS} skills on your profile before publishing.`);
+          return error(state, t("Keep at least {0} skills on your profile before publishing.", MIN_PUBLISHED_SKILLS));
         }
         return { ...state, margaret: { ...state.margaret, published: true }, notice: null };
 
       case "setPrice": {
-        const check = validateRange(action.range);
+        const check = validateRange(action.range, state.locale);
         if (!check.ok) return error(state, check.message);
         return {
           ...state,
@@ -402,14 +415,14 @@ export function createReducer(services: DemoServices) {
 
       case "confirmBrief": {
         const { brief } = state;
-        if (brief.problem.trim() === "") return error(state, "Describe the problem in a sentence first.");
+        if (brief.problem.trim() === "") return error(state, t("Describe the problem in a sentence first."));
         if (!Number.isInteger(brief.units) || brief.units < 1 || brief.units > MAX_UNITS) {
-          return error(state, "Choose a length between 15 and 60 minutes.");
+          return error(state, t("Choose a length between 15 and 60 minutes."));
         }
-        const budget = validateRange(brief.budget);
+        const budget = validateRange(brief.budget, state.locale);
         if (!budget.ok) return error(state, budget.message);
         const advice = detectRestrictedAdvice(brief.problem);
-        if (advice !== null) return error(state, restrictedAdviceMessage(advice));
+        if (advice !== null) return error(state, restrictedAdviceMessage(advice, state.locale));
         return {
           ...state,
           brief: { ...brief, confirmed: true },
@@ -427,8 +440,8 @@ export function createReducer(services: DemoServices) {
 
       case "sendProposal": {
         const match = currentMatch(state);
-        if (match.kind !== "match") return error(state, "There is no match to send a proposal to.");
-        const check = validateProposal(state.proposal.pricePerUnit, match.overlap);
+        if (match.kind !== "match") return error(state, t("There is no match to send a proposal to."));
+        const check = validateProposal(state.proposal.pricePerUnit, match.overlap, state.locale);
         if (!check.ok) return error(state, check.message);
         return { ...state, proposal: { ...state.proposal, sent: true }, notice: null };
       }
@@ -460,7 +473,7 @@ export function createReducer(services: DemoServices) {
           ...state,
           step: stepIndexOf("proposal"),
           proposal: { ...state.proposal, sent: false },
-          notice: { kind: "info", text: "Margaret declined this time. Nothing was booked or charged. You can propose again." },
+          notice: { kind: "info", text: t("Margaret declined this time. Nothing was booked or charged. You can propose again.") },
         };
 
       case "markSessionHeld":

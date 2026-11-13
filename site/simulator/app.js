@@ -1,10 +1,13 @@
+import { formatExpertDescription } from "./presentation.js";
+import { initialLocale, createTranslator, formatMoney, formatNumber } from "../i18n/core.js";
+const locale = initialLocale();
+const t = createTranslator(locale);
 // Agely marketplace simulator: the page. The model lives in engine.js.
 import {
   GOALS,
   OUTCOMES,
   PARAMS,
   PRESETS,
-  SKILLS,
   TOGGLES,
   diagnose,
   normalise,
@@ -24,48 +27,52 @@ const OUTCOME_LABELS = {
 
 const STEP_MS = 550;
 const $ = (id) => document.getElementById(id);
-const dollars = (n) => `$${Math.round(n).toLocaleString("en-US")}`;
-const percent = (n) => `${Math.round(n * 100)}%`;
+const dollars = (n) => formatMoney(n, locale);
+const percent = (n) => formatNumber(n, locale, { style: "percent", maximumFractionDigits: 0 });
 
 function el(tag, attrs = {}, ...children) {
   const node = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
     if (k === "class") node.className = v;
-    else if (k === "text") node.textContent = v;
+    else if (k === "text") node.textContent = t(v);
     else if (k === "style") node.style.cssText = v;
-    else node.setAttribute(k, v);
+    else node.setAttribute(k, k === "aria-label" ? t(v) : v);
   }
-  node.append(...children);
+  node.append(...children.map((child) => typeof child === "string" ? t(child) : child));
   return node;
 }
 
 function formatValue(def, value) {
-  if (def.unit === "$") return `$${value}`;
-  if (def.unit === "%") return `${value}%`;
-  if (def.unit === "min") return `${value} minutes`;
-  return String(value);
+  if (def.unit === "$") return formatMoney(value, locale);
+  if (def.unit === "%") return formatNumber(value / 100, locale, { style: "percent", maximumFractionDigits: 0 });
+  if (def.unit === "min") return t("{0} minutes", formatNumber(value, locale));
+  return formatNumber(value, locale);
 }
 
 // ---- State: the scenario lives in the URL, so any scenario can be shared as a link. ----
-
-function readHash() {
-  const raw = Object.fromEntries(new URLSearchParams(location.hash.slice(1)));
-  return normalise(raw);
-}
 
 function writeHash() {
   const q = new URLSearchParams();
   for (const d of PARAMS) q.set(d.key, params[d.key]);
   for (const t of TOGGLES) q.set(t.key, params[t.key] ? "1" : "0");
   q.set("seed", params.seed);
+  if (week !== params.weeks) q.set("week", week);
   history.replaceState(null, "", `#${q}`);
 }
 
-let params = readHash();
+const savedScenario = Object.fromEntries(new URLSearchParams(location.hash.slice(1)));
+let params = normalise(savedScenario);
 let result = simulate(params);
-let week = params.weeks;
+const savedWeek = Number(savedScenario.week);
+let week = Number.isInteger(savedWeek) && savedWeek >= 1 && savedWeek <= params.weeks ? savedWeek : params.weeks;
 let timer = null;
 let selectedExpert = null;
+
+function showWeek(nextWeek) {
+  week = nextWeek;
+  writeHash();
+  render();
+}
 
 // ---- Controls ----
 
@@ -119,18 +126,17 @@ function buildControls() {
     const button = $("copy");
     try {
       await navigator.clipboard.writeText(location.href);
-      button.textContent = "Link copied";
+      button.textContent = t("Link copied");
     } catch {
-      button.textContent = "Copy the address from your browser";
+      button.textContent = t("Copy the address from your browser");
     }
-    setTimeout(() => (button.textContent = "Copy link to this scenario"), 2500);
+    setTimeout(() => (button.textContent = t("Copy link to this scenario")), 2500);
   });
 
   $("play").addEventListener("click", () => (timer ? stop() : play()));
   $("week").addEventListener("input", () => {
     stop();
-    week = Number($("week").value);
-    render();
+    showWeek(Number($("week").value));
   });
 }
 
@@ -161,20 +167,18 @@ function rerun() {
 // ---- Playback ----
 
 function play() {
-  week = week >= params.weeks ? 1 : week + 1;
-  render();
+  showWeek(week >= params.weeks ? 1 : week + 1);
   timer = setInterval(() => {
     if (week >= params.weeks) return stop();
-    week++;
-    render();
+    showWeek(week + 1);
   }, STEP_MS);
-  $("play").textContent = "Pause";
+  $("play").textContent = t("Pause");
 }
 
 function stop() {
   if (timer) clearInterval(timer);
   timer = null;
-  $("play").textContent = week >= params.weeks ? "Play from week 1" : "Continue";
+  $("play").textContent = t(week >= params.weeks ? "Play from week 1" : "Continue");
 }
 
 // ---- Rendering ----
@@ -183,8 +187,8 @@ function render() {
   const s = summarise(result, week);
   $("week").max = params.weeks;
   $("week").value = week;
-  $("week-label").textContent = `Week ${week} of ${params.weeks}`;
-  if (!timer) $("play").textContent = week >= params.weeks ? "Play from week 1" : "Continue";
+  $("week-label").textContent = t("Week {0} of {1}", formatNumber(week, locale), formatNumber(params.weeks, locale));
+  if (!timer) $("play").textContent = t(week >= params.weeks ? "Play from week 1" : "Continue");
   renderGoals(s);
   renderTiles(s);
   renderWeeks();
@@ -203,22 +207,22 @@ function renderGoals(s) {
         "li",
         { class: ok ? "goal goal--met" : "goal" },
         el("span", { class: "goal-mark", "aria-hidden": "true", text: ok ? "✓" : "✗" }),
-        el("span", { class: "goal-text", text: `${g.label} ` }, el("strong", { text: `(${ok ? "met" : "not yet"}: ${values[g.key]})` })),
+        el("span", { class: "goal-text", text: `${t(g.label)} ` }, el("strong", { text: t("({0}: {1})", t(ok ? "met" : "not yet"), values[g.key]) })),
         el("span", { class: "goal-bar", "aria-hidden": "true" }, el("span", { style: `width:${progress * 100}%` })),
       );
     }),
   );
-  $("goals-title").textContent = `Goals: ${met.length} of ${GOALS.length} met`;
-  $("diagnosis").textContent = diagnose(s, params);
+  $("goals-title").textContent = t("Goals: {0} of {1} met", formatNumber(met.length, locale), formatNumber(GOALS.length, locale));
+  $("diagnosis").textContent = diagnose(s, params, t);
 }
 
 function renderTiles(s) {
   const tiles = [
     ["Earned by experts", dollars(s.earned)],
-    ["Requests that got help", `${percent(s.matchRate)}`, `${s.served.toLocaleString("en-US")} of ${s.requests.toLocaleString("en-US")}`],
+    ["Requests that got help", `${percent(s.matchRate)}`, t("{0} of {1}", formatNumber(s.served, locale), formatNumber(s.requests, locale))],
     ["Typical expert, per week", dollars(s.medianWeekly)],
     ["Experts who earned", percent(s.earningShare)],
-    ["Approved workflows", s.workflows.toLocaleString("en-US")],
+    ["Approved workflows", formatNumber(s.workflows, locale)],
     ["Agely's fees", dollars(s.fees)],
   ];
   $("tiles").replaceChildren(
@@ -235,7 +239,7 @@ function renderWeeks() {
       const col = el("button", {
         type: "button",
         class: n > week ? "weekbar weekbar--future" : "weekbar",
-        "aria-label": `Week ${n}: ${w.matched + w.engine} of ${w.requests} requests got help`,
+        "aria-label": t("Week {0}: {1} of {2} requests got help", formatNumber(n, locale), formatNumber(w.matched + w.engine, locale), formatNumber(w.requests, locale)),
         tabindex: "-1",
       });
       for (const o of OUTCOMES) {
@@ -243,8 +247,7 @@ function renderWeeks() {
       }
       col.addEventListener("click", () => {
         stop();
-        week = n;
-        render();
+        showWeek(n);
       });
       col.addEventListener("pointerenter", () => highlightWeek(n));
       return col;
@@ -259,7 +262,7 @@ function renderWeeks() {
       "tbody",
       {},
       ...result.weeks.slice(0, week).map((x, i) =>
-        el("tr", {}, el("th", { scope: "row", text: String(i + 1) }), ...OUTCOMES.map((o) => el("td", { text: String(x[o]) })), el("td", { text: dollars(x.earned) })),
+        el("tr", {}, el("th", { scope: "row", text: formatNumber(i + 1, locale) }), ...OUTCOMES.map((o) => el("td", { text: formatNumber(x[o], locale) })), el("td", { text: dollars(x.earned) })),
       ),
     ),
   );
@@ -270,9 +273,9 @@ function highlightWeek(n) {
   [...$("weekbars").children].forEach((col, i) => col.classList.toggle("weekbar--current", i + 1 === n));
   const w = result.weeks[n - 1];
   $("weeks-legend").replaceChildren(
-    el("li", { class: "legend-head", text: `Week ${n}` }),
+    el("li", { class: "legend-head", text: t("Week {0}", formatNumber(n, locale)) }),
     ...OUTCOMES.filter((o) => o !== "engine" || params.engine).map((o) =>
-      el("li", {}, el("span", { class: `key seg--${o}` }), `${OUTCOME_LABELS[o]}: `, el("strong", { text: String(w[o]) })),
+      el("li", {}, el("span", { class: `key seg--${o}` }), t("{0}: ", t(OUTCOME_LABELS[o])), el("strong", { text: formatNumber(w[o], locale) })),
     ),
   );
 }
@@ -292,16 +295,16 @@ function renderFit() {
   const top = Math.max(...expertShare, ...buyerShare, 0.01);
   $("fit").replaceChildren(
     ...expertShare.map((share, i) => {
-      const label = i === BINS - 1 ? `$${i * BIN} or more` : `$${i * BIN}–$${(i + 1) * BIN}`;
+      const label = i === BINS - 1 ? t("{0} or more", dollars(i * BIN)) : t("{0}–{1}", dollars(i * BIN), dollars((i + 1) * BIN));
       const col = el(
         "div",
         { class: "fit-col" },
         el("div", { class: "fit-up" }, el("span", { class: "fit-bar fit-bar--expert", style: `height:${(share / top) * 100}%` })),
         el("div", { class: "fit-down" }, el("span", { class: "fit-bar fit-bar--buyer", style: `height:${(buyerShare[i] / top) * 100}%` })),
-        el("span", { class: "fit-tick", text: i % 5 === 0 ? `$${i * BIN}` : "" }),
+        el("span", { class: "fit-tick", text: i % 5 === 0 ? dollars(i * BIN) : "" }),
       );
       col.addEventListener("pointerenter", () => {
-        $("fit-readout").textContent = `${label} per 15 minutes: ${percent(share)} of experts, ${percent(buyerShare[i])} of budgets.`;
+        $("fit-readout").textContent = t("{0} per 15 minutes: {1} of experts, {2} of budgets.", label, percent(share), percent(buyerShare[i]));
       });
       return col;
     }),
@@ -317,7 +320,7 @@ function renderExperts(s) {
         type: "button",
         class: `expert${earned === 0 ? " expert--none" : ""}${selectedExpert === e.id ? " expert--selected" : ""}`,
         style: earned === 0 ? "" : `--level:${Math.round(15 + 85 * (earned / top))}%`,
-        "aria-label": `${e.name}: ${dollars(earned)} earned`,
+        "aria-label": t("{0}: {1} earned", e.name, dollars(earned)),
       });
       const show = () => {
         selectedExpert = e.id;
@@ -333,15 +336,12 @@ function renderExperts(s) {
   );
   const chosen = result.experts[selectedExpert ?? -1];
   if (chosen) describeExpert(chosen, s.byExpert[chosen.id]);
-  else $("expert-readout").textContent = "Select a square to see that expert.";
+  else $("expert-readout").textContent = t("Select a square to see that expert.");
 }
 
 function describeExpert(e, earned) {
-  const skills = e.skills.map((i) => SKILLS[i]).join(" and ");
-  const final = week >= params.weeks ? `, ${e.sessions} sessions and ${e.workflows} approved workflows by the end` : "";
-  $("expert-readout").textContent =
-    `${e.name}, ${e.age}. ${e.years} years in ${skills}. Charges $${e.price.min}–$${e.price.max} per 15 minutes and can take ${e.capacity} sessions a week. ` +
-    `Earned ${dollars(earned)} by week ${week}${final}.`;
+  $("expert-readout").textContent = formatExpertDescription(e, earned, week, params.weeks, locale);
+
 }
 
 buildControls();

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CATALOGUE, findSkills, skillByTag } from "./catalogue";
+import { CATALOGUE, displaySkillLabel, findSkills, skillByTag } from "./catalogue";
 
 describe("skill catalogue", () => {
   it("has unique tags, each with a label and at least one keyword", () => {
@@ -30,4 +30,15 @@ describe("skill catalogue", () => {
     expect(findSkills("I enjoy gardening.")).toEqual([]);
     expect(findSkills("")).toEqual([]);
   });
+  it("recognizes the translated catalogue label in a typed brief", () => {
+    expect(findSkills("J'ai besoin d'aide avec la négociation avec les fournisseurs.", "fr").map((skill) => skill.tag))
+      .toEqual(["supplier-negotiation"]);
+  });
+
+  it("preserves a user's edited label even when it matches a catalogue string", () => {
+    const skill = { tag: "supplier-negotiation", label: "Supplier negotiation" };
+    expect(displaySkillLabel({ ...skill, source: { kind: "edited" } }, "fr")).toBe("Supplier negotiation");
+    expect(displaySkillLabel({ ...skill, source: { kind: "interview", turn: 1 } }, "fr")).toBe("Négociation avec les fournisseurs");
+  });
+
 });

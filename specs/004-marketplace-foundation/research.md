@@ -152,8 +152,10 @@ The decisions below were added by the plan review of 2026-11-14, after phases 1 
   are registered for translation but exempt from #20's completeness check until story 5, then
   translated in one pass. Until then the product is English-only inside an app that offers other
   languages, and the product shell says so when another language is selected.
-- **Alternatives considered**: Merging this branch first forces #20 to absorb the conflicts and
-  translate a moving target.
+- **T041 implementation**: The local integration branch merges the marketplace stack with the
+  commit that contains #20. All product messages now participate in the completeness check. The
+  app shows the shared draft translation notice, and locale changes keep the current product
+  route and form state.
 
 ## R15. Moving between product screens
 

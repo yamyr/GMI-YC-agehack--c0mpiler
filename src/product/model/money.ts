@@ -1,3 +1,5 @@
+import { formatMoney, type Locale } from "../../../site/i18n/core.js";
+
 /**
  * Money for the product. Prices per 15 minutes stay whole dollars, as in the walkthrough; session
  * totals, the fee and what an expert is owed are integer cents (FR-020, research R9).
@@ -27,7 +29,6 @@ export function owedCents(amountCents: number): number {
 }
 
 /** "$150", "$58.50", "$1,234.56". */
-export function formatCents(cents: number): string {
-  const whole = cents % 100 === 0;
-  return `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: 2 })}`;
+export function formatCents(cents: number, locale: Locale = "en"): string {
+  return formatMoney(cents / 100, locale, cents % 100 === 0 ? 0 : 2);
 }

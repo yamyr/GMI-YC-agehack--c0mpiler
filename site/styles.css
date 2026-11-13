@@ -511,7 +511,7 @@ a {
 .ranges-plot {
   position: relative;
   margin-left: 92px;
-  padding: 40px 0 8px;
+  padding: 0 0 8px;
 }
 
 .ranges-budget {
@@ -523,11 +523,11 @@ a {
   border-radius: 4px;
 }
 
-.ranges-budget span {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  white-space: nowrap;
+.ranges-budget-label {
+  /* A translated caption can span several lines; the price rows must follow its real height. */
+  position: relative;
+  margin: 0 0 8px;
+  padding: 8px 0 0 calc(8.33% + 8px);
   color: var(--color-dev);
   font-weight: 600;
   font-size: 0.89rem;
@@ -660,11 +660,6 @@ a {
   /* Narrow bars can't hold their own label, so the price moves up beside the name. */
   .ranges-plot {
     margin-left: 0;
-    padding-top: 64px;
-  }
-
-  .ranges-budget span {
-    white-space: normal;
   }
 
   .range-row {

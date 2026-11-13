@@ -1,5 +1,5 @@
 import { type Page, expect, test } from "@playwright/test";
-import { productAudit, productSignIn } from "./productHelpers";
+import { productAudit, productSignIn, seedExperts } from "./productHelpers";
 
 // Spec 004, story 1: an expert's profile is kept.
 
@@ -118,6 +118,40 @@ test("an interview that names no skill asks for more instead of inventing one", 
   await expect(page.getByRole("alert")).toContainText("couldn't find a skill");
   await expect(page).toHaveURL(/#\/app\/expert\/interview$/);
   await expect(page.getByText("What work did you do, and for how long?", { exact: false })).toBeVisible();
+});
+
+test("an expert can confirm a price entered with Devanagari and Tamil decimal digits", async ({ page }) => {
+  await page.goto("/?lang=en#/app");
+  await productSignIn(page, "ruth@example.com");
+  await page.getByRole("button", { name: "Continue as an expert" }).click();
+  await interview(page, "Ruth Adeyemi");
+  await page.getByRole("link", { name: "Set my price" }).click();
+
+  await page.getByLabel("Lowest price per 15 minutes").fill("६०");
+  await page.getByLabel("Highest price per 15 minutes").fill("௯௦");
+  await page.getByRole("button", { name: "Confirm my price" }).click();
+
+  await expect(page.getByText("Confirmed: $60–$90 per 15 minutes")).toBeVisible();
+});
+
+test("an untouched skill field follows the language while a typed edit is kept", async ({ page }) => {
+  await seedExperts(page);
+  await page.goto("/?lang=en#/app");
+  await productSignIn(page, "seed-ruth@example.com");
+  await page.goto("/?lang=en#/app/expert/profile");
+  const skill = page.locator(".competency").first();
+  await skill.locator("summary").click();
+  const label = skill.locator(".competency__label");
+  const field = skill.locator("input");
+  await expect(field).toHaveValue("Contract manufacturing terms");
+
+  await page.locator("#language").selectOption("fr");
+  await expect(label).toHaveText("Conditions de fabrication en sous-traitance");
+  await expect(field).toHaveValue("Conditions de fabrication en sous-traitance");
+
+  await field.fill("My contract wording");
+  await page.locator("#language").selectOption("en");
+  await expect(field).toHaveValue("My contract wording");
 });
 
 test("one expert cannot see another's profile, and a deleted account is gone", async ({ page }) => {

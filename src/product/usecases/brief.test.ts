@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
+import { createTranslator } from "../../../site/i18n/core.js";
 import type { ExpertProfile } from "../model/types";
 import type { InterviewAnswer } from "../ports";
 import { chooseRole, signOut } from "./account";
 import { confirmBrief, draftBriefFromConversation, myBrief, myCurrentBrief, updateBrief } from "./brief";
-import { myMatch, runMatch } from "./match";
+import { localizeStoredMatch, myMatch, runMatch } from "./match";
 import { type TestWorld, testWorld } from "./testing";
 
 const ANSWERS: readonly InterviewAnswer[] = [
@@ -57,6 +58,69 @@ describe("a buyer's brief", () => {
     const result = await draftBriefFromConversation(world.ctx, ANSWERS);
     expect(result).toMatchObject({ ok: true, value: { buyerId: sam, skillTag: "contract-manufacturing", units: 2, budget: { min: 50, max: 100 }, state: "draft", createdAt: "2026-11-14T12:00:00.000Z" } });
     expect(await myCurrentBrief(world.ctx)).toEqual(result);
+  });
+
+  it("recognizes and preserves a typed brief in the selected language", async () => {
+    const world = testWorld();
+    await buyer(world);
+    const problem = "J'ai besoin d'aide avec la négociation avec les fournisseurs.";
+    const result = await draftBriefFromConversation(world.ctx, [
+      { questionId: "problem", text: problem },
+      { questionId: "length", text: "45 minutes" },
+      { questionId: "budget", text: "50 à 100 dollars" },
+    ], "fr");
+
+    expect(result).toMatchObject({ ok: true, value: { problem, skillTag: "supplier-negotiation", units: 3, budget: { min: 50, max: 100 } } });
+  });
+
+  it("uses each typed answer's language when the buyer switches languages mid-conversation", async () => {
+    const world = testWorld();
+    await buyer(world);
+    const problem = "J'ai besoin d'aide avec la négociation avec les fournisseurs.";
+    const result = await draftBriefFromConversation(world.ctx, [
+      { questionId: "problem", text: problem, locale: "fr" },
+      { questionId: "length", text: "१ घंटा", locale: "hi" },
+      { questionId: "budget", text: "$50 to $80", locale: "en" },
+    ], "en");
+
+    expect(result).toMatchObject({ ok: true, value: { problem, skillTag: "supplier-negotiation", units: 4, budget: { min: 50, max: 80 } } });
+  });
+
+  it("preserves quantities entered using Hindi digits", async () => {
+    const world = testWorld();
+    await buyer(world);
+    const result = await draftBriefFromConversation(world.ctx, [
+      { questionId: "problem", text: "आपूर्तिकर्ता से बातचीत में मदद चाहिए।" },
+      { questionId: "length", text: "४५ मिनट" },
+      { questionId: "budget", text: "५० से ८० अमेरिकी डॉलर" },
+    ], "hi");
+
+    expect(result).toMatchObject({ ok: true, value: { skillTag: "supplier-negotiation", units: 3, budget: { min: 50, max: 80 } } });
+  });
+
+  it.each([
+    ["fr", "1 heure 15 minutes", 5],
+    ["hi", "१ घंटा", 4],
+    ["fr", "45", 3],
+    ["fr", "1 minute", 1],
+  ] as const)("interprets duration in %s for %s", async (locale, length, units) => {
+    const world = testWorld();
+    await buyer(world);
+    const result = await draftBriefFromConversation(world.ctx, [
+      ANSWERS[0] ?? { questionId: "problem", text: "Help with contract manufacturing" },
+      { questionId: "length", text: length },
+    ], locale);
+
+    expect(result).toMatchObject({ ok: true, value: { units } });
+  });
+
+  it.each(["en", "tl"] as const)("uses an exact catalogue label over overlapping keywords in %s", async (locale) => {
+    const world = testWorld();
+    await buyer(world);
+    const text = createTranslator(locale)("Supplier quality audits").toLocaleUpperCase(locale);
+    const result = await draftBriefFromConversation(world.ctx, [{ questionId: "problem", text }], locale);
+
+    expect(result).toMatchObject({ ok: true, value: { skillTag: "supplier-audits" } });
   });
 
   it("is not saved when the problem names no skill Agely knows", async () => {
@@ -135,6 +199,24 @@ describe("matching a brief against stored experts", () => {
       ["lin", "price"],
     ]);
     expect(await myMatch(world.ctx, id)).toEqual(result);
+  });
+
+  it("renders old stored match explanations in the current language without rewriting the stored result", async () => {
+    const world = testWorld();
+    await threeExperts(world);
+    await buyer(world);
+    const id = await confirmedBrief(world);
+    const stored = await runMatch(world.ctx, id);
+    const brief = await myBrief(world.ctx, id);
+    if (!stored.ok || !brief.ok) throw new Error("expected a stored match");
+
+    const localized = localizeStoredMatch(stored.value.match.result, brief.value, "fr");
+
+    if (localized.kind !== "match") throw new Error("expected a match");
+    expect(localized.expert.name).toBe("Ruth Adeyemi");
+    expect(localized.explanation.join(" ")).toContain("34 ans d’expérience.");
+    expect(localized.explanation.join(" ")).toContain("Conditions de fabrication en sous-traitance");
+    expect(await myMatch(world.ctx, id)).toEqual(stored);
   });
 
   it("does not match a brief that is not confirmed", async () => {

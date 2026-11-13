@@ -1,5 +1,7 @@
+import type { Locale } from "../../../site/i18n/core.js";
 import { validateRange } from "../../demo/domain/price";
 import type { PriceRange } from "../../demo/domain/types";
+import { displaySkillDescription, displaySkillLabel } from "../model/catalogue";
 import type { ExpertProfile, Skill } from "../model/types";
 import { type Result, ok, refuse } from "../model/types";
 import type { InterviewAnswer, PriceSuggestion } from "../ports";
@@ -34,10 +36,10 @@ async function change(ctx: Context, edit: (profile: ExpertProfile) => ExpertProf
  * profile that was already published or priced keeps that state, and a new one starts as a
  * draft (FR-006). When the answers name no skill, nothing is saved.
  */
-export async function draftProfileFromInterview(ctx: Context, name: string, answers: readonly InterviewAnswer[]): Promise<Result<ExpertProfile, NotSignedIn | "empty-name" | "unmatched">> {
+export async function draftProfileFromInterview(ctx: Context, name: string, answers: readonly InterviewAnswer[], locale: Locale = "en"): Promise<Result<ExpertProfile, NotSignedIn | "empty-name" | "unmatched">> {
   const named = await setName(ctx, name);
   if (!named.ok) return named;
-  const draft = await ctx.ports.agent.draftProfile(answers);
+  const draft = await ctx.ports.agent.draftProfile(answers, locale);
   if (draft.unmatched) return refuse("unmatched");
   const before = await ctx.ports.store.get("profile", named.value.id);
   const profile: ExpertProfile = {
@@ -84,11 +86,22 @@ export function unpublishProfile(ctx: Context): Promise<Result<ExpertProfile, No
 }
 
 /** The agent's suggestion. It is shown, never applied. */
-export async function suggestMyPrice(ctx: Context): Promise<Result<PriceSuggestion, NotSignedIn | "no-profile">> {
+export async function suggestMyPrice(ctx: Context, locale: Locale = "en"): Promise<Result<PriceSuggestion, NotSignedIn | "no-profile">> {
   const found = await existing(ctx);
   if (!found.ok) return found;
   const p = found.value;
-  return ok(await ctx.ports.agent.suggestPrice({ headline: p.headline, location: p.location, yearsExperience: p.yearsExperience, unmatched: false, skills: p.skills.map((s) => ({ tag: s.tag, label: s.label, description: s.description, sourceTurn: 1 })) }));
+  return ok(await ctx.ports.agent.suggestPrice({
+    headline: p.headline,
+    location: p.location,
+    yearsExperience: p.yearsExperience,
+    unmatched: false,
+    skills: p.skills.map((skill) => ({
+      tag: skill.tag,
+      label: displaySkillLabel(skill, locale),
+      description: displaySkillDescription(skill, locale),
+      sourceTurn: skill.source.kind === "interview" ? skill.source.turn : 0,
+    })),
+  }, locale));
 }
 
 /** Explicit: the expert names their own price (FR-006). */

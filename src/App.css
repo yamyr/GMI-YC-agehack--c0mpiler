@@ -51,6 +51,7 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-3);
   min-height: 64px;
   padding: var(--space-2) var(--stage-pad-x);
   background: var(--surface);
@@ -68,7 +69,8 @@ h3 {
 .app-switch {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--control-h);
+  text-align: end;
   color: var(--color-accent-strong);
   font-weight: 600;
 }
@@ -213,3 +215,26 @@ a:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+.language-settings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+.language-settings select {
+  min-height: var(--control-h);
+  max-width: 100%;
+  font: inherit;
+  padding: var(--space-2) var(--space-3);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.translation-notice, .language-confirmation {
+  flex-basis: 100%;
+  margin: 0;
+}
+.translation-notice { color: var(--text-muted); font-size: var(--text-xs); }
+.language-confirmation { padding: var(--space-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); }

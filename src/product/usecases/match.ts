@@ -1,7 +1,8 @@
-import { matchBrief } from "../../demo/domain/match";
+import { createTranslator, type Locale } from "../../../site/i18n/core.js";
+import { explainMatch, explainNoMatch, matchBrief } from "../../demo/domain/match";
 import { overlap } from "../../demo/domain/price";
-import type { Expert, Brief as RuleBrief } from "../../demo/domain/types";
-import { skillByTag } from "../model/catalogue";
+import type { Competency, Expert, MatchResult, Brief as RuleBrief } from "../../demo/domain/types";
+import { displaySkillLabel, skillByTag } from "../model/catalogue";
 import type { Account, Brief, ExpertProfile, StoredMatch } from "../model/types";
 import { type Result, ok, refuse } from "../model/types";
 import { myBrief } from "./brief";
@@ -35,7 +36,26 @@ function toExpert(profile: ExpertProfile, account: Account): Expert {
   };
 }
 
-const toRuleBrief = (brief: Brief): RuleBrief => ({ problem: brief.problem, competencyTag: brief.skillTag, competencyLabel: skillByTag(brief.skillTag)?.label ?? brief.skillTag, units: brief.units, budget: brief.budget, confirmed: true });
+function toRuleBrief(brief: Brief, locale: Locale = "en"): RuleBrief {
+  const skill = skillByTag(brief.skillTag);
+  return { problem: brief.problem, competencyTag: brief.skillTag, competencyLabel: skill === undefined ? brief.skillTag : createTranslator(locale)(skill.label), units: brief.units, budget: brief.budget, confirmed: true };
+}
+
+/** Render the snapshot in the current language without repeating the match or changing storage. */
+export function localizeStoredMatch(result: MatchResult, brief: Brief, locale: Locale): MatchResult {
+  const ruleBrief = toRuleBrief(brief, locale);
+  if (result.kind === "none") return { ...result, explanation: explainNoMatch(ruleBrief, result.reason, locale) };
+
+  const competencies = result.matchedCompetencies.map((skill): Competency => ({
+    ...skill,
+    // Product snapshots encode edited skills as an interview source with turn zero.
+    label: displaySkillLabel({ ...skill, source: skill.source.kind === "interview" && skill.source.turn > 0 ? skill.source : { kind: "edited" } }, locale),
+  }));
+  return {
+    ...result,
+    explanation: explainMatch(ruleBrief, { expert: result.expert, competencies, overlap: result.overlap }, locale),
+  };
+}
 
 async function isStale(ctx: Context, brief: Brief, match: StoredMatch): Promise<boolean> {
   if (match.result.kind !== "match") return false;

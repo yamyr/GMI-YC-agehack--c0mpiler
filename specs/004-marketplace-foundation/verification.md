@@ -45,7 +45,7 @@ macOS. Only what was run is listed (constitution principle IV).
 - **Phone width.** The browser projects are 1440 by 900 and 960 by 640, as for the walkthrough.
   Only the sign-in page was checked at 390 px, by the website check.
 - **Dark mode.** The app has none; nothing was checked.
-- **Internationalization.** The product is English only until pull request #20 merges (T041).
+- **Internationalization.** This original stack run preceded T041. See the follow-up below.
 - **Load.** During development some browser runs stalled while the machine was heavily loaded by
   other work. They passed when re-run with two workers. No test was changed to hide a failure;
   two long audited journeys were given `test.slow()`.
@@ -56,3 +56,36 @@ From the groundwork phase on, each phase's failing tests were committed before t
 passes them, with one exception: in story 3 the booking use cases were committed together with
 the failing browser journey, after their failing unit tests. The three unit sweeps for SC-002,
 SC-004 and SC-005 passed as soon as they were written; they confirmed existing behaviour.
+
+## T041 marketplace localization
+
+The local `codex/marketplace-i18n` branch combines the marketplace stack at `e425c06` with the
+version of `main` that includes #20 at `dce0e89`. The existing pull request branches retain their
+history. The marketplace uses the shared draft catalogs for English and all 17 additional
+locales. The completeness check includes product copy and validates interpolation slots.
+
+- Both TypeScript checks passed. Vitest passed 379 tests across 38 files. The catalog check passed
+  881 messages in each of 17 draft locales, including 278 new marketplace messages.
+- Playwright passed 318 tests with two workers. Marketplace sign-in was exercised in every
+  locale. French and Tamil buyers used translated suggestions and kept typed edits after locale
+  changes. A Hindi booking used native digits and exported an iCalendar file with the same
+  amount, names and session instant. Back and Forward retained the language after reload.
+- The marketplace route sweep checked the 16px text floor, overflow, keyboard focus, stand-in
+  disclosures and axe WCAG 2.1 AA. Phone checks covered German, Finnish, Tamil and Hindi. An
+  additional 390px journey signed in using Simplified Chinese, switched to Tamil mid-interview,
+  published a profile and confirmed a price using Tamil digits. A caption overflowing its
+  card reproduced in that run and now has a browser regression.
+- Both production builds passed. The built website passed 105 checks over five paths, three
+  views and seven representative languages. The sign-in check opened the marketplace at its
+  language-qualified hash and measured layout, text size and axe violations. The app build was
+  restored in `dist/` for Tauri.
+- Rust formatting, Clippy with warnings denied, advisory and licence checks, and workflow lint
+  passed. Rust tests passed 22 tests. The existing real-Codex test remained ignored.
+- Website follow-ups fix recognition of explicit Simplified Chinese tags, preserve the displayed
+  simulator week when changing language, and translate five cost-ledger disclosures. Canonical
+  cost amounts and evidence keep their original values.
+
+The catalogs contain machine-generated drafts. Native-speaker review and a real-user trial
+remain pending. The marketplace drafting agent recognizes a limited set of skill phrases and
+numeric formats. The local build retains the Vite chunk-size warning because the language
+catalogs are available without a runtime translation service.

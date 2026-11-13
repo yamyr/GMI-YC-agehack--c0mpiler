@@ -33,6 +33,7 @@ Your goal in this conversation: {goal}\n\
 Background you may use (scripted demo persona):\n{background}\n\
 \n\
 Rules:\n\
+- Write the message and all three suggested replies in {language}. Keep JSON field names unchanged.\n\
 - Speak warmly and plainly to an older adult. Short sentences. Ask one question at a time.\n\
 - React to what {person} just said before moving on.\n\
 - Give exactly three different suggested replies, written as {person} in the first person, \
@@ -48,6 +49,7 @@ Conversation so far:\n{lines}\n\
 Reply with JSON only: {{\"message\": your next line, \"options\": three suggested replies, \
 \"done\": true or false}}.",
         role = brief.agent_role.trim(),
+        language = brief.locale.language(),
         goal = brief.goal.trim(),
         background = brief.background.trim(),
         max_chars = MAX_OPTION_CHARS,

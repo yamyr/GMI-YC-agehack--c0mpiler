@@ -33,4 +33,8 @@ describe("money", () => {
     expect(formatCents(5_850)).toBe("$58.50");
     expect(formatCents(123_456)).toBe("$1,234.56");
   });
+  it("formats the same USD amount using the selected locale", () => {
+    expect(formatCents(5_850, "de")).toBe("58,50\u00a0$");
+  });
+
 });

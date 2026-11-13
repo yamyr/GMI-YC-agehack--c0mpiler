@@ -1,3 +1,4 @@
+import type { Locale } from "../../../site/i18n/core.js";
 import { type AdviceCategory, detectRestrictedAdvice } from "../../demo/domain/advice";
 import { validateRange } from "../../demo/domain/price";
 import type { PriceRange } from "../../demo/domain/types";
@@ -23,10 +24,10 @@ export async function myCurrentBrief(ctx: Context): Promise<Result<Brief | null,
 }
 
 /** Turns the conversation into a saved draft. A problem that names no known skill saves nothing. */
-export async function draftBriefFromConversation(ctx: Context, answers: readonly InterviewAnswer[]): Promise<Result<Brief, "not-signed-in" | "unmatched">> {
+export async function draftBriefFromConversation(ctx: Context, answers: readonly InterviewAnswer[], locale: Locale = "en"): Promise<Result<Brief, "not-signed-in" | "unmatched">> {
   const acting = await actingAccount(ctx);
   if (!acting.ok) return acting;
-  const draft = await ctx.ports.agent.draftBrief(answers);
+  const draft = await ctx.ports.agent.draftBrief(answers, locale);
   if (draft.unmatched || draft.skillTag === null) return refuse("unmatched");
   const brief: Brief = { id: ctx.newId(), buyerId: acting.value.id, problem: draft.problem, skillTag: draft.skillTag, units: draft.units, budget: draft.budget, state: "draft", createdAt: ctx.now().toISOString() };
   await ctx.ports.store.put("brief", brief);

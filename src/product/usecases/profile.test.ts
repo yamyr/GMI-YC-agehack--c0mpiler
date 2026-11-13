@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { createTranslator } from "../../../site/i18n/core.js";
 import type { InterviewAnswer } from "../ports";
 import { chooseRole, signOut } from "./account";
 import { actingAccount } from "./context";
@@ -42,6 +43,40 @@ describe("drafting a profile from the interview", () => {
     expect(new Set(result.value.skills.map((s) => s.id)).size).toBe(4);
     expect(await actingAccount(world.ctx)).toMatchObject({ ok: true, value: { name: "Ruth Adeyemi" } });
     expect(await myProfile(world.ctx)).toEqual(result);
+  });
+
+  it("recognizes the stated experience in a localized answer", async () => {
+    const world = testWorld();
+    await expert(world);
+    const work = "J'ai travaillé en négociation avec les fournisseurs pendant 38 ans.";
+    const result = await draftProfileFromInterview(world.ctx, "Ruth", [{ questionId: "work", text: work }], "fr");
+
+    expect(result).toMatchObject({ ok: true, value: { headline: work, yearsExperience: 38 } });
+  });
+
+  it("retains a typed skill and experience stated before the expert switches languages", async () => {
+    const world = testWorld();
+    await expert(world);
+    const work = "J'ai travaillé en négociation avec les fournisseurs pendant 38 ans.";
+    const result = await draftProfileFromInterview(world.ctx, "Ruth", [
+      { questionId: "work", text: work, locale: "fr" },
+      { questionId: "where", text: "Leeds", locale: "en" },
+    ], "en");
+
+    expect(result).toMatchObject({ ok: true, value: { headline: work, yearsExperience: 38, skills: [{ tag: "supplier-negotiation" }] } });
+  });
+
+  it("translates a selected reply and preserves the same text when the expert types it", async () => {
+    const world = testWorld();
+    await expert(world);
+    const text = "I ran procurement for a manufacturer for 34 years.";
+    const selected = await draftProfileFromInterview(world.ctx, "Ruth", [{ questionId: "work", text, suggested: true }], "fr");
+    const typed = await draftProfileFromInterview(world.ctx, "Ruth", [{ questionId: "work", text }], "fr");
+
+    const translation = createTranslator("fr")(text);
+    expect(translation).not.toBe(text);
+    expect(selected).toMatchObject({ ok: true, value: { headline: translation, yearsExperience: 34 } });
+    expect(typed).toMatchObject({ ok: true, value: { headline: text, yearsExperience: 34 } });
   });
 
   it("saves nothing and says so when the answers name no skill", async () => {

@@ -18,6 +18,10 @@
   margin: 0;
 }
 
+.product .big-price {
+  overflow-wrap: anywhere;
+}
+
 .stand-in__code {
   margin-top: var(--space-2);
   font-size: var(--text-lg);

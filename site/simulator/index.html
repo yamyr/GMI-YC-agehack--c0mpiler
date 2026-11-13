@@ -1,134 +1,136 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Agely marketplace simulator</title>
+    <meta charset="utf-8" /></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1" /></meta>
+    <title data-i18n>Agely marketplace simulator</title>
     <meta
       name="description"
       content="Set up a market of older experts and buyers, run it week by week, and see who gets help and who gets paid."
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://agely.dev/simulator/" />
-    <meta property="og:title" content="Agely marketplace simulator" />
+    / data-i18n-attrs="content"></meta>
+    <meta property="og:type" content="website" /></meta>
+    <meta property="og:url" content="https://agely.dev/simulator/" /></meta>
+    <meta property="og:title" content="Agely marketplace simulator" / data-i18n-attrs="content"></meta>
     <meta
       property="og:description"
       content="Set up a market of older experts and buyers, run it week by week, and see who gets help and who gets paid."
-    />
-    <meta property="og:image" content="https://agely.dev/assets/agely-demo-poster.jpg" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <link rel="canonical" href="https://agely.dev/simulator/" />
-    <link rel="icon" type="image/png" href="../assets/icon.png" />
-    <link rel="stylesheet" href="../styles.css" />
-    <link rel="stylesheet" href="simulator.css" />
-  </head>
+    / data-i18n-attrs="content"></meta>
+    <meta property="og:image" content="https://agely.dev/assets/agely-demo-poster.jpg" /></meta>
+    <meta name="twitter:card" content="summary_large_image" /></meta>
+    <link rel="canonical" href="https://agely.dev/simulator/" /></link>
+    <link rel="icon" type="image/png" href="../assets/icon.png" /></link>
+    <link rel="stylesheet" href="../styles.css" /></link>
+    <link rel="stylesheet" href="simulator.css" /></link>
+  <link rel="stylesheet" href="../i18n/site.css" />
+</head>
   <body>
     <header class="topbar">
-      <a class="brand" href="../" aria-label="Agely home">
-        <img src="../assets/icon.png" alt="" width="36" height="36" />
-        <span>Agely</span>
+      <a class="brand" href="../" aria-label="Agely home" data-i18n-attrs="aria-label">
+        <img src="../assets/icon.png" alt="" width="36" height="36" /></img>
+        <span><span data-i18n-ignore>Agely</span></span>
       </a>
-      <a class="topbar-link" href="../demo/">Try the interactive demo</a>
+      <a class="topbar-link" href="../demo/"><span data-i18n>Try the interactive demo</span></a>
     </header>
 
     <main class="sim wrap">
       <div class="sim-intro">
-        <h1>Run the marketplace</h1>
-        <p>
+        <h1><span data-i18n>Run the marketplace</span></h1>
+        <p><span data-i18n>
           The demo follows one expert and one buyer. This simulator runs the same matching rule over
           a whole market: an expert fits a request when they list the skill and their price range
           overlaps the buyer's budget. Change the market, press play, and try to meet all three
           goals.
-        </p>
-        <p class="sim-caveat">
+        </span></p>
+        <p class="sim-caveat"><span data-i18n>
           The people and numbers are made up. It shows how the rules behave, not what Agely will
           earn.
-        </p>
+        </span></p>
       </div>
 
       <div class="sim-layout">
-        <form class="controls" id="controls" aria-label="Scenario settings">
-          <h2>Scenario</h2>
-          <label class="field" for="preset">Start from</label>
+        <form class="controls" id="controls" aria-label="Scenario settings" data-i18n-attrs="aria-label">
+          <h2><span data-i18n>Scenario</span></h2>
+          <label class="field" for="preset"><span data-i18n>Start from</span></label>
           <select id="preset"></select>
           <div class="control-buttons">
-            <button type="button" class="btn" id="random">Generate a random scenario</button>
-            <button type="button" class="btn" id="reseed">Same settings, new people</button>
-            <button type="button" class="btn" id="copy">Copy link to this scenario</button>
+            <button type="button" class="btn" id="random"><span data-i18n>Generate a random scenario</span></button>
+            <button type="button" class="btn" id="reseed"><span data-i18n>Same settings, new people</span></button>
+            <button type="button" class="btn" id="copy"><span data-i18n>Copy link to this scenario</span></button>
           </div>
           <details class="adjust" id="adjust" open>
-            <summary>Adjust the market</summary>
+            <summary><span data-i18n>Adjust the market</span></summary>
             <div id="sliders"></div>
           </details>
         </form>
 
         <div class="results">
-          <section class="panel playback" aria-label="Playback">
-            <button type="button" class="button" id="play">Play from week 1</button>
+          <section class="panel playback" aria-label="Playback" data-i18n-attrs="aria-label">
+            <button type="button" class="button" id="play"><span data-i18n>Play from week 1</span></button>
             <label class="scrub">
-              <span id="week-label">Week 12 of 12</span>
-              <input type="range" id="week" min="1" max="12" step="1" value="12" />
+              <span id="week-label"><span data-i18n>Week 12 of 12</span></span>
+              <input type="range" id="week" min="1" max="12" step="1" value="12" /></input>
             </label>
           </section>
 
           <section class="panel" aria-labelledby="goals-title">
-            <h2 id="goals-title">Goals</h2>
+            <h2 id="goals-title"><span data-i18n>Goals</span></h2>
             <ul class="goals" id="goals"></ul>
             <p class="diagnosis" id="diagnosis" aria-live="polite"></p>
           </section>
 
-          <section class="tiles" id="tiles" aria-label="Totals so far"></section>
+          <section class="tiles" id="tiles" aria-label="Totals so far" data-i18n-attrs="aria-label"></section>
 
           <section class="panel" aria-labelledby="weeks-title">
-            <h2 id="weeks-title">What happened to each week's requests</h2>
-            <p class="chart-note">
+            <h2 id="weeks-title"><span data-i18n>What happened to each week's requests</span></h2>
+            <p class="chart-note"><span data-i18n>
               Each bar is one week, split by how its requests ended. Select a bar to jump to that
               week.
-            </p>
+            </span></p>
             <div class="weekbars" id="weekbars"></div>
             <ul class="legend-list" id="weeks-legend"></ul>
             <details class="table-view">
-              <summary>Show the numbers as a table</summary>
+              <summary><span data-i18n>Show the numbers as a table</span></summary>
               <div class="table-scroll" tabindex="0" role="region" aria-labelledby="weeks-title"><table id="weeks-table"></table></div>
             </details>
           </section>
 
           <section class="panel" aria-labelledby="fit-title">
-            <h2 id="fit-title">Do prices and budgets meet?</h2>
-            <p class="chart-note">
+            <h2 id="fit-title"><span data-i18n>Do prices and budgets meet?</span></h2>
+            <p class="chart-note"><span data-i18n>
               Where expert prices and buyer budgets sit, per 15 minutes. A match needs the two to
               overlap, so the further apart the two shapes are, the more requests fail on price.
-            </p>
+            </span></p>
             <div class="fit" id="fit"></div>
             <ul class="legend-list">
-              <li><span class="key key--expert"></span>Expert prices, above the line</li>
-              <li><span class="key key--buyer"></span>Buyer budgets, below the line</li>
+              <li><span class="key key--expert"></span><span data-i18n>Expert prices, above the line</span></li>
+              <li><span class="key key--buyer"></span><span data-i18n>Buyer budgets, below the line</span></li>
             </ul>
-            <p class="readout" id="fit-readout">Point at a column to see its share.</p>
+            <p class="readout" id="fit-readout"><span data-i18n>Point at a column to see its share.</span></p>
           </section>
 
           <section class="panel" aria-labelledby="experts-title">
-            <h2 id="experts-title">Who earned</h2>
-            <p class="chart-note">
+            <h2 id="experts-title"><span data-i18n>Who earned</span></h2>
+            <p class="chart-note"><span data-i18n>
               Each square is one expert. Darker means more earned so far. A dashed square has
               earned nothing yet.
-            </p>
+            </span></p>
             <div class="expert-grid" id="expert-grid"></div>
-            <p class="readout" id="expert-readout" aria-live="polite">
+            <p class="readout" id="expert-readout" aria-live="polite"><span data-i18n>
               Select a square to see that expert.
-            </p>
+            </span></p>
           </section>
         </div>
       </div>
     </main>
 
     <footer class="footer">
-      <p>
+      <p><span data-i18n>
         Agely is a hackathon prototype. The outcome we want to measure is dollars earned by people
         over 65.
-      </p>
+      </span></p>
     </footer>
 
     <script type="module" src="app.js"></script>
-  </body>
+  <script type="module" src="../i18n/site.js"></script>
+</body>
 </html>

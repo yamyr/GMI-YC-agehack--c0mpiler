@@ -1,3 +1,4 @@
+import { useI18n } from "../../i18n";
 import type { Dispatch } from "react";
 import type { ConversationId, Notice } from "../domain/types";
 import { wasLive } from "../state/reducer";
@@ -20,16 +21,10 @@ export function NoticeLine({ notice }: { readonly notice: Notice | null }) {
 
 /** FR-013: after a live conversation, say plainly that the draft shown is still the scripted one. */
 export function ScriptedDraftNote({ state, after }: { readonly state: DemoState; readonly after: ConversationId }) {
+  const { t } = useI18n();
+
   if (!wasLive(state, after)) return null;
   return (
-    <p className="notice notice--info">
-      This is the scripted draft. Drafting it from the live conversation comes later.
-    </p>
+    <p className="notice notice--info">{t("This is the scripted draft. Drafting it from the live conversation comes later.")}</p>
   );
-}
-
-/** Parses a whole-dollar text field; blank or non-numeric becomes NaN so validation explains it. */
-export function parseDollars(text: string): number {
-  const trimmed = text.trim().replace(/^\$/, "");
-  return trimmed === "" ? Number.NaN : Number(trimmed);
 }

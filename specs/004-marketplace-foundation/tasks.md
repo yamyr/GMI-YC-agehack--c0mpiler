@@ -74,15 +74,15 @@ previous one.
 
 ## Phase 8: User Story 5 and polish
 
-- [x] T036 [P] [US5] `e2e/product-honesty.spec.ts`: every product route shows the label of each stand-in it depends on; payment screens say no money has moved; the R18 limits are stated (SC-007).
-- [x] T037 [P] [US5] `e2e/product-a11y.spec.ts`: axe, the 16px floor, overflow and focus rings on every product route (FR-024, SC-009).
+- [x] T036 [P] [US5] `e2e/product-sweep.spec.ts`: every product route shows the label of each stand-in it depends on; payment screens say no money has moved; the R18 limits are stated (SC-007).
+- [x] T037 [P] [US5] `e2e/product-sweep.spec.ts`: axe, the 16px floor, overflow and focus rings on every product route (FR-024, SC-009).
 - [x] T038 [P] Permission sweep: for every use case, a second account gets `not-yours` and learns nothing (SC-005). Repeat runs for SC-002 (20 round trips) and SC-004 (50 acceptances with repeats).
 - [x] T039 [US5] Confirm the walkthrough's specs pass unchanged and that it stores nothing (FR-023, SC-008).
 - [x] T040 Update `README.md`, `AGENTS.md` and `specs/001-demo-walkthrough/contracts/services.md`; record results in `specs/004-marketplace-foundation/verification.md` after the full check set and the quickstart.
 
-## After pull request #20 merges (not part of this run)
+## Phase 9: Marketplace translations after pull request #20
 
-- [ ] T041 Rebase; adopt `t()` in `src/product/`; add the exemption from the completeness check, the English-only notice, and the translation pass (R14, R19).
+- [x] T041 Integrate the marketplace stack with `main`, use shared `t()` in `src/product/`, and translate the registered product messages across all 17 draft locales. The final release candidate includes the marketplace in the completeness check (R14, R19).
 
 ## Dependencies
 

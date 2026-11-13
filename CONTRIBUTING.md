@@ -29,3 +29,30 @@ By contributing you agree that your work is released under the [MIT License](LIC
 ## Security
 
 See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
+
+## Maintain translations
+
+English source messages are the catalog keys. Add each new message to the relevant sorted
+source inventory in `site/i18n/messages/`, then add its draft translation to every file in
+`site/i18n/catalogs/`. Keep numbered slots such as `{0}` unchanged; their order may change.
+Run `bun scripts/i18n-check.mjs` to detect missing translations and lost slots.
+
+Use complete sentences when interpolating values. Render translations as text, never as HTML.
+Keep domain IDs, user-written text, names, URLs and canonical ledger evidence separate from
+translated labels. Format displayed values with the shared `site/i18n/core.js` helpers. Prices
+stay in USD and a language choice does not change the time zone.
+
+The current catalogs are model-generated drafts and need human language review. Missing or
+malformed entries fall back to the English source. Keep the visible draft/fallback disclosure
+until the language-review process changes. Update `ATTRIBUTION.md` when adding generated text.
+
+The walkthrough asks before restarting in another language. Cancelling preserves edits.
+Confirming starts a fresh story and discards pending replies from the previous run. The
+marketplace changes language in place, including during sign-in or while editing a brief.
+Keep the fixed reply values and skill tags stable when editing their translations. Use
+`e2e/i18n.spec.ts` and `e2e/product-i18n.spec.ts` to verify both behaviors. Run the
+accessibility checks and inspect long translations in a browser.
+
+The offline restricted-advice guard recognizes example keywords in the supported languages.
+It is a demo rule, not a complete classifier. Add both positive business examples and negative
+advice requests when extending it. Do not describe its keyword coverage as general safety.

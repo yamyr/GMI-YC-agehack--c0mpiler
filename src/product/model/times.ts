@@ -1,3 +1,5 @@
+import { createTranslator, formatDate, formatNumber, type Locale } from "../../../site/i18n/core.js";
+
 /**
  * Times a buyer can pick with one tap (research R16): 10:00 and 14:00 on the next three
  * weekdays, in the buyer's own time zone. Never today, so the expert has time to answer.
@@ -16,14 +18,15 @@ export function suggestedTimes(now: Date): Date[] {
 }
 
 /** "Thursday 19 November at 10:00 EST": the viewer's own time zone, named so nobody has to guess. */
-export function formatWhen(instant: string, locale?: string): string {
-  return new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long", hour: "numeric", minute: "2-digit", timeZoneName: "short" }).format(new Date(instant));
+export function formatWhen(instant: string, locale: Locale = "en"): string {
+  return formatDate(new Date(instant), locale, { weekday: "long", day: "numeric", month: "long", hour: "numeric", minute: "2-digit", timeZoneName: "short" });
 }
 
-export function lengthText(units: number): string {
+export function lengthText(units: number, locale: Locale = "en"): string {
+  const t = createTranslator(locale);
   const minutes = units * 15;
-  if (minutes < 60) return `${minutes} minutes`;
-  const hours = Math.floor(minutes / 60);
-  const rest = minutes % 60;
-  return `${hours} ${hours === 1 ? "hour" : "hours"}${rest === 0 ? "" : ` ${rest} minutes`}`;
+  if (minutes === 60) return t("1 hour");
+  if (minutes === 120) return t("2 hours");
+  if (minutes > 60 && minutes < 120) return t("1 hour {0} minutes", formatNumber(minutes - 60, locale));
+  return t("{0} minutes", formatNumber(minutes, locale));
 }

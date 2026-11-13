@@ -288,24 +288,24 @@ export const GOALS = [
 ];
 
 /** One plain-language reading of the result: the biggest problem and the lever that addresses it. */
-export function diagnose(summary, p) {
+export function diagnose(summary, p, t = (source, ...values) => source.replace(/\{(\d+)\}/g, (_, i) => String(values[Number(i)]))) {
   const { counts, requests } = summary;
-  if (requests === 0) return "Nothing has happened yet.";
+  if (requests === 0) return t("Nothing has happened yet.");
   const lost = ["skill", "price", "busy", "declined"].map((k) => [k, counts[k]]).sort((a, b) => b[1] - a[1]);
   const [worst, n] = lost[0];
   const share = Math.round((n / requests) * 100);
   if (summary.matchRate >= 0.7 && summary.earningShare < 0.8) {
-    return `Buyers are being served, but only ${Math.round(summary.earningShare * 100)}% of experts have earned anything. The best price fit keeps winning. Spreading work across experts, or more requests, would reach the rest.`;
+    return t("Buyers are being served, but only {0}% of experts have earned anything. The best price fit keeps winning. Spreading work across experts, or more requests, would reach the rest.", Math.round(summary.earningShare * 100));
   }
   if (summary.matchRate >= 0.7 && summary.medianWeekly < 150) {
-    return "Most requests get help, but there isn't enough paid work per expert. More requests, longer sessions, or fewer experts would raise what a typical expert earns.";
+    return t("Most requests get help, but there isn't enough paid work per expert. More requests, longer sessions, or fewer experts would raise what a typical expert earns.");
   }
-  if (summary.matchRate >= 0.7) return "This market works: most buyers get help and the money reaches most experts.";
+  if (summary.matchRate >= 0.7) return t("This market works: most buyers get help and the money reaches most experts.");
   const why = {
-    skill: `${share}% of requests ask for a skill nobody lists. More experts would cover it; so would fewer distinct skills.`,
-    price: `${share}% of requests fail on price: the buyer's budget and the expert's range don't overlap. ${p.expertPrice > p.budget ? "Experts charge more than buyers can pay." : "Budgets and prices are too narrow to meet."} Wider ranges or a closer typical price would help.`,
-    busy: `${share}% of requests find a fitting expert who is already fully booked. More experts, more sessions per week, or letting engines answer would absorb the demand.`,
-    declined: `${share}% of requests are turned down by every expert asked. A higher acceptance rate is the lever.`,
+    skill: t("{0}% of requests ask for a skill nobody lists. More experts would cover it; so would fewer distinct skills.", share),
+    price: t("{0}% of requests fail on price: the buyer's budget and the expert's range don't overlap. {1} Wider ranges or a closer typical price would help.", share, p.expertPrice > p.budget ? t("Experts charge more than buyers can pay.") : t("Budgets and prices are too narrow to meet.")),
+    busy: t("{0}% of requests find a fitting expert who is already fully booked. More experts, more sessions per week, or letting engines answer would absorb the demand.", share),
+    declined: t("{0}% of requests are turned down by every expert asked. A higher acceptance rate is the lever.", share),
   };
   return why[worst];
 }

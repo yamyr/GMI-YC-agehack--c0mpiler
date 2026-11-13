@@ -1,3 +1,4 @@
+import { useI18n } from "../../i18n";
 import type { Persona } from "../domain/types";
 
 const LABELS: Readonly<Record<Persona, { readonly text: string; readonly initials: string }>> = {
@@ -8,13 +9,14 @@ const LABELS: Readonly<Record<Persona, { readonly text: string; readonly initial
 
 /** Says in words whose side of the story is on screen (never colour alone). */
 export function PersonaBanner({ persona }: { readonly persona: Persona }) {
+  const { t } = useI18n();
   const { text, initials } = LABELS[persona];
   return (
     <div className="persona-banner" role="status">
       <span className="persona-banner__avatar" aria-hidden="true">
         {initials}
       </span>
-      {text}
+      {t(text)}
     </div>
   );
 }

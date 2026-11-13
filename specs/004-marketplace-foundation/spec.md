@@ -356,7 +356,7 @@ stand-ins active, find a visible label on each screen that depends on one.
   workflows beyond what the walkthrough shows, ratings and reviews, disputes and refunds after a
   session was held, reminders by email or text, search or browsing of experts, an admin console,
   and languages other than those the app already supports.
-- The 15 languages being added by the internationalization feature are assumed to land
-  separately; new screens here are written so they can be translated the same way.
+- The marketplace uses the walkthrough's shared translation system. Its interface uses English
+  and the 17 additional locales in spec 003. Names and user-entered text keep their original language.
 - A constitution amendment is expected: principle V says no backend is added until a spec
   requires it, and this spec is that requirement.

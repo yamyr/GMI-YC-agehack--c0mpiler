@@ -1,128 +1,130 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>What Agely costs to build</title>
+    <meta charset="utf-8" /></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1" /></meta>
+    <title data-i18n>What Agely costs to build</title>
     <meta
       name="description"
       content="An open ledger of what it costs to build Agely, including the AI used to write it."
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://agely.dev/costs/" />
-    <meta property="og:title" content="What Agely costs to build" />
+    / data-i18n-attrs="content"></meta>
+    <meta property="og:type" content="website" /></meta>
+    <meta property="og:url" content="https://agely.dev/costs/" /></meta>
+    <meta property="og:title" content="What Agely costs to build" / data-i18n-attrs="content"></meta>
     <meta
       property="og:description"
       content="An open ledger of what it costs to build Agely, including the AI used to write it."
-    />
-    <meta property="og:image" content="https://agely.dev/assets/agely-demo-poster.jpg" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <link rel="canonical" href="https://agely.dev/costs/" />
-    <link rel="icon" type="image/png" href="../assets/icon.png" />
-    <link rel="stylesheet" href="../styles.css" />
-    <link rel="stylesheet" href="costs.css" />
-  </head>
+    / data-i18n-attrs="content"></meta>
+    <meta property="og:image" content="https://agely.dev/assets/agely-demo-poster.jpg" /></meta>
+    <meta name="twitter:card" content="summary_large_image" /></meta>
+    <link rel="canonical" href="https://agely.dev/costs/" /></link>
+    <link rel="icon" type="image/png" href="../assets/icon.png" /></link>
+    <link rel="stylesheet" href="../styles.css" /></link>
+    <link rel="stylesheet" href="costs.css" /></link>
+  <link rel="stylesheet" href="../i18n/site.css" />
+</head>
   <body>
     <header class="topbar">
-      <a class="brand" href="../" aria-label="Agely home">
-        <img src="../assets/icon.png" alt="" width="36" height="36" />
-        <span>Agely</span>
+      <a class="brand" href="../" aria-label="Agely home" data-i18n-attrs="aria-label">
+        <img src="../assets/icon.png" alt="" width="36" height="36" /></img>
+        <span><span data-i18n-ignore>Agely</span></span>
       </a>
-      <a class="topbar-link" href="https://github.com/yamyr/agely/blob/main/site/costs/costs.json">View the ledger file</a>
+      <a class="topbar-link" href="https://github.com/yamyr/agely/blob/main/site/costs/costs.json"><span data-i18n>View the ledger file</span></a>
     </header>
 
     <main class="costs wrap">
       <div class="costs-intro">
-        <h1>What Agely costs to build</h1>
-        <p>
+        <h1><span data-i18n>What Agely costs to build</span></h1>
+        <p><span data-i18n>
           Agely exists to put money in older people's pockets, so we keep our own money in the open.
           This page lists every cost of making the product that we know of, including the AI used
-          to write it. <span id="as-of"></span>
+          to write it. </span><span id="as-of"></span>
         </p>
       </div>
 
-      <section class="totals" id="totals" aria-label="Totals"></section>
+      <section class="totals" id="totals" aria-label="Totals" data-i18n-attrs="aria-label"></section>
 
       <section class="block" aria-labelledby="kinds-title">
-        <h2 id="kinds-title">How to read the figures</h2>
-        <p class="lead-in">
+        <h2 id="kinds-title"><span data-i18n>How to read the figures</span></h2>
+        <p class="lead-in"><span data-i18n>
           Every line is one of four kinds. The total adds cash and estimates together, and the two
           are also shown apart so you can see how much of it is calculated.
-        </p>
+        </span></p>
         <dl class="kinds" id="kinds"></dl>
       </section>
 
       <section class="block" aria-labelledby="ledger-title">
-        <h2 id="ledger-title">The ledger</h2>
+        <h2 id="ledger-title"><span data-i18n>The ledger</span></h2>
         <div class="table-scroll">
           <table class="ledger" id="ledger"></table>
         </div>
       </section>
 
       <section class="block" aria-labelledby="ai-title">
-        <h2 id="ai-title">AI used to write Agely</h2>
+        <h2 id="ai-title"><span data-i18n>AI used to write Agely</span></h2>
         <p class="lead-in" id="ai-note"></p>
         <!-- Focusable so keyboard users can scroll the table sideways on a narrow screen. -->
         <div class="table-scroll" tabindex="0" role="region" aria-labelledby="ai-title">
           <table class="ledger" id="ai-table"></table>
         </div>
-        <p class="lead-in">
+        <p class="lead-in"><span data-i18n>
           Most tokens are cache reads: the agent re-reading the same conversation and files on each
           step, billed at a small fraction of the normal input price. The figures come from
-          <a href="https://github.com/yamyr/agely/blob/main/scripts/ai-usage.mjs">a script in the repository</a>
+          </span><a href="https://github.com/yamyr/agely/blob/main/scripts/ai-usage.mjs"><span data-i18n>a script in the repository</span></a><span data-i18n>
           that counts tokens only. It reads no prompts or code.
-        </p>
+        </span></p>
       </section>
 
       <section class="block" aria-labelledby="models-title">
-        <h2 id="models-title">Who we learned this from</h2>
+        <h2 id="models-title"><span data-i18n>Who we learned this from</span></h2>
         <ul class="sources">
           <li>
-            <a href="https://docs.opencollective.com/help/collectives/budget">Open Collective</a>
+            <a href="https://docs.opencollective.com/help/collectives/budget"><span data-i18n-ignore>Open Collective</span></a><span data-i18n>
             gives each open-source project a public budget where every expense is a line anyone can
             read. Our ledger copies that shape: one line per cost, with what it was for.
-          </li>
+          </span></li>
           <li>
-            <a href="https://signal.org/blog/signal-is-expensive/">Signal's "Privacy is Priceless, but Signal is Expensive"</a>
+            <a href="https://signal.org/blog/signal-is-expensive/"><span data-i18n-ignore>Signal's "Privacy is Priceless, but Signal is Expensive"</span></a><span data-i18n>
             explains what each cost buys instead of only listing totals. That is why every line here
             carries a sentence of explanation.
-          </li>
+          </span></li>
           <li>
-            <a href="https://cal.com/open">Cal.com's open page</a> is the open-startup habit of
+            <a href="https://cal.com/open"><span data-i18n-ignore>Cal.com's open page</span></a><span data-i18n> is the open-startup habit of
             publishing numbers at a fixed address and keeping them current.
-          </li>
+          </span></li>
         </ul>
       </section>
 
       <section class="block" aria-labelledby="update-title">
-        <h2 id="update-title">How this page stays honest</h2>
+        <h2 id="update-title"><span data-i18n>How this page stays honest</span></h2>
         <ul class="sources">
-          <li>
+          <li><span data-i18n>
             The page is drawn from one file,
-            <a href="https://github.com/yamyr/agely/blob/main/site/costs/costs.json">costs.json</a>.
+            </span><a href="https://github.com/yamyr/agely/blob/main/site/costs/costs.json"><span data-i18n-ignore>costs.json</span></a><span data-i18n>.
             Every change to it is a public commit, so the history of the ledger is the history of
             the file.
-          </li>
-          <li>
+          </span></li>
+          <li><span data-i18n>
             A test fails the build if a line has no explanation, if money marked as paid has no
             receipt reference, or if the AI estimates drift from the usage table.
-          </li>
-          <li>
+          </span></li>
+          <li><span data-i18n>
             A cost we know about but haven't measured is listed as not yet recorded. It is not left
             out. Where we estimate, the method and its weak points are written on the line.
-          </li>
+          </span></li>
         </ul>
       </section>
     </main>
 
     <footer class="footer">
-      <p>
+      <p><span data-i18n>
         Agely is a hackathon prototype. The outcome we want to measure is dollars earned by people
         over 65.
-      </p>
+      </span></p>
     </footer>
 
-    <noscript><p class="wrap">This page needs JavaScript to draw the ledger. The data is in <a href="costs.json">costs.json</a>.</p></noscript>
+    <noscript><p class="wrap"><span data-i18n>This page needs JavaScript to draw the ledger. The data is in </span><a href="costs.json"><span data-i18n-ignore>costs.json</span></a><span data-i18n-ignore>.</span></p></noscript>
     <script type="module" src="costs.js"></script>
-  </body>
+  <script type="module" src="../i18n/site.js"></script>
+</body>
 </html>

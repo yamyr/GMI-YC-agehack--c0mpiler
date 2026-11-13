@@ -1,7 +1,7 @@
 import { type ComponentType, useCallback, useEffect, useMemo, useState } from "react";
-import { SERVICE_NAMES, TRY_OUT_LIMITS, TRY_OUT_NOTICE } from "./copy";
+import { useI18n } from "../i18n";
+import { tryOutLimits } from "./copy";
 import type { Account } from "./model/types";
-import { serviceStatuses } from "./ports";
 import "./product.css";
 import { type RouteName, type RouteParams, href, resolve } from "./routes";
 import { browserContext } from "./runtime";
@@ -17,7 +17,7 @@ import { ExpertProfileScreen } from "./screens/ExpertProfileScreen";
 import { HomeScreen } from "./screens/HomeScreen";
 import { SessionScreen } from "./screens/SessionScreen";
 import { SignInScreen } from "./screens/SignInScreen";
-import type { ScreenProps } from "./screens/shared";
+import { type ScreenProps, ServiceStatusList } from "./screens/shared";
 import { signOut } from "./usecases/account";
 import { actingAccount } from "./usecases/context";
 
@@ -38,6 +38,7 @@ const SCREENS: Record<Exclude<RouteName, "sign-in">, ComponentType<ScreenProps>>
 
 /** The signed-in product, running on stand-ins: a frame around whichever page the address names. */
 export function ProductApp() {
+  const { t } = useI18n();
   const ctx = useMemo(browserContext, []);
   // undefined while the first read is in flight; null when nobody is signed in.
   const [account, setAccount] = useState<Account | null | undefined>(undefined);
@@ -57,13 +58,13 @@ export function ProductApp() {
 
   const page = account === undefined ? null : resolve(hash, account);
 
-  // Keep the address honest: if the person may not open what they asked for, show where they are.
+  // Only redirect the hash we resolved. A link may have changed it before hashchange arrives.
   useEffect(() => {
-    if (page !== null && page.href !== window.location.hash) {
+    if (page !== null && hash === window.location.hash && page.href !== hash) {
       window.history.replaceState(null, "", page.href);
       setHash(page.href);
     }
-  }, [page]);
+  }, [hash, page]);
 
   const go = useCallback((name: RouteName, params?: RouteParams) => {
     window.location.hash = href(name, params);
@@ -78,50 +79,46 @@ export function ProductApp() {
 
   return (
     <div className="demo product">
-      <p className="notice notice--info product-notice">{TRY_OUT_NOTICE}</p>
+      <p className="notice notice--info product-notice">
+        {t("This is a try-out version of Agely. Accounts are for trying it out, your data stays on this device, and nothing you enter is private or permanent.")}
+      </p>
 
       {account != null && (
-        <nav className="product-nav" aria-label="Your Agely">
+        <nav className="product-nav" aria-label={t("Your Agely")}>
           <a href={href("home")} aria-current={page?.name === "home" ? "page" : undefined}>
-            Home
+            {t("Home")}
           </a>
           {account.roles.includes("expert") && account.activeRole === "expert" && (
             <>
               <a href={href("expert-inbox")} aria-current={page?.name === "expert-inbox" ? "page" : undefined}>
-                Inbox
+                {t("Inbox")}
               </a>
               <a href={href("expert-earnings")} aria-current={page?.name === "expert-earnings" ? "page" : undefined}>
-                Earnings
+                {t("Earnings")}
               </a>
             </>
           )}
           <a href={href("account")} aria-current={page?.name === "account" ? "page" : undefined}>
-            Account
+            {t("Account")}
           </a>
           <button type="button" className="quiet" onClick={() => void onSignOut()}>
-            Sign out
+            {t("Sign out")}
           </button>
         </nav>
       )}
 
       <div className="demo-stage">
-        {page === null && <p className="lead">Opening Agely…</p>}
+        {page === null && <p className="lead">{t("Opening Agely…")}</p>}
         {page?.name === "sign-in" && <SignInScreen ctx={ctx} onSignedIn={refresh} />}
         {Screen !== null && account != null && page !== null && <Screen key={page.href} ctx={ctx} account={account} params={page.params} route={page.name} go={go} refresh={refresh} />}
       </div>
 
       <section className="services" aria-labelledby="services-title">
-        <h2 id="services-title">What is connected</h2>
+        <h2 id="services-title">{t("What is connected")}</h2>
+        <ServiceStatusList ctx={ctx} />
+        <h3>{t("What this try-out version can't do")}</h3>
         <ul className="plain-list">
-          {serviceStatuses(ctx.ports).map((status) => (
-            <li key={status.service} data-stand-in={status.connected ? undefined : status.service}>
-              <strong>{SERVICE_NAMES[status.service]}:</strong> {status.connected ? "connected" : status.label}
-            </li>
-          ))}
-        </ul>
-        <h3>What this try-out version can't do</h3>
-        <ul className="plain-list">
-          {TRY_OUT_LIMITS.map((limit) => (
+          {tryOutLimits(t).map((limit) => (
             <li key={limit}>{limit}</li>
           ))}
         </ul>

@@ -1,7 +1,7 @@
 /**
  * A calendar file for one session (research R10). Times are UTC instants, so each person's
  * calendar shows the session in their own time zone. Follows RFC 5545: CRLF line endings,
- * escaped text, and lines folded at 75 characters.
+ * escaped text, and lines folded at 75 UTF-8 octets.
  */
 export interface IcsEvent {
   readonly uid: string;
@@ -15,16 +15,24 @@ export interface IcsEvent {
 }
 
 const utc = (instant: string): string => new Date(instant).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
-const escapeText = (text: string): string => text.replace(/\\/g, "\\\\").replace(/;/g, "\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+const escapeText = (text: string): string => text.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r\n?|\n/g, "\\n");
+const utf8 = new TextEncoder();
 
 function fold(line: string): string[] {
   const parts: string[] = [];
-  let rest = line;
-  while (rest.length > 75) {
-    parts.push(rest.slice(0, 75));
-    rest = ` ${rest.slice(75)}`;
+  let part = "";
+  let bytes = 0;
+  for (const character of line) {
+    const size = utf8.encode(character).length;
+    if (bytes + size > 75) {
+      parts.push(part);
+      part = " ";
+      bytes = 1;
+    }
+    part += character;
+    bytes += size;
   }
-  parts.push(rest);
+  parts.push(part);
   return parts;
 }
 

@@ -19,8 +19,8 @@ export interface ProposalInput {
 
 export interface ProposalView {
   readonly proposal: Proposal;
-  readonly buyerName: string;
-  readonly expertName: string;
+  readonly buyerName: string | null;
+  readonly expertName: string | null;
   readonly problem: string;
   readonly totalCents: number;
   /** The session, once the proposal has been accepted. */
@@ -30,8 +30,8 @@ export interface ProposalView {
 export interface SessionView {
   readonly session: Session;
   readonly payment: Payment;
-  readonly buyerName: string;
-  readonly expertName: string;
+  readonly buyerName: string | null;
+  readonly expertName: string | null;
   readonly problem: string;
   readonly units: number;
   readonly pricePerUnit: number;
@@ -149,9 +149,9 @@ export async function acceptProposal(ctx: Context, id: string): Promise<Result<{
   return ok({ session, payment });
 }
 
-async function nameOf(ctx: Context, accountId: string): Promise<string> {
+async function nameOf(ctx: Context, accountId: string): Promise<string | null> {
   const account = await ctx.ports.store.get("account", accountId);
-  return account === null ? "Deleted account" : account.name;
+  return account?.name ?? null;
 }
 
 /** Proposals the acting person sent or received, newest session time first. Email addresses never leave. */

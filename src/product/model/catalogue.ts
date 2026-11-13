@@ -1,3 +1,6 @@
+import { createTranslator, type Locale } from "../../../site/i18n/core.js";
+import type { Skill } from "./types";
+
 /**
  * The shared vocabulary of skills. The matching rule compares tags for equality (FR-010), so
  * profiles and briefs both draw their tags from here (research R6).
@@ -30,10 +33,36 @@ export function skillByTag(tag: string): CatalogueSkill | undefined {
   return CATALOGUE.find((s) => s.tag === tag);
 }
 
+export function exactSkillLabel(text: string, locale: Locale): CatalogueSkill | undefined {
+  const t = createTranslator(locale);
+  const label = text.trim().normalize("NFC").toLocaleLowerCase(locale);
+  return CATALOGUE.find((skill) => [skill.label, t(skill.label)].some((candidate) => candidate.normalize("NFC").toLocaleLowerCase(locale) === label));
+}
+
+export function displaySkillLabel(skill: Pick<Skill, "tag" | "label" | "source">, locale: Locale): string {
+  return skill.source.kind === "interview" && skill.label === skillByTag(skill.tag)?.label
+    ? createTranslator(locale)(skill.label)
+    : skill.label;
+}
+
+export function displaySkillDescription(skill: Pick<Skill, "tag" | "description">, locale: Locale): string {
+  // The profile editor changes only the label. A catalogue description retains its origin.
+  return skill.description === skillByTag(skill.tag)?.description
+    ? createTranslator(locale)(skill.description)
+    : skill.description;
+}
+
 const escape = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /** Catalogue skills whose keywords appear as whole words in the text, in catalogue order. */
-export function findSkills(text: string): readonly CatalogueSkill[] {
-  const lower = text.toLowerCase();
-  return CATALOGUE.filter((skill) => skill.keywords.some((k) => new RegExp(`(^|[^a-z])${escape(k)}([^a-z]|$)`).test(lower)));
+export function findSkills(text: string, locale: Locale = "en"): readonly CatalogueSkill[] {
+  const t = createTranslator(locale);
+  const lower = text.normalize("NFC").toLocaleLowerCase(locale);
+  return CATALOGUE.filter((skill) => {
+    if (skill.keywords.some((word) => new RegExp(`(^|[^a-z])${escape(word)}([^a-z]|$)`).test(lower))) return true;
+    const label = t(skill.label).normalize("NFC").toLocaleLowerCase(locale);
+    // Japanese and Chinese compound phrases need no whitespace around a catalogue label.
+    if (locale === "ja" || locale === "zh-Hans") return lower.includes(label);
+    return new RegExp(`(^|[^\\p{L}\\p{M}])${escape(label)}([^\\p{L}\\p{M}]|$)`, "u").test(lower);
+  });
 }

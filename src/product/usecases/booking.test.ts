@@ -229,6 +229,18 @@ describe("seeing proposals and sessions", () => {
     expect(JSON.stringify(hers)).not.toContain("sam@example.com");
   });
 
+  it("reports a missing counterparty as data rather than a name to translate", async () => {
+    const world = testWorld();
+    const { proposalId } = await proposed(world);
+    await asRuth(world);
+    const accepted = await acceptProposal(world.ctx, proposalId);
+    if (!accepted.ok) throw new Error(accepted.error);
+    const { session } = accepted.value;
+    await world.ctx.ports.store.remove("account", session.buyerId);
+
+    expect(await mySession(world.ctx, session.id)).toMatchObject({ ok: true, value: { buyerName: null, expertName: "Ruth Adeyemi" } });
+  });
+
   it("shows a session to its two people and to nobody else", async () => {
     const world = testWorld();
     const { proposalId } = await proposed(world);

@@ -3,6 +3,7 @@
  * real, must pass the matching suite in ./contract. See
  * specs/004-marketplace-foundation/contracts/ports.md.
  */
+import type { Locale } from "../../../site/i18n/core.js";
 import type { PriceRange } from "../../demo/domain/types";
 import type { EntityMap, Instant, Kind, MeetingLink } from "../model/types";
 
@@ -56,6 +57,10 @@ export interface AgentQuestion {
 export interface InterviewAnswer {
   readonly questionId: string;
   readonly text: string;
+  /** A selected fixed reply carries the source text so it drafts the same values in any language. */
+  readonly suggested?: boolean;
+  /** Selected language when this answer was entered, even if the person switches before finishing. */
+  readonly locale?: Locale;
 }
 
 export interface DraftSkill {
@@ -93,10 +98,10 @@ export interface BriefDraft {
 
 export interface AgentPort {
   interviewQuestions(): Promise<AgentQuestion[]>;
-  draftProfile(answers: readonly InterviewAnswer[]): Promise<ProfileDraft>;
-  suggestPrice(profile: ProfileDraft): Promise<PriceSuggestion>;
+  draftProfile(answers: readonly InterviewAnswer[], locale?: Locale): Promise<ProfileDraft>;
+  suggestPrice(profile: ProfileDraft, locale?: Locale): Promise<PriceSuggestion>;
   briefQuestions(): Promise<AgentQuestion[]>;
-  draftBrief(answers: readonly InterviewAnswer[]): Promise<BriefDraft>;
+  draftBrief(answers: readonly InterviewAnswer[], locale?: Locale): Promise<BriefDraft>;
   readonly status: ServiceStatus;
 }
 

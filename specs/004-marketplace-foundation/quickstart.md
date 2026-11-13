@@ -49,3 +49,10 @@ Run `bun run dev` and open `http://localhost:1420/#/app`.
 - A second expert account cannot open the first one's session by its address.
 - Entering a sign-in code twice, or after ten minutes, is refused with a plain sentence.
 - Pressing Accept twice creates one session and one held payment.
+
+## Try another language
+
+Choose a language above the sign-in or marketplace screen. The current account, route and
+in-progress form stay open. Suggested replies appear in that language and keep the same
+underlying choices. The drafting stand-in recognizes a limited set of skill phrases. It may
+miss a typed answer, so try a suggested reply if needed.
