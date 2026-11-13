@@ -13,10 +13,19 @@
 - `pluralCategory(count: number, locale: Locale): Intl.LDMLPluralRule`.
 
 ## React: src/i18n/index.tsx
-`I18nProvider` provides `useI18n(): { locale: Locale; t: Translator; setLocale(locale: Locale): void }`. App selector owns proposed language and restart confirmation; active locale changes only after explicit action. DemoApp uses locale as a React key.
+`I18nProvider` provides `useI18n(): { locale: Locale; t: Translator; setLocale(locale: Locale): void }`.
+The walkthrough selector asks before changing language, and `DemoApp` restarts with the new
+locale as its React key. The marketplace applies the new language directly and retains the
+current screen and form. The provider keeps the locale in the URL during same-document
+browser history navigation.
 
 ## Migration conventions
-All user-facing source strings are registered in `site/i18n/messages/app.json`, `website.json` or `website-extra.json`, each a sorted JSON string array. Shared selector and recovery copy is included in these inventories. Preserve English source exactly to retain existing tests. Screens use useI18n().t; pure functions receive a default-English locale or translator argument. Translate seed content at initialization, never generic user strings. Parameterized sources use `{0}` slots.
+Register user-facing strings in the applicable JSON array under `site/i18n/messages/`. Marketplace
+sources that the walkthrough and site do not share go in `product.json`. These inventories include
+selector and recovery copy. Preserve English source exactly to retain existing tests. Screens
+use `useI18n().t`. Pure functions receive a locale that defaults to English, or a translator.
+Translate seed content at initialization and keep user-entered text as written. Parameterized
+sources use `{0}` slots.
 
 Static HTML uses explicit localization markers, and dynamic JavaScript invokes the shared translator. Preserve simulator model IDs and ledger source records.
 

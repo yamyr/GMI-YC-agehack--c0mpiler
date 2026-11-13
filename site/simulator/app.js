@@ -57,6 +57,7 @@ function writeHash() {
   for (const t of TOGGLES) q.set(t.key, params[t.key] ? "1" : "0");
   q.set("seed", params.seed);
   if (week !== params.weeks) q.set("week", week);
+  if (selectedExpert !== null) q.set("expert", selectedExpert);
   history.replaceState(null, "", `#${q}`);
 }
 
@@ -66,7 +67,8 @@ let result = simulate(params);
 const savedWeek = Number(savedScenario.week);
 let week = Number.isInteger(savedWeek) && savedWeek >= 1 && savedWeek <= params.weeks ? savedWeek : params.weeks;
 let timer = null;
-let selectedExpert = null;
+const savedExpert = /^\d+$/.test(savedScenario.expert) ? Number(savedScenario.expert) : -1;
+let selectedExpert = result.experts[savedExpert]?.id ?? null;
 
 function showWeek(nextWeek) {
   week = nextWeek;
@@ -324,6 +326,7 @@ function renderExperts(s) {
       });
       const show = () => {
         selectedExpert = e.id;
+        writeHash();
         describeExpert(e, earned);
         for (const other of $("expert-grid").children) other.classList.remove("expert--selected");
         cell.classList.add("expert--selected");

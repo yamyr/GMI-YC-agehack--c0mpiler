@@ -54,6 +54,7 @@ if (typeof document !== 'undefined') {
   for (const language of LOCALES) {
     const option = document.createElement('option');
     option.value = language.id;
+    option.lang = language.id;
     option.textContent = language.label;
     select.append(option);
   }

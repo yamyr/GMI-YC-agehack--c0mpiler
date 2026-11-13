@@ -23,6 +23,19 @@ describe("static website localization", () => {
     expect(window.document.documentElement.lang).toBe('fr');
     expect(window.localStorage.getItem('agely.locale')).toBe('fr');
   });
+  it("marks each native language name with its own language in the rendered picker", async () => {
+    const window = new Window({ url: 'https://agely.dev/?lang=ta' });
+    window.document.body.innerHTML = '<header></header><main></main>';
+    vi.stubGlobal('window', window);
+    vi.stubGlobal('document', window.document);
+    vi.stubGlobal('navigator', window.navigator);
+    vi.stubGlobal('location', window.location);
+    vi.resetModules();
+    await import('./site.js');
+    const options = [...window.document.querySelectorAll('#site-language option')];
+    expect(options).toHaveLength(LOCALES.length);
+    for (const option of options) expect(option.getAttribute('lang'), option.textContent).toBe(option.value);
+  });
   it("preserves money word boundaries on the real landing page", () => {
     const document = new Window().document;
     document.write(readFileSync(new URL('../index.html', import.meta.url), 'utf8'));
