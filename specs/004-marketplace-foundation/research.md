@@ -198,3 +198,18 @@ The decisions below were added by the plan review of 2026-11-14, after phases 1 
   otherwise in the stand-in would hide exactly what the real adapters must provide.
 - **Alternatives considered**: Cross-tab locking and fake notifications are code that the real
   adapters would throw away.
+
+## R19. Building before pull request #20 merges (amends R12 and R14)
+
+- **Decision**: The owner asked for the stories to proceed without waiting. They are built on
+  main as it is, and they do not edit the four domain files #20 rewrites (`match.ts`, `price.ts`,
+  `proposal.ts`, `money.ts`). Instead: `Expert.age` becomes optional in `types.ts` (which #20
+  does not touch), so a stored profile can be passed to `matchBrief` unchanged; and the product
+  checks a proposed price with `contains()` and its own sentence, not with `validateProposal`,
+  whose message names Margaret. Adopting #20's `t()` call in `src/product/` becomes a follow-up
+  once #20 is on main.
+- **Rationale**: R14's reason for waiting was to avoid resolving the same conflicts twice. Not
+  touching the contested files removes the conflicts, so the reason to wait goes with them. R12's
+  goal, one matching rule and no copy, is still met: `matchBrief` is called as it is.
+- **Alternatives considered**: Waiting for #20 stalls the feature on another session's work.
+  Editing the contested files now guarantees a conflict whichever branch lands second.
