@@ -1,0 +1,132 @@
+{
+  "asOf": "2026-11-13",
+  "currency": "USD",
+  "kinds": {
+    "paid": "Money that left someone's account. Needs a receipt or a note of where the figure came from.",
+    "estimate": "Calculated, not billed. The method is written next to the figure.",
+    "free": "A service used on a free plan. Listed so nothing is hidden behind a zero.",
+    "missing": "A real cost whose amount we have not written down yet."
+  },
+  "entries": [
+    {
+      "date": "2026-11-13",
+      "item": "Claude Code, Claude Opus 5.5",
+      "category": "AI coding agents",
+      "kind": "estimate",
+      "amount": 30.08,
+      "method": "386 responses in local session logs, priced at Anthropic's API list prices."
+    },
+    {
+      "date": "2026-11-13",
+      "item": "Claude Code, Claude Fable 5.2",
+      "category": "AI coding agents",
+      "kind": "estimate",
+      "amount": 9.58,
+      "method": "60 responses in local session logs, priced at Anthropic's API list prices. Counted part-way through the session that built this page."
+    },
+    {
+      "date": "2026-11-13",
+      "item": "Claude Code, Claude Sonnet 5.5",
+      "category": "AI coding agents",
+      "kind": "estimate",
+      "amount": 0.06,
+      "method": "6 responses in local session logs, priced at Anthropic's API list prices."
+    },
+    {
+      "date": "2026-11-11",
+      "item": "Codex CLI, GPT-6.1 Sol",
+      "category": "AI coding agents",
+      "kind": "estimate",
+      "amount": 1.82,
+      "method": "3 sessions with token counts in local logs, priced at $2 input, $0.10 cached input and $10 output per million tokens. Those prices come from press coverage, not OpenAI's own price list."
+    },
+    {
+      "date": "2026-11-13",
+      "item": "People's time",
+      "category": "People",
+      "kind": "estimate",
+      "amount": 315.76,
+      "method": "4.9 hours at $64.44 an hour. The hours are the time with a commit or an AI session active on one computer, 11 to 13 November, counting gaps of up to 30 minutes. The rate is the US median for software developers (Bureau of Labor Statistics, 2025). Nobody was actually paid."
+    },
+    {
+      "date": "2026-11-13",
+      "item": "Demo video, generated with Seedance 2.5 at 720p",
+      "category": "Media",
+      "kind": "estimate",
+      "amount": 19.09,
+      "method": "83 seconds of finished video at about $0.23 a second. Resellers list 720p between $0.13 and $0.47 a second, and takes that were not used are not counted, so the real figure is probably higher."
+    },
+    {
+      "date": null,
+      "item": "Cloudflare, one year",
+      "category": "Infrastructure",
+      "kind": "paid",
+      "amount": 200,
+      "method": "Hosting for agely.dev. The plan is $20 a month; a year was paid up front for $200.",
+      "evidence": "amount given by the project owner; receipt and payment date not attached yet"
+    },
+    {
+      "date": null,
+      "item": "Domain name agely.dev, five years",
+      "category": "Infrastructure",
+      "kind": "paid",
+      "amount": 50,
+      "method": "Registration paid up front for five years, which works out at $10 a year.",
+      "evidence": "amount given by the project owner; receipt and payment date not attached yet"
+    },
+    {
+      "date": "2026-11-11",
+      "item": "GitHub repository and Actions",
+      "category": "Infrastructure",
+      "kind": "free",
+      "amount": 0,
+      "method": "The repository is public, and GitHub does not charge public repositories for hosting or standard Actions runners."
+    }
+  ],
+  "aiUsage": {
+    "source": "scripts/ai-usage.mjs, run against the Claude Code and Codex session logs on one contributor's computer",
+    "coverage": "Sessions on 11 and 13 November 2026 on one computer. Work done on other machines or in other tools is not included. AI is counted as the cost of its tokens at public list prices, whatever plan the work ran under.",
+    "models": [
+      {
+        "tool": "Claude Code",
+        "model": "Claude Opus 5.5",
+        "responses": 386,
+        "input": 830,
+        "cacheWrite": 932491,
+        "cacheRead": 79043802,
+        "output": 367557,
+        "listPriceUsd": 30.08
+      },
+      {
+        "tool": "Claude Code",
+        "model": "Claude Fable 5.2",
+        "responses": 60,
+        "input": 140,
+        "cacheWrite": 249037,
+        "cacheRead": 8468428,
+        "output": 97510,
+        "listPriceUsd": 9.58
+      },
+      {
+        "tool": "Claude Code",
+        "model": "Claude Sonnet 5.5",
+        "responses": 6,
+        "input": 12,
+        "cacheWrite": 18820,
+        "cacheRead": 33384,
+        "output": 1047,
+        "listPriceUsd": 0.06
+      },
+      {
+        "tool": "Codex CLI",
+        "model": "GPT-6.1 Sol",
+        "responses": null,
+        "input": 403332,
+        "cacheWrite": 0,
+        "cacheRead": 7528960,
+        "output": 26373,
+        "listPriceUsd": 1.82
+      }
+    ]
+  }
+}

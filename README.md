@@ -2,7 +2,7 @@
 
 **Experience shouldn't retire.**
 
-▶ **[Watch the demo](https://agely.dev/)** on the Agely landing page (source in `site/`), or **[try it in your browser](https://agely.dev/demo/)**.
+▶ **[Watch the demo](https://agely.dev/)** on the Agely landing page (source in `site/`), **[try it in your browser](https://agely.dev/demo/)**, or **[run a whole market in the simulator](https://agely.dev/simulator/)**.
 
 Agely is an expert network where older adults turn decades of experience into paid, 15-minute sessions. Our longer-term goal is an AI engine each expert owns: a growing collection of their approved questions, checks, and workflows.
 
@@ -145,6 +145,8 @@ For a frontend-only production preview, run `bun run build` followed by `bun run
 | `.specify/` | Spec Kit templates, scripts, and the project constitution. |
 | `docs/tooling/` | Notes on the project's optional development tools. |
 | `site/` | Static landing page with the demo video, served at agely.dev; the app is at `/demo/` (`bun run build:site`). |
+| `site/costs/` | Open cost ledger at agely.dev/costs/. Record a cost by adding a line to `costs.json`; `scripts/ai-usage.mjs` totals AI tokens from local agent logs. |
+| `site/simulator/` | Marketplace simulator at agely.dev/simulator/: the demo's matching rule run over a made-up market, with adjustable parameters. `engine.js` is the model and has unit tests. |
 
 Features follow Spec Kit: specify, clarify, plan, tasks, analyze, and implement. Use `src/ui/tokens.css` for shared visual values. Keep versions in `package.json`, `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml` in sync; a unit test checks them.
 

@@ -28,7 +28,11 @@ function landingPage(): Plugin {
       rmSync(rootPath("./dist"), { recursive: true, force: true });
     },
     closeBundle() {
-      cpSync(rootPath("./site"), rootPath("./dist"), { recursive: true });
+      cpSync(rootPath("./site"), rootPath("./dist"), {
+        recursive: true,
+        // Unit tests live beside the simulator's model but are not part of the website.
+        filter: (source) => !source.endsWith(".test.js"),
+      });
     },
   };
 }

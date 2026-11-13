@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agely marketplace simulator</title>
+    <meta
+      name="description"
+      content="Set up a market of older experts and buyers, run it week by week, and see who gets help and who gets paid."
+    />
+    <link rel="icon" type="image/png" href="../assets/icon.png" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="simulator.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../" aria-label="Agely home">
+        <img src="../assets/icon.png" alt="" width="36" height="36" />
+        <span>Agely</span>
+      </a>
+      <a class="topbar-link" href="../demo/">Try the interactive demo</a>
+    </header>
+
+    <main class="sim wrap">
+      <div class="sim-intro">
+        <h1>Run the marketplace</h1>
+        <p>
+          The demo follows one expert and one buyer. This simulator runs the same matching rule over
+          a whole market: an expert fits a request when they list the skill and their price range
+          overlaps the buyer's budget. Change the market, press play, and try to meet all three
+          goals.
+        </p>
+        <p class="sim-caveat">
+          The people and numbers are made up. It shows how the rules behave, not what Agely will
+          earn.
+        </p>
+      </div>
+
+      <div class="sim-layout">
+        <form class="controls" id="controls" aria-label="Scenario settings">
+          <h2>Scenario</h2>
+          <label class="field" for="preset">Start from</label>
+          <select id="preset"></select>
+          <div class="control-buttons">
+            <button type="button" class="btn" id="random">Generate a random scenario</button>
+            <button type="button" class="btn" id="reseed">Same settings, new people</button>
+            <button type="button" class="btn" id="copy">Copy link to this scenario</button>
+          </div>
+          <details class="adjust" id="adjust" open>
+            <summary>Adjust the market</summary>
+            <div id="sliders"></div>
+          </details>
+        </form>
+
+        <div class="results">
+          <section class="panel playback" aria-label="Playback">
+            <button type="button" class="button" id="play">Play from week 1</button>
+            <label class="scrub">
+              <span id="week-label">Week 12 of 12</span>
+              <input type="range" id="week" min="1" max="12" step="1" value="12" />
+            </label>
+          </section>
+
+          <section class="panel" aria-labelledby="goals-title">
+            <h2 id="goals-title">Goals</h2>
+            <ul class="goals" id="goals"></ul>
+            <p class="diagnosis" id="diagnosis" aria-live="polite"></p>
+          </section>
+
+          <section class="tiles" id="tiles" aria-label="Totals so far"></section>
+
+          <section class="panel" aria-labelledby="weeks-title">
+            <h2 id="weeks-title">What happened to each week's requests</h2>
+            <p class="chart-note">
+              Each bar is one week, split by how its requests ended. Select a bar to jump to that
+              week.
+            </p>
+            <div class="weekbars" id="weekbars"></div>
+            <ul class="legend-list" id="weeks-legend"></ul>
+            <details class="table-view">
+              <summary>Show the numbers as a table</summary>
+              <div class="table-scroll"><table id="weeks-table"></table></div>
+            </details>
+          </section>
+
+          <section class="panel" aria-labelledby="fit-title">
+            <h2 id="fit-title">Do prices and budgets meet?</h2>
+            <p class="chart-note">
+              Where expert prices and buyer budgets sit, per 15 minutes. A match needs the two to
+              overlap, so the further apart the two shapes are, the more requests fail on price.
+            </p>
+            <div class="fit" id="fit"></div>
+            <ul class="legend-list">
+              <li><span class="key key--expert"></span>Expert prices, above the line</li>
+              <li><span class="key key--buyer"></span>Buyer budgets, below the line</li>
+            </ul>
+            <p class="readout" id="fit-readout">Point at a column to see its share.</p>
+          </section>
+
+          <section class="panel" aria-labelledby="experts-title">
+            <h2 id="experts-title">Who earned</h2>
+            <p class="chart-note">
+              Each square is one expert. Darker means more earned so far. A dashed square has
+              earned nothing yet.
+            </p>
+            <div class="expert-grid" id="expert-grid"></div>
+            <p class="readout" id="expert-readout" aria-live="polite">
+              Select a square to see that expert.
+            </p>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>
+        Agely is a hackathon prototype. The outcome we want to measure is dollars earned by people
+        over 65.
+      </p>
+    </footer>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
