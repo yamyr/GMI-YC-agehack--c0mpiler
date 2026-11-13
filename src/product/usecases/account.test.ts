@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chooseRole, requestSignInCode, signIn, signOut } from "./account";
+import { chooseRole, requestSignInCode, setName, signIn, signOut } from "./account";
 import { actingAccount, owned } from "./context";
 import { testWorld } from "./testing";
 
@@ -61,5 +61,21 @@ describe("ownership", () => {
     expect(owned(theirs, acting.value, (t) => [t.ownerId])).toEqual({ ok: false, error: "not-yours" });
     expect(owned(null as { ownerId: string } | null, acting.value, (t) => [t.ownerId])).toEqual({ ok: false, error: "not-yours" });
     expect(owned(mine, acting.value, (t) => [t.ownerId])).toEqual({ ok: true, value: mine });
+  });
+});
+
+describe("names", () => {
+  it("stores what the person asks to be called, trimmed", async () => {
+    const world = testWorld();
+    await world.signInAs("ruth@example.com");
+    expect(await setName(world.ctx, "  Ruth Adeyemi ")).toMatchObject({ ok: true, value: { name: "Ruth Adeyemi" } });
+    expect(await actingAccount(world.ctx)).toMatchObject({ ok: true, value: { name: "Ruth Adeyemi" } });
+  });
+
+  it("refuses an empty name and a signed-out person", async () => {
+    const world = testWorld();
+    expect(await setName(world.ctx, "Ruth")).toEqual({ ok: false, error: "not-signed-in" });
+    await world.signInAs("ruth@example.com");
+    expect(await setName(world.ctx, "   ")).toEqual({ ok: false, error: "empty-name" });
   });
 });
