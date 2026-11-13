@@ -62,10 +62,10 @@ Behaviour:
 ```ts
 interface AgentPort {
   interviewQuestions(): Promise<AgentQuestion[]>;                    // each with suggested replies
-  draftProfile(answers: InterviewAnswer[]): Promise<ProfileDraft>;   // skills carry their source turn
-  suggestPrice(profile: ProfileDraft): Promise<PriceSuggestion>;     // a range and at least two reasons
+  draftProfile(answers: readonly InterviewAnswer[], locale?: Locale): Promise<ProfileDraft>;   // skills carry their source turn
+  suggestPrice(profile: ProfileDraft, locale?: Locale): Promise<PriceSuggestion>;     // a range and at least two reasons
   briefQuestions(): Promise<AgentQuestion[]>;
-  draftBrief(answers: InterviewAnswer[]): Promise<BriefDraft>;
+  draftBrief(answers: readonly InterviewAnswer[], locale?: Locale): Promise<BriefDraft>;
   readonly status: ServiceStatus;
 }
 ```
@@ -76,7 +76,9 @@ Behaviour:
 - `draftProfile` returns 1 to 5 skills, every tag from the catalogue and used once, every
   `sourceTurn` pointing at an answer that exists.
 - `suggestPrice` returns a valid range and at least two reasons.
-- `draftBrief` returns a catalogue skill tag, 1 to 8 units and a valid budget.
+- `draftBrief` returns a catalogue skill tag, 1 to 8 units and a valid budget. If a supplied
+  budget does not give two whole USD amounts, it returns `budget: null`. The buyer can correct
+  that answer before a draft is saved.
 - With answers that match nothing in the catalogue, the draft has `unmatched: true` and no
   skills (a brief draft has `skillTag: null`) instead of inventing one. The screen then asks the
   person to say more; it never publishes or confirms an unmatched draft.

@@ -89,3 +89,23 @@ The catalogs contain machine-generated drafts. Native-speaker review and a real-
 remain pending. The marketplace drafting agent recognizes a limited set of skill phrases and
 numeric formats. The local build retains the Vite chunk-size warning because the language
 catalogs are available without a runtime translation service.
+
+### Follow-up reliability checks
+
+- Blocked access to browser storage, blocked reads and blocked writes now show a localized
+  recovery screen with a way back to the walkthrough. Each case passed at both app test sizes.
+  French, Tamil, Hindi and Simplified Chinese recovery screens also passed desktop and 390px
+  phone checks for layout and axe.
+- A French buyer can enter `1 h 30 min`, correct a fractional budget without repeating the
+  earlier answers, and review a 90-minute brief with a USD 1,500 to 2,400 budget. Grouped amounts
+  also passed German and Hindi regressions. Ambiguous inputs save no draft and ask the buyer
+  for two whole USD amounts.
+- The website picker labels each option with its own language tag. The simulator preserved both
+  the displayed week and the selected expert when changing languages. Keyboard selection was
+  verified in muted Chromium at 390px and 1440px.
+
+After these changes both TypeScript checks, Vitest (398 tests in 38 files), the catalog check
+(884 messages across 17 draft locales), the full browser suite (326 tests), both production
+builds, Rust formatting, Clippy, 22 Rust tests, cargo deny and workflow lint passed. The
+105-combination website sweep passed after the site and storage changes. The final parser
+revision passed focused built-site checks for Tamil phone and German desktop.

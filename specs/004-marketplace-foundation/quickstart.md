@@ -55,4 +55,6 @@ Run `bun run dev` and open `http://localhost:1420/#/app`.
 Choose a language above the sign-in or marketplace screen. The current account, route and
 in-progress form stay open. Suggested replies appear in that language and keep the same
 underlying choices. The drafting stand-in recognizes a limited set of skill phrases. It may
-miss a typed answer, so try a suggested reply if needed.
+miss a typed answer, so try a suggested reply if needed. The try-out requires browser storage.
+If the browser blocks site data, you can change that setting and try again or return to the
+walkthrough.

@@ -1,4 +1,5 @@
 import { createTranslator, formatList, formatNumber, type Locale, type Translator } from "../../../site/i18n/core.js";
+import type { PriceRange } from "../../demo/domain/types";
 import { normalizeDecimalDigits } from "../../i18n/digits";
 import { STAND_IN_LABELS } from "../copy";
 import { CATALOGUE, exactSkillLabel, findSkills } from "../model/catalogue";
@@ -36,32 +37,70 @@ function answerLocale(answer: InterviewAnswer, selected: Locale): Locale {
   return answer.suggested ? "en" : answer.locale ?? selected;
 }
 
-/** Find a numeric duration or experience count followed by a known unit. */
-function numberWithUnit(text: string, unit: "year" | "hour" | "minute", locale: Locale): number | undefined {
+/** Find a numeric duration or experience count around a known unit. */
+function quantityWithUnit(text: string, unit: "year" | "hour" | "minute", locale: Locale): RegExpExecArray | null {
   const patterns = new Set<string>();
   // These samples cover the plural forms used by the supported languages.
   for (const language of new Set<Locale>([locale, "en"])) {
-    const formatter = new Intl.NumberFormat(language === "tl" ? "fil-PH" : language, { style: "unit", unit, unitDisplay: "long" });
-    for (const count of [1, 2, 5, 11, 21]) {
-      const pattern = formatter.formatToParts(count).map(({ type, value }) => {
-        if (type === "integer") return "\\d+";
-        if (type === "literal" && value.trim() === "") return "\\s*";
-        return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
-      }).join("");
-      patterns.add(pattern);
+    const displays = unit === "year" ? ["long"] as const : ["long", "short", "narrow"] as const;
+    for (const unitDisplay of displays) {
+      const formatter = new Intl.NumberFormat(language === "tl" ? "fil-PH" : language, { style: "unit", unit, unitDisplay });
+      for (const count of [1, 2, 5, 11, 21]) {
+        const pattern = formatter.formatToParts(count).map(({ type, value }) => {
+          if (type === "integer") return "\\d+";
+          if (type === "literal" && value.trim() === "") return "\\s*";
+          return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+        }).join("");
+        patterns.add(pattern);
+      }
     }
   }
   const boundary = locale === "ja" || locale === "zh-Hans" ? "" : "(?![\\p{L}\\p{M}])";
+  const alternatives = [...patterns].sort((a, b) => b.length - a.length).join("|");
+  return new RegExp(`(?<![\\d.,+-])(?:${alternatives})${boundary}`, "iu").exec(text);
+}
+
+function numberWithUnit(text: string, unit: "year" | "hour" | "minute", locale: Locale): number | undefined {
   const normalized = normalizeDecimalDigits(text).replace(/(\d)\s*\+\s*/g, "$1 ");
-  const match = new RegExp(`(?<!\\d)(?:${[...patterns].join("|")})${boundary}`, "iu").exec(normalized);
+  const match = quantityWithUnit(normalized, unit, locale);
   return match === null ? undefined : numbers(match[0])[0];
 }
 
 function durationMinutes(text: string, locale: Locale): number | undefined {
-  const hours = numberWithUnit(text, "hour", locale);
-  const minutes = numberWithUnit(text, "minute", locale);
-  if (hours !== undefined) return hours * 60 + (minutes ?? 0);
-  return minutes ?? numbers(text)[0];
+  const normalized = normalizeDecimalDigits(text);
+  if (/\d[.,]\d|[+−-]\s*\d/u.test(normalized)) return undefined;
+  const hour = quantityWithUnit(normalized, "hour", locale);
+  const minutes = numberWithUnit(normalized, "minute", locale);
+  if (hour === null) return minutes ?? numbers(normalized)[0];
+  const afterHour = normalized.slice(hour.index + hour[0].length);
+  const compactMinutes = /^([0-5]?\d)\s*$/.exec(afterHour)?.[1];
+  return Number.parseInt(hour[0].replace(/^\D+/u, ""), 10) * 60 + (minutes ?? (compactMinutes === undefined ? 0 : Number(compactMinutes)));
+}
+
+/** The conversation accepts whole-dollar ranges and locally grouped whole amounts. */
+function budgetRange(text: string, locale: Locale): PriceRange | null {
+  const normalized = normalizeDecimalDigits(text).trim().replace(/\s+per\s+15\s+minutes[.!]?$/iu, "");
+  if (/[+=/⁄]|\d[eE]-?\d|\p{Sc}/u.test(normalized.replaceAll("$", ""))) return null;
+  if (/\b(?:EUR|GBP|JPY|CNY|RMB|INR|AUD|CAD|SGD|euros?|pesos?|rupees?|pounds?)\b|(?:CA|AU|NZ|SG)\$/iu.test(normalized)) return null;
+
+  const amounts = [...normalized.matchAll(/\d+(?:[., ]\d+)*/g)];
+  const [first, second] = amounts;
+  if (amounts.length !== 2 || first === undefined || second === undefined) return null;
+  const beforeFirst = normalized.slice(0, first.index);
+  const between = normalized.slice(first.index + first[0].length, second.index);
+  // A single ASCII hyphen between two amounts is a range separator. A minus before
+  // the first amount, or another minus before the second, would mean a negative price.
+  if (/[-−]/u.test(beforeFirst) || /−|[-–—][\s\p{Sc}]*-/u.test(between) || /\p{L}[^-]*-\s*\$?\s*$/u.test(between)) return null;
+
+  const values = amounts.map(([token]) => {
+    const value = Number(token.replace(/[., ]/g, ""));
+    if (!Number.isSafeInteger(value) || value < 1) return null;
+    // Accept a grouped spelling only when it matches what this locale displays.
+    const grouped = normalizeDecimalDigits(formatNumber(value, locale, { useGrouping: true }));
+    return /^\d+$/.test(token) || token === grouped ? value : null;
+  });
+  const [a, b] = values;
+  return a == null || b == null ? null : { min: Math.min(a, b), max: Math.max(a, b) };
 }
 
 /**
@@ -127,8 +166,8 @@ export function makeStandInAgent(): AgentPort {
       const length = answers.find((answer) => answer.questionId === "length") ?? answers[1];
       const minutes = length === undefined ? undefined : durationMinutes(length.text, answerLocale(length, locale));
       const units = minutes === undefined ? 2 : Math.min(8, Math.max(1, Math.round(minutes / 15)));
-      const [a, b] = numbers(answers.find((x) => x.questionId === "budget")?.text ?? answers[2]?.text ?? "");
-      const budget = a !== undefined && b !== undefined && a >= 1 && b >= 1 ? { min: Math.min(a, b), max: Math.max(a, b) } : { min: 50, max: 100 };
+      const budgetAnswer = answers.find((answer) => answer.questionId === "budget") ?? answers[2];
+      const budget = budgetAnswer === undefined ? { min: 50, max: 100 } : budgetRange(budgetAnswer.text, answerLocale(budgetAnswer, locale));
       return { problem: firstSentence(displayAnswer(problem, BRIEF, createTranslator(locale))), skillTag: skill?.tag ?? null, units, budget, unmatched: skill === undefined };
     },
   };

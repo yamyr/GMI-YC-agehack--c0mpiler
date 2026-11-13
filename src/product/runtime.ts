@@ -12,8 +12,21 @@ import type { Context } from "./usecases/context";
  * the browser's own storage. A real adapter replaces one line here once it passes the port's
  * contract suite.
  */
-export function browserContext(): Context {
-  const kv = window.localStorage;
+export function browserContext(): Context | null {
+  let kv: Storage;
+  try {
+    kv = window.localStorage;
+    // Access may succeed even when a browser blocks writes.
+    const probe = `agely.product.storage-test.${crypto.randomUUID()}`;
+    kv.setItem(probe, "");
+    try {
+      if (kv.getItem(probe) !== "") return null;
+    } finally {
+      kv.removeItem(probe);
+    }
+  } catch {
+    return null;
+  }
   const clock = tryOutClock(kv, () => Date.now());
   const now = (): Date => clock.now();
   const newId = (): string => crypto.randomUUID();

@@ -153,3 +153,22 @@ test("Tamil price fits the stand-in card on a phone", async ({ page }) => {
   await page.evaluate(() => document.fonts.ready);
   expect(await price.evaluate((element) => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(0);
 });
+
+for (const blocked of ["access", "reads", "writes"] as const) {
+  test(`blocked storage ${blocked} leaves a localized way back to the walkthrough`, async ({ page }) => {
+    await page.addInitScript((mode) => {
+      const block = () => { throw new DOMException("Storage blocked by test", "SecurityError"); };
+      if (mode === "access") Object.defineProperty(window, "localStorage", { get: block });
+      else if (mode === "reads") Storage.prototype.getItem = block;
+      else Storage.prototype.setItem = block;
+    }, blocked);
+    await page.goto("/?lang=fr#/app");
+    const t = createTranslator("fr");
+    await expect(page.locator("html")).toHaveAttribute("lang", "fr");
+    await expect(page.getByRole("heading", { name: "Le stockage du navigateur est indisponible" })).toBeVisible();
+    await expect(page.getByText(t("Agely needs browser storage to keep this try-out on your device. Allow site data in your browser settings, then reload this page."))).toBeVisible();
+    await page.getByRole("link", { name: t("Back to the walkthrough") }).click();
+    await expect(page.getByRole("heading", { name: t("Experience shouldn't retire.") })).toBeVisible();
+    await expect(page).toHaveURL(/\?lang=fr#\/$/);
+  });
+}

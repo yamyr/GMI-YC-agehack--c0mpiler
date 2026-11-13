@@ -92,7 +92,8 @@ export interface BriefDraft {
   /** A catalogue tag, or null when `unmatched`. */
   readonly skillTag: string | null;
   readonly units: number;
-  readonly budget: PriceRange;
+  /** Null when a supplied budget cannot be interpreted as two whole dollar amounts. */
+  readonly budget: PriceRange | null;
   readonly unmatched: boolean;
 }
 

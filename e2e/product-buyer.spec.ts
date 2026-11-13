@@ -1,4 +1,5 @@
 import { type Page, expect, test } from "@playwright/test";
+import { createTranslator } from "../site/i18n/core.js";
 import { productAudit, productSignIn, seedExperts, setProfileState } from "./productHelpers";
 
 // Spec 004, story 2: a buyer is matched with real experts.
@@ -14,6 +15,29 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/#/app");
   await productSignIn(page, "sam@example.com");
   await page.getByRole("button", { name: "Continue as a buyer" }).click();
+});
+
+test("a buyer can correct a French budget that uses fractional amounts", async ({ page }) => {
+  await page.locator("#language").selectOption("fr");
+  const t = createTranslator("fr");
+  await page.getByRole("link", { name: t("Describe my problem") }).click();
+  await page.getByRole("button", { name: t("I'm about to sign with a contract manufacturer for the first time."), exact: true }).click();
+
+  async function give(text: string) {
+    const closedTypingPanel = page.locator("details:not([open])").getByText(t("Or type your answer"), { exact: true });
+    if (await closedTypingPanel.isVisible()) await closedTypingPanel.click();
+    await page.getByRole("textbox", { name: t("Your answer") }).fill(text);
+    await page.getByRole("button", { name: t("Send my answer"), exact: true }).click();
+  }
+
+  await give("1 h 30 min");
+  await give("50,20 $US à 100,50 $US");
+  await expect(page.getByRole("alert")).toHaveText(t("Enter two whole US dollar amounts for your budget, such as 50 to 100."));
+  await expect(page.getByText("1 h 30 min", { exact: true })).toBeVisible();
+  await give("1\u202f500 $US à 2\u202f400 $US");
+  await expect(page.locator("#brief-units")).toHaveValue("6");
+  await expect(page.locator("#brief-min")).toHaveValue("1500");
+  await expect(page.locator("#brief-max")).toHaveValue("2400");
 });
 
 test("a buyer describes a problem, confirms the brief, and sees who fits and why", async ({ page }) => {

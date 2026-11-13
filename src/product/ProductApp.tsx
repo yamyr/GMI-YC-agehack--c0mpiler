@@ -1,4 +1,4 @@
-import { type ComponentType, useCallback, useEffect, useMemo, useState } from "react";
+import { type ComponentType, useCallback, useEffect, useState } from "react";
 import { useI18n } from "../i18n";
 import { tryOutLimits } from "./copy";
 import type { Account } from "./model/types";
@@ -19,7 +19,7 @@ import { SessionScreen } from "./screens/SessionScreen";
 import { SignInScreen } from "./screens/SignInScreen";
 import { type ScreenProps, ServiceStatusList } from "./screens/shared";
 import { signOut } from "./usecases/account";
-import { actingAccount } from "./usecases/context";
+import { actingAccount, type Context } from "./usecases/context";
 
 const SCREENS: Record<Exclude<RouteName, "sign-in">, ComponentType<ScreenProps>> = {
   home: HomeScreen,
@@ -36,10 +36,25 @@ const SCREENS: Record<Exclude<RouteName, "sign-in">, ComponentType<ScreenProps>>
   session: SessionScreen,
 };
 
-/** The signed-in product, running on stand-ins: a frame around whichever page the address names. */
 export function ProductApp() {
   const { t } = useI18n();
-  const ctx = useMemo(browserContext, []);
+  const [ctx] = useState(browserContext);
+  if (ctx !== null) return <ProductRoutes ctx={ctx} />;
+
+  return (
+    <div className="demo product">
+      <div className="demo-stage">
+        <h2>{t("Browser storage is unavailable")}</h2>
+        <p>{t("Agely needs browser storage to keep this try-out on your device. Allow site data in your browser settings, then reload this page.")}</p>
+        <button type="button" className="primary" onClick={() => window.location.reload()}>{t("Try again")}</button>
+      </div>
+    </div>
+  );
+}
+
+/** The signed-in product, running on stand-ins: a frame around whichever page the address names. */
+function ProductRoutes({ ctx }: { readonly ctx: Context }) {
+  const { t } = useI18n();
   // undefined while the first read is in flight; null when nobody is signed in.
   const [account, setAccount] = useState<Account | null | undefined>(undefined);
   const [hash, setHash] = useState(() => window.location.hash);

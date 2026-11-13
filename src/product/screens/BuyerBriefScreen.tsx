@@ -26,7 +26,7 @@ export function BuyerBriefScreen({ ctx, route, go }: ScreenProps) {
   const [brief, setBrief] = useState<Brief | null | undefined>(fresh ? null : undefined);
   const [questions, setQuestions] = useState<readonly AgentQuestion[]>([]);
   const [answers, setAnswers] = useState<readonly InterviewAnswer[]>([]);
-  const [unmatched, setUnmatched] = useState(false);
+  const [conversationError, setConversationError] = useState<"invalid-budget" | "unmatched" | null>(null);
   const [error, setError] = useState<ReviewError | null>(null);
 
   useEffect(() => {
@@ -49,8 +49,10 @@ export function BuyerBriefScreen({ ctx, route, go }: ScreenProps) {
       if (result.ok) {
         if (fresh) go("buyer-brief");
         else setBrief(result.value);
+      } else if (result.error === "invalid-budget") {
+        setConversationError("invalid-budget");
       } else {
-        setUnmatched(true);
+        setConversationError("unmatched");
         setAnswers([]);
       }
     };
@@ -58,9 +60,11 @@ export function BuyerBriefScreen({ ctx, route, go }: ScreenProps) {
       <div>
         <h2 tabIndex={-1}>{t("What do you need help with?")}</h2>
         <StandIn ctx={ctx} service="agent" />
-        {unmatched && (
+        {conversationError !== null && (
           <p className="notice notice--error" role="alert">
-            {t("I couldn't tell which kind of experience you need. Describe the problem in a little more detail.")}
+            {t(conversationError === "invalid-budget"
+              ? "Enter two whole US dollar amounts for your budget, such as 50 to 100."
+              : "I couldn't tell which kind of experience you need. Describe the problem in a little more detail.")}
           </p>
         )}
         <div className="conversation">

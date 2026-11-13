@@ -74,13 +74,14 @@ export function agentContract(name: string, make: () => AgentPort): void {
       expect(draft.problem.length).toBeGreaterThan(0);
     });
 
-    it("keeps a drafted brief inside 1 to 8 units and a valid budget whatever is said", async () => {
+    it("keeps a drafted brief inside 1 to 8 units and refuses an unclear budget", async () => {
       for (const text of ["nine hours", "0 minutes", "600 minutes", "no idea", "$900 to $20"]) {
         const draft = await make().draftBrief([answer("q1", "help with hiring"), answer("q2", text), answer("q3", text)]);
         expect(Number.isInteger(draft.units)).toBe(true);
         expect(draft.units).toBeGreaterThanOrEqual(1);
         expect(draft.units).toBeLessThanOrEqual(8);
-        expect(validateRange(draft.budget).ok).toBe(true);
+        if (text === "$900 to $20") expect(draft.budget).toEqual({ min: 20, max: 900 });
+        else expect(draft.budget).toBeNull();
       }
     });
 

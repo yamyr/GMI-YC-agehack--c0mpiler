@@ -99,7 +99,50 @@ describe("a buyer's brief", () => {
   });
 
   it.each([
+    ["fr", "1\u202f500\u00a0$US – 2\u202f400\u00a0$US", 1500, 2400],
+    ["de", "1.500\u00a0$ – 2.400\u00a0$", 1500, 2400],
+    ["hi", "१,५०,००० से २,४०,००० अमेरिकी डॉलर", 150000, 240000],
+  ] as const)("preserves grouped whole-dollar amounts in %s", async (locale, budget, min, max) => {
+    const world = testWorld();
+    await buyer(world);
+    const result = await draftBriefFromConversation(world.ctx, [
+      { questionId: "problem", text: "I need help with contract manufacturing." },
+      { questionId: "length", text: "30 minutes" },
+      { questionId: "budget", text: budget },
+    ], locale);
+
+    expect(result).toMatchObject({ ok: true, value: { budget: { min, max } } });
+  });
+
+  it.each([
+    ["es", "50,20 a 100,50 dólares"],
+    ["de", "50,20 bis 100 Dollar"],
+    ["fr", "50 à 100,50 dollars"],
+    ["en", "50 to 100 to 150"],
+    ["en", "-50 to 100"],
+    ["en", "50 – -100"],
+    ["en", "1e3"],
+    ["en", "1/2"],
+    ["fr", "50 € à 100 €"],
+  ] as const)("does not save an ambiguous %s budget (%s)", async (locale, budget) => {
+    const world = testWorld();
+    await buyer(world);
+
+    const result = await draftBriefFromConversation(world.ctx, [
+      { questionId: "problem", text: "I need help with contract manufacturing." },
+      { questionId: "length", text: "30 minutes" },
+      { questionId: "budget", text: budget },
+    ], locale);
+
+    expect(result).toEqual({ ok: false, error: "invalid-budget" });
+    expect(await myCurrentBrief(world.ctx)).toEqual({ ok: true, value: null });
+  });
+
+  it.each([
     ["fr", "1 heure 15 minutes", 5],
+    ["fr", "1 h 30 min", 6],
+    ["fr", "1h30", 6],
+    ["fr", "90 min", 6],
     ["hi", "१ घंटा", 4],
     ["fr", "45", 3],
     ["fr", "1 minute", 1],
