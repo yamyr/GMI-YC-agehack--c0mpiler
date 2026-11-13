@@ -120,3 +120,73 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+.button-link--primary {
+  background: var(--color-accent-strong);
+  color: var(--surface);
+}
+
+.button-link--primary:hover {
+  background: var(--text);
+  border-color: var(--text);
+}
+
+/* A short list of choices where one tap is enough (research R16). */
+.choices {
+  margin: var(--space-4) 0;
+  padding: 0;
+  border: 0;
+}
+
+.choices legend {
+  padding: 0;
+  margin-bottom: var(--space-2);
+  font-weight: 600;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--control-h);
+  padding: 0 var(--space-4);
+  margin-bottom: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.choice input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--color-accent-strong);
+}
+
+/* The chosen time is marked by a heavier border as well as the filled radio. */
+.choice:has(input:checked) {
+  border: 2px solid var(--text);
+}
+
+.choices .field {
+  margin-top: var(--space-4);
+}
+
+/* The browser's date and time control, brought up to the same size as every other field. */
+.product input[type="datetime-local"] {
+  width: 100%;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  min-height: var(--control-h);
+}
+
+/* Links in running text, such as the meeting link. */
+.product .demo-stage a:not(.button-link) {
+  color: var(--color-accent-strong);
+  font-weight: 600;
+}

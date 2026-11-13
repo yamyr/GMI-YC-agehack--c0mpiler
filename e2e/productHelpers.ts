@@ -17,7 +17,8 @@ export async function productAudit(page: Page, where: string): Promise<void> {
   expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`), `accessibility on ${where}`).toEqual([]);
   const tooSmall = await page.evaluate(() =>
     Array.from(document.body.querySelectorAll<HTMLElement>("*"))
-      .filter((el) => Array.from(el.childNodes).some((n) => n.nodeType === Node.TEXT_NODE && (n.textContent ?? "").trim() !== "") && el.offsetParent !== null)
+      // Elements that show text: those with a text node, and form controls, whose text is not a node.
+      .filter((el) => (Array.from(el.childNodes).some((n) => n.nodeType === Node.TEXT_NODE && (n.textContent ?? "").trim() !== "") || el.matches("input:not([type=radio]):not([type=checkbox]), select, textarea")) && el.offsetParent !== null)
       .filter((el) => Number.parseFloat(getComputedStyle(el).fontSize) < 16)
       .map((el) => `${el.tagName}.${el.className}`),
   );

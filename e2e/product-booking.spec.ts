@@ -64,8 +64,8 @@ test("a buyer proposes, the expert accepts, and both see a confirmed session wit
   await expect(page.getByText("With Sam Ortiz")).toBeVisible();
   await expect(page.getByText(/at 10:00 AM E[SD]T/)).toBeVisible();
   await expect(page.getByText("$150 is held until the session has taken place.")).toBeVisible();
-  await expect(page.locator('[data-stand-in="payments"]')).toContainText("no money has moved");
-  await expect(page.locator('[data-stand-in="meetings"]')).toContainText("not a real meeting");
+  await expect(page.locator('.demo-stage [data-stand-in="payments"]')).toContainText("no money has moved");
+  await expect(page.locator('.demo-stage [data-stand-in="meetings"]')).toContainText("not a real meeting");
   await expect(page.getByRole("link", { name: "Open the meeting link" })).toHaveAttribute("href", /^https:\/\/meet\.agely\.example\//);
   await productAudit(page, "session");
   expect(await paymentCount(page)).toBe(1);
