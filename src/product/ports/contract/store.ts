@@ -3,7 +3,7 @@ import type { Account, Brief } from "../../model/types";
 import type { StorePort } from "../index";
 
 const account = (id: string, email = `${id}@example.com`): Account => ({ id, email, name: "", roles: ["expert"], activeRole: "expert", createdAt: "2026-11-14T00:00:00.000Z" });
-const brief = (id: string, buyerId: string, state: Brief["state"] = "draft"): Brief => ({ id, buyerId, problem: "p", skillTag: "sales", units: 2, budget: { min: 50, max: 100 }, state });
+const brief = (id: string, buyerId: string, state: Brief["state"] = "draft"): Brief => ({ id, buyerId, problem: "p", skillTag: "sales", units: 2, budget: { min: 50, max: 100 }, state, createdAt: "2026-11-14T00:00:00.000Z" });
 
 /**
  * Behaviour every StorePort adapter must show. `make` returns a fresh, empty store; `reopen`

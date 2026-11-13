@@ -55,6 +55,7 @@ Editing a published profile keeps it published.
 | units | integer | 1 to 8 (15 minutes to 2 hours) |
 | budget | `{min, max}` whole dollars per 15 minutes | Valid per `validateRange` |
 | state | `draft` or `confirmed` | Confirm is explicit; refused for regulated advice (FR-012) |
+| createdAt | instant | The newest brief is the buyer's current one. Any edit returns it to `draft` and discards its stored match. |
 
 ## Match
 

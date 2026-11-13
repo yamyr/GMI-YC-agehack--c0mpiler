@@ -51,4 +51,12 @@ describe("product routes", () => {
       expect(href(name)).toBe(`#/app${path}`);
     }
   });
+
+  it("opens the buyer's pages only for someone acting as a buyer", () => {
+    for (const [path, name] of [["/buyer/brief", "buyer-brief"], ["/buyer/match", "buyer-match"]] as const) {
+      expect(resolve(`#/app${path}`, account(["buyer"], "buyer"))).toMatchObject({ name, href: `#/app${path}` });
+      expect(resolve(`#/app${path}`, account(["expert", "buyer"], "expert"))).toMatchObject({ name: "home" });
+      expect(href(name)).toBe(`#/app${path}`);
+    }
+  });
 });

@@ -1,7 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react";
 import type { AgentQuestion, InterviewAnswer } from "../ports";
 import { draftProfileFromInterview } from "../usecases/profile";
-import { type ScreenProps, StandIn } from "./shared";
+import { Exchange, ReplyPicker, type ScreenProps, StandIn } from "./shared";
 
 /**
  * Story 1: the expert talks; nothing is filled in. Each question can be answered by picking a
@@ -44,14 +44,6 @@ export function ExpertInterviewScreen({ ctx, account, go, refresh }: ScreenProps
     if (given !== "") setName(given);
   }
 
-  function onTyped(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const text = String(new FormData(form).get("answer") ?? "");
-    form.reset();
-    void give(text);
-  }
-
   return (
     <div>
       <h2 tabIndex={-1}>Tell us about your work</h2>
@@ -63,31 +55,8 @@ export function ExpertInterviewScreen({ ctx, account, go, refresh }: ScreenProps
       )}
 
       <div className="conversation">
-        <div className="turn turn--agent">
-          <p className="turn__speaker">Agely</p>
-          <p>What should people call you?</p>
-        </div>
-        {name !== null && (
-          <div className="turn turn--person">
-            <p className="turn__speaker">You</p>
-            <p>{name}</p>
-          </div>
-        )}
-        {name !== null &&
-          questions.slice(0, answers.length + 1).map((question, index) => (
-            <div key={question.id}>
-              <div className="turn turn--agent">
-                <p className="turn__speaker">Agely</p>
-                <p>{question.text}</p>
-              </div>
-              {answers[index] !== undefined && (
-                <div className="turn turn--person">
-                  <p className="turn__speaker">You</p>
-                  <p>{answers[index].text}</p>
-                </div>
-              )}
-            </div>
-          ))}
+        <Exchange question="What should people call you?" answer={name ?? undefined} />
+        {name !== null && questions.slice(0, answers.length + 1).map((question, index) => <Exchange key={question.id} question={question.text} answer={answers[index]?.text} />)}
       </div>
 
       {name === null && (
@@ -104,32 +73,7 @@ export function ExpertInterviewScreen({ ctx, account, go, refresh }: ScreenProps
         </form>
       )}
 
-      {name !== null && current !== undefined && (
-        // Keyed by question so the typing panel closes again for each new question.
-        <div key={current.id}>
-          <div className="replies" role="group" aria-label="Suggested replies">
-            {current.suggestedReplies.map((reply) => (
-              <button key={reply} type="button" className="secondary" onClick={() => void give(reply)}>
-                {reply}
-              </button>
-            ))}
-          </div>
-          <details className="type-instead">
-            <summary>Or type your answer</summary>
-            <form onSubmit={onTyped}>
-              <div className="field">
-                <label htmlFor="interview-answer">Your answer</label>
-                <input id="interview-answer" name="answer" type="text" required />
-              </div>
-              <div className="actions">
-                <button type="submit" className="secondary">
-                  Send my answer
-                </button>
-              </div>
-            </form>
-          </details>
-        </div>
-      )}
+      {name !== null && current !== undefined && <ReplyPicker key={current.id} question={current} onAnswer={(text) => void give(text)} />}
     </div>
   );
 }

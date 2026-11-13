@@ -19,6 +19,8 @@ async function interview(page: Page, name: string): Promise<void> {
 }
 
 test("an expert is interviewed, edits and publishes a profile, sets a price, and finds it all there later", async ({ page }) => {
+  // A whole journey with an accessibility audit at every step: allow three times the usual time.
+  test.slow();
   await page.goto("/#/app");
   await productSignIn(page, "ruth@example.com");
   await page.getByRole("button", { name: "Continue as an expert" }).click();

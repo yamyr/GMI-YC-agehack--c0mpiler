@@ -58,6 +58,7 @@ export interface Brief {
   /** Whole dollars per 15 minutes. */
   readonly budget: PriceRange;
   readonly state: "draft" | "confirmed";
+  readonly createdAt: Instant;
 }
 
 export interface StoredMatch {
