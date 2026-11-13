@@ -2,6 +2,8 @@
 
 **Experience shouldn't retire.**
 
+▶ **[Watch the demo](https://agely.dev/)** on the Agely landing page (source in `site/`), or **[try it in your browser](https://agely.dev/demo/)**.
+
 Agely is an expert network where older adults turn decades of experience into paid, 15-minute sessions. Our longer-term goal is an AI engine each expert owns: a growing collection of their approved questions, checks, and workflows.
 
 This hackathon prototype follows Margaret, a retired procurement director, and Dev, a hardware founder, from their first conversations to a completed session and Margaret's first saved workflow.
@@ -142,6 +144,7 @@ For a frontend-only production preview, run `bun run build` followed by `bun run
 | `specs/001-demo-walkthrough/` | Demo specification, data model, contracts, tasks, and presenter guide. |
 | `.specify/` | Spec Kit templates, scripts, and the project constitution. |
 | `docs/tooling/` | Notes on the project's optional development tools. |
+| `site/` | Static landing page with the demo video, served at agely.dev; the app is at `/demo/` (`bun run build:site`). |
 
 Features follow Spec Kit: specify, clarify, plan, tasks, analyze, and implement. Use `src/ui/tokens.css` for shared visual values. Keep versions in `package.json`, `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml` in sync; a unit test checks them.
 

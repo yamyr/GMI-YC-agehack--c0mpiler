@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:site": "AGELY_SITE_BUILD=1 bun run build",
     "preview": "vite preview",
     "test": "vitest run",
     "e2e": "playwright test",
