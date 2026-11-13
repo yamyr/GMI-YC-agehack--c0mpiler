@@ -610,7 +610,7 @@ a {
 
 .story-end {
   margin: 48px 0 0;
-  text-align: center;
+  justify-content: center;
 }
 
 /* One column: the lanes become a stagger, Margaret to the left and Dev to the right. */
