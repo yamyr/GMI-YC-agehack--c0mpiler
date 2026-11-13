@@ -4,6 +4,7 @@ declare const __APP_VERSION__: string;
 
 declare module "node:fs" {
   export function readFileSync(path: string | URL, options?: string | { encoding?: string; flag?: string }): string;
+  export function existsSync(path: string | URL): boolean;
 }
 
 declare module "node:url" {

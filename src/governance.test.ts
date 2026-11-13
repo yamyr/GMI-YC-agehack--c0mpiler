@@ -18,7 +18,7 @@ describe("AGENTS.md", () => {
   });
 
   it("stays under 10 KB so it is read in full", () => {
-    expect(Buffer.byteLength(agents)).toBeLessThan(10_000);
+    expect(new TextEncoder().encode(agents).length).toBeLessThan(10_000);
   });
 
   it("names every principle of the constitution", () => {
