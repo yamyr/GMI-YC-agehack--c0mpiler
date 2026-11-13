@@ -1,3 +1,15 @@
+<!--
+Sync Impact Report
+Version: 1.0.0 → 1.1.0 (MINOR: new principle VI, materially expanded guidance in I, III, IV and
+the workflow)
+Modified: I (accessibility is tested), III (published numbers), IV (website checks, report only
+what ran), Product & Technical Constraints (the website), Development Workflow (Spec Kit scope,
+AGENTS.md, guards)
+Added: VI. Owned and Attributed
+Templates: plan-template.md reads this file at run time; no template edits needed
+Follow-ups: none
+-->
+
 # Agely Constitution
 
 ## Core Principles
@@ -10,6 +22,9 @@ Agely is built for people over 65 before anyone else.
   (`--control-h`); pinch zoom MUST NOT be disabled.
 - Copy MUST use plain language, one decision per screen, and visible keyboard focus.
 - Meaning MUST NOT be carried by colour or animation alone.
+- These rules are tested, not only stated: the Playwright suite MUST check the 16px floor, focus
+  rings and WCAG 2.1 AA (axe) on every chapter of the app. A new screen joins those checks in the
+  same change.
 
 Rationale: almost no technology is designed for older people; Agely's supply side is them.
 
@@ -29,6 +44,9 @@ Rationale: trust from older experts and buyers depends on staying in control.
 - Agely MUST NOT offer legal, medical or financial advice; briefs in those domains MUST be
   declined with a clear explanation.
 - Identity and credentials are self-declared at launch and MUST be shown as such.
+- Numbers Agely publishes about itself follow the same rule. A figure that is modelled (the
+  simulator) or estimated (the cost ledger) MUST say so where it appears, and an estimate MUST
+  state its method. Money paid and money estimated MUST be distinguishable.
 
 Rationale: the product's value rests on credible expertise and credible claims.
 
@@ -39,6 +57,11 @@ Rationale: the product's value rests on credible expertise and credible claims.
   IPC stub.
 - Work is done only when `tsc`, Vitest, the production build, Playwright, `cargo fmt`,
   `cargo clippy -D warnings` and `cargo test` all pass.
+- Website pages in `site/` have no Playwright journeys. Logic there (the simulator's model, the
+  ledger's rules) MUST have unit tests, and a changed page MUST be opened in a browser at desktop
+  and phone width before it is called done.
+- Report only what ran. A pull request says what was tested and what could not be run; a check
+  that was skipped is named, not implied.
 
 Rationale: a demo that breaks on stage costs more than the time tests take.
 
@@ -49,9 +72,22 @@ Rationale: a demo that breaks on stage costs more than the time tests take.
 
 Rationale: a prototype must stay easy to change while the product is found.
 
+### VI. Owned and Attributed
+- Every asset the project ships (fonts, icons, images, video, sample data) MUST be original or
+  openly licensed, and MUST be listed in `ATTRIBUTION.md` in the change that adds it.
+- A new dependency's licence MUST be on the allowlist in `src-tauri/deny.toml` (Rust) or be a
+  permissive licence of the same kind (JavaScript). CI checks the Rust side.
+- Content made with a generative model MUST be recorded as such in `ATTRIBUTION.md`, with the
+  terms of the service that made it.
+- The repository is MIT licensed. The Ajentik logo is the owner's mark and is not covered.
+
+Rationale: a product about credible expertise cannot be careless about whose work it uses.
+
 ## Product & Technical Constraints
 
 - Desktop app: Tauri 2 (Rust shell) + React 19 + TypeScript (strict) + Vite, managed with Bun.
+- Website: static pages in `site/`, served at agely.dev with the app at `/demo/`. Plain HTML, CSS
+  and JavaScript modules; no framework and no build step of its own.
 - Target users: buyers in the United States; experts from any country.
 - Future integrations (out of scope until specified): Stripe for held payments, Google Meet or
   Zoom for sessions, Supabase for data, a voice agent for interviews.
@@ -60,8 +96,14 @@ Rationale: a prototype must stay easy to change while the product is found.
 
 ## Development Workflow
 
-- Every feature follows Spec Kit: specify → clarify → plan → tasks → analyze → implement.
-  Artifacts live in `specs/<feature>/`.
+- Every feature of the app (`src/`, `src-tauri/`) follows Spec Kit: specify → clarify → plan →
+  tasks → analyze → implement. Artifacts live in `specs/<feature>/`.
+- Website pages in `site/` do not need a spec. Their pull request MUST say what the page is for
+  and how it was checked.
+- `AGENTS.md` holds the working rules for people and coding agents and MUST stay consistent with
+  this file. Where they disagree, this file wins and `AGENTS.md` is corrected.
+- A check that looks removable (a test, a lint rule, a CI gate) MUST say what it prevents, and
+  MUST NOT be weakened to make a change pass.
 - Work happens on a feature branch and lands through a pull request. CI (`ci.yml`) MUST be
   green before merge; reviewer approval is not required for this repository.
 - Versions in `package.json`, `src-tauri/tauri.conf.json` and `src-tauri/Cargo.toml` move in
@@ -76,4 +118,4 @@ principles, MINOR for new principles or sections, PATCH for clarifications. Ever
 include a Constitution Check against the principles above, and any justified violation MUST be
 recorded in the plan's Complexity Tracking table.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-11 | **Last Amended**: 2026-11-11
+**Version**: 1.1.0 | **Ratified**: 2026-11-11 | **Last Amended**: 2026-11-13

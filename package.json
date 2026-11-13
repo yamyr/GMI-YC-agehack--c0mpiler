@@ -1,6 +1,7 @@
 {
   "name": "agely",
   "private": true,
+  "license": "MIT",
   "version": "0.0.1",
   "packageManager": "bun@1.3.10",
   "type": "module",
@@ -8,6 +9,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "build:site": "AGELY_SITE_BUILD=1 bun run build",
+    "check:site": "bun run build:site && bun scripts/site-check.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "e2e": "playwright test",
@@ -20,6 +22,7 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.64.0",
     "@tauri-apps/cli": "^2",
     "@types/react": "^19.1.8",

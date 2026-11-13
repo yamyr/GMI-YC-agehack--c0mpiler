@@ -2,8 +2,10 @@
 name = "agely"
 version = "0.0.1"
 description = "Agely — a 15-minute expert that helps adults nearing or in retirement find meaning"
-authors = ["Agely contributors"]
+authors = ["Volodymyr IER", "Agely core contributors"]
 edition = "2021"
+license = "MIT"
+publish = false
 
 [lib]
 # The `_lib` suffix keeps the lib name distinct from the bin name

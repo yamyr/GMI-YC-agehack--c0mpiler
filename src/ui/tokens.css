@@ -21,7 +21,7 @@
 :root {
   /* Brand */
   --color-accent: #0ea5a4;
-  --color-accent-strong: #0b7f7e;
+  --color-accent-strong: #097171; /* 4.5:1 or better on --color-accent-soft; e2e/a11y.spec.ts checks it */
   --color-accent-soft: #d6f3f2;
 
   /* Bands: solid for fills, soft for backgrounds, ink for text on soft */
@@ -44,7 +44,7 @@
   --border: #e4ded4;
   --text: #1b2430;
   --text-muted: #56606c;
-  --text-subtle: #7a8491;
+  --text-subtle: #5e6874; /* 4.5:1 or better on --bg, --surface and --surface-muted */
   --live-bg: #1b2430;
 
   /* Spacing */

@@ -1,16 +1,12 @@
 import { expect, test } from "@playwright/test";
-import { CHAPTER_NAMES } from "./helpers";
+import { CHAPTER_NAMES, visitEveryStep } from "./helpers";
 
-test("every chapter fits the window, keeps the demo label, and respects the 16px floor (SC-004, FR-026)", async ({ page }) => {
-  await page.goto("/");
-  for (const chapter of ["start", ...CHAPTER_NAMES] as const) {
-    if (chapter !== "start") {
-      await page.getByRole("navigation", { name: "Chapters" }).getByRole("button", { name: chapter, exact: true }).click();
-    }
+test("every step fits the window, keeps the demo label, and respects the 16px floor (SC-004, FR-026)", async ({ page }) => {
+  await visitEveryStep(page, async (step) => {
     await expect(page.getByText("Demo — scripted data")).toBeVisible();
 
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-    expect(overflow, `horizontal overflow on ${chapter}`).toBeLessThanOrEqual(0);
+    expect(overflow, `horizontal overflow on “${step}”`).toBeLessThanOrEqual(0);
 
     const tooSmall = await page.evaluate(() => {
       const offenders: string[] = [];
@@ -22,10 +18,10 @@ test("every chapter fits the window, keeps the demo label, and respects the 16px
       }
       return offenders;
     });
-    expect(tooSmall, `text below 16px on ${chapter}`).toEqual([]);
+    expect(tooSmall, `text below 16px on “${step}”`).toEqual([]);
 
     await expect(page.getByRole("button", { name: "Restart" })).toBeVisible();
-  }
+  });
 });
 
 test("runs fully offline: no requests leave the local dev server (SC-005)", async ({ page, baseURL }) => {

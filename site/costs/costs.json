@@ -21,8 +21,8 @@
       "item": "Claude Code, Claude Fable 5.2",
       "category": "AI coding agents",
       "kind": "estimate",
-      "amount": 9.58,
-      "method": "60 responses in local session logs, priced at Anthropic's API list prices. Counted part-way through the session that built this page."
+      "amount": 16.62,
+      "method": "108 responses in local session logs, priced at Anthropic's API list prices. Counted part-way through the session that updated this page."
     },
     {
       "date": "2026-11-13",
@@ -45,16 +45,16 @@
       "item": "People's time",
       "category": "People",
       "kind": "estimate",
-      "amount": 315.76,
-      "method": "4.9 hours at $64.44 an hour. The hours are the time with a commit or an AI session active on one computer, 11 to 13 November, counting gaps of up to 30 minutes. The rate is the US median for software developers (Bureau of Labor Statistics, 2025). Nobody was actually paid."
+      "amount": 405.97,
+      "method": "6.3 hours at $64.44 an hour. The hours are the time with a commit or an AI session active on one computer since 11 November, counting gaps of up to 30 minutes. The rate is the US median for software developers (Bureau of Labor Statistics, 2025). Nobody was actually paid."
     },
     {
       "date": "2026-11-13",
-      "item": "Demo video, generated with Seedance 2.5 at 720p",
+      "item": "Demo video, Seedance 2.5 at 720p on Higgsfield",
       "category": "Media",
       "kind": "estimate",
       "amount": 19.09,
-      "method": "83 seconds of finished video at about $0.23 a second. Resellers list 720p between $0.13 and $0.47 a second, and takes that were not used are not counted, so the real figure is probably higher."
+      "method": "83 seconds of finished video at about $0.23 a second. It was made on Higgsfield, which sells credits; the credits spent were not recorded, so this uses the per-second prices resellers list for the same model ($0.13 to $0.47). Takes that were not used are not counted, so the real figure is probably higher."
     },
     {
       "date": null,
@@ -85,7 +85,7 @@
   ],
   "aiUsage": {
     "source": "scripts/ai-usage.mjs, run against the Claude Code and Codex session logs on one contributor's computer",
-    "coverage": "Sessions on 11 and 13 November 2026 on one computer. Work done on other machines or in other tools is not included. AI is counted as the cost of its tokens at public list prices, whatever plan the work ran under.",
+    "coverage": "Sessions between 2026-11-11 and 2026-11-13 on one computer. Work done on other machines or in other tools is not included. AI is counted as the cost of its tokens at public list prices, whatever plan the work ran under.",
     "models": [
       {
         "tool": "Claude Code",
@@ -100,12 +100,12 @@
       {
         "tool": "Claude Code",
         "model": "Claude Fable 5.2",
-        "responses": 60,
-        "input": 140,
-        "cacheWrite": 249037,
-        "cacheRead": 8468428,
-        "output": 97510,
-        "listPriceUsd": 9.58
+        "responses": 108,
+        "input": 252,
+        "cacheWrite": 347043,
+        "cacheRead": 24471687,
+        "output": 154286,
+        "listPriceUsd": 16.62
       },
       {
         "tool": "Claude Code",

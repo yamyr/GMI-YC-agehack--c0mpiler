@@ -1,0 +1,35 @@
+# Licence and advisory policy for the Rust dependencies (constitution principle VI).
+# Run with `cargo deny check` in src-tauri/. CI runs it on every pull request.
+
+[graph]
+# Agely ships for macOS first; check the targets the app is built for.
+targets = ["aarch64-apple-darwin", "x86_64-apple-darwin"]
+
+[advisories]
+# Fail on known vulnerabilities and on unmaintained crates we depend on directly.
+unmaintained = "workspace"
+
+[licenses]
+# Permissive licences, plus MPL-2.0. MPL is file-level copyleft: it obliges us to share changes
+# to the MPL files themselves, not our own code. Tauri's HTML and CSS parsing (cssparser,
+# selectors, dom_query) needs it, so it cannot be avoided while the app is built on Tauri.
+# To add a licence, name it here with the crate that needs it.
+allow = [
+    "MPL-2.0",
+    "MIT",
+    "Apache-2.0",
+    "BSD-3-Clause",
+    "Zlib",
+    "Unicode-3.0",
+    "CC0-1.0",
+]
+confidence-threshold = 0.9
+
+[bans]
+multiple-versions = "allow"
+wildcards = "deny"
+
+[sources]
+# Crates come from crates.io only: no git or alternative registries.
+unknown-registry = "deny"
+unknown-git = "deny"

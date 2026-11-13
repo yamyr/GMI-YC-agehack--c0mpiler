@@ -1,6 +1,6 @@
 ---
 name: gstack-verify
-description: Use while coding, before /gstack-ship - run Agely's full check set (tsc, Vitest, build, Playwright, cargo fmt/clippy/test), fix what breaks, repeat until green. Adapted from gstack /verify.
+description: Use while coding, before /gstack-ship - run Agely's full check set (tsc, Vitest, build, Playwright, cargo fmt/clippy/test/deny, website check), fix what breaks, repeat until green. Adapted from gstack /verify.
 ---
 
 <!-- Adapted from garrytan/gstack verify/SKILL.md @ f0cd9f8c (MIT). gstack runtime
@@ -27,10 +27,12 @@ the repo root. Each Bash call is a fresh shell.
 | 6 | rust-fmt | `cargo fmt --manifest-path src-tauri/Cargo.toml --check` | needs `dist/` to exist (run build first, or `mkdir -p dist`) |
 | 7 | rust-clippy | `cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings` | |
 | 8 | rust-test | `cargo test --manifest-path src-tauri/Cargo.toml` | |
+| 9 | licences | `cargo deny --manifest-path src-tauri/Cargo.toml check` | needs `cargo install cargo-deny`; report `ENV` if it is not installed, CI runs it regardless |
+| 10 | site | `bun run check:site` | builds the website into `dist/` and checks every page; run `bun run build` afterwards if Tauri needs `dist/` |
 
 Scope shortcut while iterating: if `git diff --name-only main...HEAD` plus uncommitted
-changes touch nothing under `src-tauri/`, you may skip 6-8 during the loop, but the
-final run in step 3 always runs all eight. Never invent a command the repo does not declare;
+changes touch nothing under `src-tauri/`, you may skip 6-9 during the loop, but the
+final run in step 3 always runs all ten. Never invent a command the repo does not declare;
 if `package.json` scripts or `ci.yml` change, follow them instead of this table.
 
 If `node_modules/` is missing, say so and ask before running `bun install`. If Playwright
@@ -63,15 +65,15 @@ reproduce it in one focused test and trace the root cause.
 
 ## 3. Hand off
 
-Do a final full run of all eight checks on the current tree, with no edits after it. Print:
+Do a final full run of all ten checks on the current tree, with no edits after it. Print:
 
 ```
-VERIFY: READY_FOR_SHIP head=<git rev-parse --short HEAD> dirty=<yes|no from git status --porcelain> checks=8/8
+VERIFY: READY_FOR_SHIP head=<git rev-parse --short HEAD> dirty=<yes|no from git status --porcelain> checks=10/10
 ```
 
 Any edit after this line invalidates it; rerun the affected checks.
 
-Only print `READY_FOR_SHIP` when all eight passed on this exact tree; otherwise print
+Only print `READY_FOR_SHIP` when all ten passed on this exact tree; otherwise print
 `VERIFY: NOT_READY` with the red checks. Stop with "ready for /gstack-ship".
 
 ## Completion status
