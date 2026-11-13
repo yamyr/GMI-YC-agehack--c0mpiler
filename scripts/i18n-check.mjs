@@ -1,26 +1,32 @@
 import { readFile, readdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
-import ts from "typescript";
+import { parseSync } from "vite";
 import { LOCALES, messageSlots } from "../site/i18n/core.js";
 import { catalogs } from "../site/i18n/catalogs/index.js";
 
 /** Only source arguments are messages. Names and other interpolation values are authored data. */
 export function findMessageLiterals(code, filename) {
   const messages = new Set();
-  const file = ts.createSourceFile(filename, code, ts.ScriptTarget.Latest, true);
+  // Vite's parser supports TSX without depending on the removed TypeScript 7 compiler API.
+  const { program, errors } = parseSync(filename, code, { preserveParens: false });
+  if (errors.length) throw new Error(`Cannot inventory ${filename}: ${errors.map(({ message }) => message).join("; ")}`);
   function source(expression) {
-    if (ts.isStringLiteralLike(expression)) messages.add(expression.text);
-    else if (ts.isConditionalExpression(expression)) {
-      source(expression.whenTrue);
-      source(expression.whenFalse);
+    if (expression.type === "Literal" && typeof expression.value === "string") messages.add(expression.value);
+    else if (expression.type === "TemplateLiteral" && expression.expressions.length === 0) messages.add(expression.quasis[0].value.cooked);
+    else if (expression.type === "ConditionalExpression") {
+      source(expression.consequent);
+      source(expression.alternate);
     }
   }
   function visit(node) {
-    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === "t" && node.arguments[0]) source(node.arguments[0]);
-    ts.forEachChild(node, visit);
+    if (node.type === "CallExpression" && node.callee.type === "Identifier" && node.callee.name === "t" && node.arguments[0]) source(node.arguments[0]);
+    for (const child of Object.values(node)) {
+      if (Array.isArray(child)) child.forEach((value) => { if (value && typeof value === "object") visit(value); });
+      else if (child && typeof child === "object") visit(child);
+    }
   }
-  visit(file);
+  visit(program);
   return [...messages].sort();
 }
 

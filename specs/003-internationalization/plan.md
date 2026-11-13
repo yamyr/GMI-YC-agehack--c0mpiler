@@ -5,7 +5,7 @@
 **Branch**: `003-internationalization` | **Date**: 2026-11-13 | **Spec**: [spec.md](spec.md)
 **Goal**: Make Agely usable in English and the 17 requested languages.
 **Architecture**: A dependency-free JavaScript core and local message catalogs live under `site/i18n/`, with TypeScript declarations for the React app. React owns its locale context; the static site owns its own DOM adapter. Domain IDs, user text and canonical financial evidence remain separate from translated presentation.
-**Tech stack**: Existing React 19, strict TypeScript 5.8, plain browser JavaScript, Intl, Tauri 2/Rust, Bun, Vitest and Playwright.
+**Tech stack**: Existing React 19, strict TypeScript, plain browser JavaScript, Intl, Tauri 2/Rust, Bun, Vitest and Playwright. The integration uses main's TypeScript 7/Vite 8/Vitest 5 upgrade; message-source auditing uses Vite's parser.
 
 ## Summary
 Translate whole messages with numbered slots such as `Hello {0}`. Source English is the stable key and readable fallback. Seed content is localized when a new walkthrough is created, never by rewriting user edits. A confirmed locale change remounts the demo and invalidates pending requests. Static text is explicitly marked for localization and dynamic tools call the same translator.

@@ -8,7 +8,7 @@ Status: verified locally for English plus all 17 requested languages, including 
 | --- | --- |
 | App TypeScript | Passed: `bunx tsc --noEmit` |
 | E2E TypeScript | Passed: `bunx tsc -p e2e/tsconfig.json` |
-| Unit tests | 22 files, 210 tests passed |
+| Unit tests | 22 files, 212 tests passed on main's TypeScript 7/Vite 8/Vitest 5 toolchain |
 | Catalog/source audit | 602 messages, 17 draft locales, 10,234 translated entries; no missing keys or slot mismatches |
 | Full browser suite | 262 tests passed with two workers and the unchanged 30-second timeout |
 | App and website builds | Passed; existing Vite bundle-size warning remains |
@@ -21,11 +21,23 @@ Status: verified locally for English plus all 17 requested languages, including 
 Translations are model-generated drafts, not native-speaker certification. The real authenticated
 Codex smoke test was not run. Existing English media and source evidence retain their language.
 The offline advice guard still recognizes representative keywords rather than classifying every
-possible request. All catalogs ship locally; the app JavaScript is 457.79 kB gzip and triggers
+possible request. All catalogs ship locally; the app JavaScript is 460.10 kB gzip and triggers
 Vite's existing chunk-size warning. No dependency or runtime translation service was added.
 
 The plain app build is restored in `dist/` after website verification so Tauri opens the app.
-The branch remains local; this verification does not claim remote CI or a deployment.
+The branch is published as [PR #20](https://github.com/yamyr/agely/pull/20). Final CI and
+production deployment are pending; the record below distinguishes observed checks from rollout intent.
+
+## Integration with current main
+
+The user authorized deploying the draft translations for early-user feedback. The initial PR run
+passed Rust, dependency policy, workflow lint and the full browser/website job. Its frontend jobs
+found that main's TypeScript 7 upgrade removed the compiler API used by the new catalog checker.
+After merging main, the checker uses the parser exported by the existing Vite dependency.
+The original extraction test and two added parser regressions failed first, then all 212 unit
+tests passed. Both TypeScript checks, catalog integrity, both builds and the full 84-combination
+website gate also passed with the new toolchain. Independent review found no issue with the fix.
+No dependency was added and no check was weakened.
 
 The following sections retain the chronological evidence, including earlier-scope counts.
 

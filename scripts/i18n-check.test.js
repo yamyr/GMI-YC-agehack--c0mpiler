@@ -14,6 +14,18 @@ describe("catalog integrity gate", () => {
     const code = 't("Book {0}", "Margaret"); t(ready ? "Ready" : "Wait"); t(userText);';
     expect(findMessageLiterals(code, "example.tsx")).toEqual(["Book {0}", "Ready", "Wait"]);
   });
+  it("reads TSX, escapes and static templates without treating comments or authored values as messages", () => {
+    const code = [
+      '// t("Comment")',
+      'const example: string = \'t("Example")\';',
+      'const view = <p>{t((ready ? `Ready` : "Say \\"yes\\""), "Person")}</p>;',
+      't(`Hello ${name}`); other.t("Other");',
+    ].join("\n");
+    expect(findMessageLiterals(code, "example.tsx")).toEqual(['Ready', 'Say "yes"']);
+  });
+  it("fails on malformed source so syntax errors cannot silently remove messages from the audit", () => {
+    expect(() => findMessageLiterals('t("Book"', "broken.tsx")).toThrow(/broken\.tsx/);
+  });
   it("finds absent languages, empty drafts and lost interpolation values", () => {
     const errors = auditCatalogs(["Book {0}", "Language"], { fr: { "Book {0}": "Réserver", Language: "" } }, ["fr", "de"]);
     expect(errors).toEqual(expect.arrayContaining([
