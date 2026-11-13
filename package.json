@@ -9,6 +9,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "build:site": "AGELY_SITE_BUILD=1 bun run build",
+    "check:site": "bun run build:site && bun scripts/site-check.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "e2e": "playwright test",

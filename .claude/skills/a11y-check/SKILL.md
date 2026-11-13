@@ -19,7 +19,7 @@ tool cannot judge.
 
 ```bash
 bunx playwright test e2e/a11y.spec.ts e2e/layout.spec.ts   # app
-bun run build:site && bun scripts/site-check.mjs            # website
+bun run check:site            # website
 ```
 
 A new app screen must be reachable from the chapter list, or added to the loop in both specs, in

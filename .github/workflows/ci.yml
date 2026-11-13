@@ -48,7 +48,7 @@ jobs:
   # --with-deps step depends on apt mirrors, which have been unreachable on the
   # hosted runner image (apt exit 100), failing runs before any test executed.
   e2e:
-    name: e2e (Chromium)
+    name: e2e and website (Chromium)
     runs-on: macos-15
     timeout-minutes: 25
     steps:
@@ -70,6 +70,11 @@ jobs:
 
       - name: e2e suite
         run: bun run e2e
+
+      # The website in site/ has no Playwright journeys; this opens every page of the built
+      # site and fails on errors, overflow, text below 16px or accessibility violations.
+      - name: website check
+        run: bun run check:site
 
       - name: upload traces
         if: failure()

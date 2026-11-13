@@ -11,20 +11,24 @@ line here in the same change that adds an asset (constitution principle VI).
 
 ## Generated content
 
-The demo video was generated on [Higgsfield](https://higgsfield.ai). Its help-centre page
-["Who owns my generations and can I use them commercially?"](https://higgsfield.ai/creator-hub/help-center/account-and-privacy/who-owns-my-generations-and-can-i-use-them-commercially)
-(last modified 12 September 2026, read 13 November 2026) says, citing the Terms of Use:
+The demo video was generated on [Higgsfield](https://higgsfield.ai) with the Seedance 2.5 model.
+Higgsfield's [Terms of Use](https://higgsfield.ai/terms-of-use-agreement) (last updated 23 October
+2026, read 13 November 2026) say:
 
-- Higgsfield does not claim ownership of inputs or outputs (section 4.4).
-- Commercial use of outputs is not restricted, and no separate commercial licence is needed.
-- Outputs are not guaranteed to be exclusive: another user may generate something similar.
-- Outputs may not be used to train, fine-tune or improve an AI model (sections 5.1(iii), 5.2(iv)).
-- Higgsfield keeps a licence to host and process the content while it stays on the service, and
-  may use it to train its own models (sections 4.3, 4.4).
+- "Company does not claim ownership of any of your Inputs or Outputs, nor does it restrict your
+  commercial use of Outputs", and rights in outputs may be transferred or sublicensed (4.4).
+- Outputs "may not be unique across users"; uniqueness and exclusivity are not guaranteed (4.4).
+- Outputs may not be used to train, fine-tune or distill an AI system (5.2(iv)).
+- Higgsfield keeps a licence to operate the service with the content, and may use it to train
+  its own models until the content or account is deleted (4.3, 4.4).
+- Where a model comes from a third-party provider, that provider's acceptable-use policy also
+  applies, and the stricter terms govern (8). Seedance's own policy has not been read for this
+  file.
+- Where the law requires it, the user must disclose that an output is artificially generated
+  (5.5, 11.7). The landing page and this file say the demo video is generated.
 
-This is the help centre's summary. The Terms of Use themselves were not read for this file, and
-the page says nothing about terms specific to Seedance. Because the video is machine-generated,
-the MIT licence can only pass on whatever rights the owner has in it.
+Because the video is machine-generated, the MIT licence can only pass on whatever rights the
+owner has in it.
 
 ## People in the demo
 
