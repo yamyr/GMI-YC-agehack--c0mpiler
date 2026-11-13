@@ -1,3 +1,4 @@
+import { useI18n } from "../../i18n";
 import { Conversation } from "../chrome/Conversation";
 import type { ConversationId } from "../domain/types";
 import { LiveConversation } from "../live/LiveConversation";
@@ -23,19 +24,21 @@ const COPY: Readonly<Record<ConversationId, { readonly title: string; readonly l
 };
 
 export function InterviewScreen({ state, dispatch, id }: ScreenProps & { readonly id: ConversationId }) {
+  const { t } = useI18n();
+
   const conversation = state.conversations[id];
   const copy = COPY[id];
   return (
     <div>
-      <h2 tabIndex={-1}>{copy.title}</h2>
-      <p className="lead">{copy.lead}</p>
+      <h2 tabIndex={-1}>{t(copy.title)}</h2>
+      <p className="lead">{t(copy.lead)}</p>
       {isLiveActive(state, id) ? (
-        <LiveConversation id={id} conversation={state.live.conversations[id]} agentName={copy.agent} dispatch={dispatch} />
+        <LiveConversation id={id} conversation={state.live.conversations[id]} agentName={t(copy.agent)} dispatch={dispatch} />
       ) : (
         <Conversation
           turns={conversation.turns}
           shown={conversation.shown}
-          agentName={copy.agent}
+          agentName={t(copy.agent)}
           onNextTurn={() => dispatch({ type: "showNextTurn" })}
         />
       )}

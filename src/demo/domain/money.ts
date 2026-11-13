@@ -1,4 +1,6 @@
-/** Whole-dollar USD, e.g. "$75", "$1,050". */
-export function formatUsd(amount: number): string {
-  return `$${amount.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
+import { formatMoney, type Locale } from "../../../site/i18n/core.js";
+
+/** Whole-dollar USD, displayed for the selected language. No currency conversion. */
+export function formatUsd(amount: number, locale: Locale = "en"): string {
+  return formatMoney(amount, locale);
 }

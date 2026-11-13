@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "e2e": "playwright test",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "check:i18n": "bun scripts/i18n-check.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "~2.12.1",

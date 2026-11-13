@@ -1,4 +1,5 @@
 import { type Dispatch, useEffect, useRef } from "react";
+import { useI18n } from "../../i18n";
 import { toMessage } from "../../lib/errors";
 import type { ConversationId } from "../domain/types";
 import { type DemoAction, type DemoState, isLiveActive } from "../state/reducer";
@@ -14,6 +15,7 @@ const IDS: readonly ConversationId[] = ["interview", "brief", "debrief"];
  * with their requestId; the reducer drops any that are stale (FR-016).
  */
 export function useLiveRunner(state: DemoState, dispatch: Dispatch<DemoAction>): void {
+  const { locale } = useI18n();
   const inFlight = useRef(new Set<number>());
 
   // Open the conversation on the current step.
@@ -35,11 +37,11 @@ export function useLiveRunner(state: DemoState, dispatch: Dispatch<DemoAction>):
       const requestId = c.pending?.requestId;
       if (requestId === undefined || inFlight.current.has(requestId)) continue;
       inFlight.current.add(requestId);
-      runAgentTurn(BRIEFS[id], c.lines)
+      runAgentTurn({ ...BRIEFS[id], locale }, c.lines)
         .then((turn) => dispatch({ type: "liveTurnReceived", conversation: id, requestId, turn }))
         .catch((err: unknown) =>
           dispatch({ type: "liveTurnFailed", conversation: id, requestId, message: toMessage(err) }),
         );
     }
-  }, [state.live.conversations, dispatch]);
+  }, [state.live.conversations, dispatch, locale]);
 }

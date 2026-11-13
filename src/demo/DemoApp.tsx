@@ -1,3 +1,4 @@
+import { useI18n } from "../i18n";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { DemoChrome } from "./chrome/DemoChrome";
 import "./demo.css";
@@ -56,7 +57,8 @@ function Screen({ id, ...props }: ScreenProps & { readonly id: StepId }) {
 
 /** Presenter-driven walkthrough (spec 001). Offline; all data scripted. */
 export function DemoApp() {
-  const [state, dispatch] = useReducer(reducer, new Date(), initialState);
+  const { locale } = useI18n();
+  const [state, dispatch] = useReducer(reducer, new Date(), (now) => initialState(now, locale));
 
   // Spec 002: readiness runs in the background and never blocks the start screen (FR-001, FR-002).
   const [status, setStatus] = useState<AgentStatus>(CHECKING_STATUS);
