@@ -28,6 +28,8 @@ export async function productAudit(page: Page, where: string): Promise<void> {
 // The stand-in store's key and shape (src/product/standins/store.ts). Seeding writes the same
 // document the product reads, so these tests need no hidden back door in the app.
 const STORE_KEY = "agely.product.v1";
+const AUTH_KEY = "agely.product.auth.v1";
+const PAYMENTS_KEY = "agely.product.payments.v1";
 
 interface SeedExpert {
   readonly id: string;
@@ -47,7 +49,7 @@ const SEED_EXPERTS: readonly SeedExpert[] = [
 /** Stores three published experts before the app loads: one fit, one without the skill, one priced out. */
 export async function seedExperts(page: Page): Promise<void> {
   await page.addInitScript(
-    ({ key, experts }) => {
+    ({ key, authKey, experts }) => {
       if (localStorage.getItem(key) !== null) return;
       const doc: Record<string, Record<string, unknown>> = { account: {}, profile: {}, brief: {}, match: {}, proposal: {}, session: {}, payment: {} };
       for (const e of experts) {
@@ -66,8 +68,11 @@ export async function seedExperts(page: Page): Promise<void> {
         };
       }
       localStorage.setItem(key, JSON.stringify(doc));
+      // Let each seeded expert sign in with their address, e.g. seed-ruth@example.com.
+      const accounts = Object.fromEntries(experts.map((e) => [`${e.id}@example.com`, e.id]));
+      localStorage.setItem(authKey, JSON.stringify({ codes: {}, accounts, current: null }));
     },
-    { key: STORE_KEY, experts: SEED_EXPERTS },
+    { key: STORE_KEY, authKey: AUTH_KEY, experts: SEED_EXPERTS },
   );
 }
 
@@ -83,4 +88,26 @@ export async function setProfileState(page: Page, profileId: string, state: "dra
     },
     { key: STORE_KEY, profileId, state },
   );
+}
+
+/** How many payments the stand-in has on record, held or settled. */
+export async function paymentCount(page: Page): Promise<number> {
+  return page.evaluate((key) => Object.keys(JSON.parse(localStorage.getItem(key) ?? "{}") as object).length, PAYMENTS_KEY);
+}
+
+/** A buyer signs in, describes the walkthrough's manufacturing problem and confirms the brief, ending on the match. */
+export async function buyerMatchedWithRuth(page: Page, email: string): Promise<void> {
+  await productSignIn(page, email);
+  await page.getByRole("button", { name: "Continue as a buyer" }).click();
+  await page.getByRole("link", { name: "Describe my problem" }).click();
+  for (const reply of ["I'm about to sign with a contract manufacturer for the first time.", "30 minutes", "$50 to $100"]) {
+    await page.getByRole("button", { name: reply, exact: true }).click();
+  }
+  await page.getByRole("button", { name: "Confirm my brief" }).click();
+  await expect(page.getByRole("heading", { name: "Agely matched you with Ruth Adeyemi" })).toBeVisible();
+}
+
+export async function productSignOut(page: Page): Promise<void> {
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await expect(page.getByRole("heading", { name: "Sign in to try Agely" })).toBeVisible();
 }
