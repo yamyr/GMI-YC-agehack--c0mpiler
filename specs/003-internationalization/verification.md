@@ -1,6 +1,7 @@
 # Verification record
 
-Status: verified locally for English plus all 17 requested languages, including Tamil and Hindi.
+Status: verified locally and in CI, merged, and deployed for English plus all 17 requested languages,
+including Tamil and Hindi. See [handover.md](handover.md) for the next-session starting point.
 
 ## Current result
 
@@ -25,8 +26,22 @@ possible request. All catalogs ship locally; the app JavaScript is 460.10 kB gzi
 Vite's existing chunk-size warning. No dependency or runtime translation service was added.
 
 The plain app build is restored in `dist/` after website verification so Tauri opens the app.
-The branch is published as [PR #20](https://github.com/yamyr/agely/pull/20). Final CI and
-production deployment are pending; the record below distinguishes observed checks from rollout intent.
+The branch merged through [PR #20](https://github.com/yamyr/agely/pull/20) after all eight PR
+checks passed. Production deployment and its live checks are recorded below.
+
+## Production rollout
+
+The user authorized deploying draft translations for early-user feedback. PR #20 merged at
+`dce0e89a8ba6ba4816de455d724cffced374176a`. Cloudflare Pages confirmed a successful deployment
+at [87216011.agely-1ss.pages.dev](https://87216011.agely-1ss.pages.dev), served on [agely.dev](https://agely.dev).
+All four jobs in the [production commit's CI run](https://github.com/yamyr/agely/actions/runs/43511174134)
+passed. A previously cancelled PR Rust job had no executed steps; its rerun passed before merge.
+
+The final local browser rerun passed all 262 tests with two workers on port 1494. Production
+inspection confirmed the Tamil homepage, Hindi walkthrough, Ukrainian simulator, and French ledger.
+All 17 catalog assets returned HTTP 200. Language selection persisted, draft notices remained
+visible, and the browser reported no console errors. The Tamil homepage fit a 390px viewport,
+and the Hindi app fit the 960px minimum width. Its deployed asset matched the verified website build.
 
 ## Integration with current main
 
@@ -125,12 +140,13 @@ User explicitly added Tamil and Hindi on 2026-11-14. The feature now includes 17
 - Final diff review found no unrelated changed asset, dependency, canonical ledger record, or version. Spec Kit tasks T001 through T022 are complete.
 
 
-## Completion
+## Local completion before rollout
 
 The final website gate passed all 84 combinations again after the intrinsic-caption correction,
 with the caption-overlap guard active. The focused Tamil phone check also passed and its new
 screenshot was inspected. App code did not change after the full 262-test browser pass.
 
-All required checks are complete on the final source tree. The plain app build was restored
+All required local checks completed on the final source tree. The plain app build was restored
 successfully after website checks. All 22 Spec Kit tasks are complete. No remote CI result,
-release, push, merge or deployment is claimed by this local verification.
+release, push, merge or deployment was claimed at this stage. Subsequent remote checks and
+deployment are recorded in the production rollout section above.
