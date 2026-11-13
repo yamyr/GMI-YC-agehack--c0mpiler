@@ -103,6 +103,27 @@ export function authContract(name: string, make: () => AuthHarness): void {
       expect(await h.reopen().current()).toBeNull();
     });
 
+    it("forgets an account: nobody is signed in, and the same email starts a new account", async () => {
+      const h = make();
+      const first = await signIn(h, "ruth@example.com");
+      const other = await signIn(h, "sam@example.com");
+      await h.auth.forget(first);
+      // Forgetting someone else's account does not sign the current person out.
+      expect(await h.auth.current()).toBe(other);
+      await h.auth.forget(other);
+      expect(await h.auth.current()).toBeNull();
+      expect(await h.reopen().current()).toBeNull();
+      const again = await signIn(h, "ruth@example.com");
+      expect(again).not.toBe(first);
+    });
+
+    it("does nothing when asked to forget an account it never knew", async () => {
+      const h = make();
+      const id = await signIn(h, "ruth@example.com");
+      await h.auth.forget("no-such-account");
+      expect(await h.auth.current()).toBe(id);
+    });
+
     it("only a stand-in shows the code to the person", async () => {
       const h = make();
       const result = await h.auth.requestCode("ruth@example.com");

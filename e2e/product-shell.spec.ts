@@ -56,8 +56,15 @@ test("a person signs in with a stand-in code, chooses a role, and is still signe
   await page.getByRole("button", { name: "Continue as an expert" }).click();
   await expect(page.getByText("acting as an expert")).toBeVisible();
 
+  await expect(page).toHaveURL(/#\/app\/home$/);
   await page.reload();
   await expect(page.getByText("Signed in as ruth@example.com, acting as an expert.")).toBeVisible();
+
+  await page.getByRole("navigation", { name: "Your Agely" }).getByRole("link", { name: "Account" }).click();
+  await expect(page).toHaveURL(/#\/app\/account$/);
+  await expect(page.getByRole("heading", { name: "Your account" })).toBeVisible();
+  await expect(page.getByText("an expert", { exact: true })).toBeVisible();
+  await audit(page, "account");
 
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page.getByRole("heading", { name: "Sign in to try Agely" })).toBeVisible();
@@ -96,4 +103,21 @@ test("the walkthrough is still the default and links to the product", async ({ p
   await expect(page.getByText("Demo — scripted data")).toBeVisible();
   // The walkthrough stores nothing (FR-023).
   expect(await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith("agely.product")))).toEqual([]);
+});
+
+test("an address a person may not open takes them somewhere they may", async ({ page }) => {
+  // Signed out, every product address is sign-in.
+  await page.goto("/#/app/account");
+  await expect(page.getByRole("heading", { name: "Sign in to try Agely" })).toBeVisible();
+  await expect(page).toHaveURL(/#\/app$/);
+
+  await signIn(page, "ruth@example.com");
+  await expect(page).toHaveURL(/#\/app\/home$/);
+
+  // Signed in, an address that does not exist is home, and sign-in is not shown again.
+  await page.goto("/#/app/no-such-page");
+  await expect(page).toHaveURL(/#\/app\/home$/);
+  await page.goto("/#/app");
+  await expect(page.getByRole("heading", { name: "How do you want to use Agely?" })).toBeVisible();
+  await expect(page).toHaveURL(/#\/app\/home$/);
 });

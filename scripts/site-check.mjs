@@ -14,7 +14,8 @@ import { fileURLToPath } from "node:url";
 import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "@playwright/test";
 
-const PAGES = ["/", "/simulator/", "/costs/", "/demo/"];
+// The last one is the signed-in product's sign-in page, inside the app bundle (spec 004).
+const PAGES = ["/", "/simulator/", "/costs/", "/demo/", "/demo/#/app"];
 const VIEWS = [
   { name: "desktop", width: 1440, height: 900, colorScheme: "light" },
   { name: "phone", width: 390, height: 844, colorScheme: "light" },
