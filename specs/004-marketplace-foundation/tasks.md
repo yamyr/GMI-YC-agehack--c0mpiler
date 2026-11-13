@@ -48,10 +48,10 @@ previous one.
 
 **Independent test**: three stored experts (fit, no skill, price gap); a confirmed brief shows the fit and both reasons.
 
-- [ ] T023 [P] [US2] Use-case tests: `saveBriefDraft`, `confirmBrief` (including regulated advice), `runMatch` (only matchable profiles, stale detection, 20-expert timing for SC-003).
-- [ ] T024 [P] [US2] Browser journey `e2e/product-buyer.spec.ts` seeded with three experts: match, no match by skill, no match by price, stale match.
-- [ ] T025 [US2] Implement in `src/product/usecases/brief.ts` and `match.ts`, calling `matchBrief` unchanged (FR-007, FR-009 to FR-012; R19).
-- [ ] T026 [US2] Buyer home, brief conversation, brief review and match screens (FR-007, FR-011).
+- [x] T023 [P] [US2] Use-case tests: `saveBriefDraft`, `confirmBrief` (including regulated advice), `runMatch` (only matchable profiles, stale detection, 20-expert timing for SC-003).
+- [x] T024 [P] [US2] Browser journey `e2e/product-buyer.spec.ts` seeded with three experts: match, no match by skill, no match by price, stale match.
+- [x] T025 [US2] Implement in `src/product/usecases/brief.ts` and `match.ts`, calling `matchBrief` unchanged (FR-007, FR-009 to FR-012; R19).
+- [x] T026 [US2] Buyer home, brief conversation, brief review and match screens (FR-007, FR-011).
 
 ## Phase 6: User Story 3 - A session is booked and the payment is held (P3)
 

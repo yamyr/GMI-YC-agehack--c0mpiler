@@ -6,6 +6,8 @@ import "./product.css";
 import { type RouteName, type RouteParams, href, resolve } from "./routes";
 import { browserContext } from "./runtime";
 import { AccountScreen } from "./screens/AccountScreen";
+import { BuyerBriefScreen } from "./screens/BuyerBriefScreen";
+import { BuyerMatchScreen } from "./screens/BuyerMatchScreen";
 import { ExpertInterviewScreen } from "./screens/ExpertInterviewScreen";
 import { ExpertPriceScreen } from "./screens/ExpertPriceScreen";
 import { ExpertProfileScreen } from "./screens/ExpertProfileScreen";
@@ -21,6 +23,9 @@ const SCREENS: Record<Exclude<RouteName, "sign-in">, ComponentType<ScreenProps>>
   "expert-interview": ExpertInterviewScreen,
   "expert-profile": ExpertProfileScreen,
   "expert-price": ExpertPriceScreen,
+  "buyer-brief": BuyerBriefScreen,
+  "buyer-brief-new": BuyerBriefScreen,
+  "buyer-match": BuyerMatchScreen,
 };
 
 /** The signed-in product, running on stand-ins: a frame around whichever page the address names. */
@@ -84,7 +89,7 @@ export function ProductApp() {
       <div className="demo-stage">
         {page === null && <p className="lead">Opening Agely…</p>}
         {page?.name === "sign-in" && <SignInScreen ctx={ctx} onSignedIn={refresh} />}
-        {Screen !== null && account != null && page !== null && <Screen ctx={ctx} account={account} params={page.params} go={go} refresh={refresh} />}
+        {Screen !== null && account != null && page !== null && <Screen key={page.href} ctx={ctx} account={account} params={page.params} route={page.name} go={go} refresh={refresh} />}
       </div>
 
       <section className="services" aria-labelledby="services-title">

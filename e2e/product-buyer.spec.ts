@@ -17,6 +17,8 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("a buyer describes a problem, confirms the brief, and sees who fits and why", async ({ page }) => {
+  // A whole journey with an accessibility audit at every step: allow three times the usual time.
+  test.slow();
   await expect(page.getByRole("heading", { name: "What to do next" })).toBeVisible();
   await productAudit(page, "buyer home");
   await page.getByRole("link", { name: "Describe my problem" }).click();
