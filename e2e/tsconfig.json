@@ -1,4 +1,7 @@
 {
   "extends": "../tsconfig.json",
+  // TypeScript 6 and later no longer load every @types package by default. The Playwright config
+  // and the specs run in Node, so Node's types are named here.
+  "compilerOptions": { "types": ["node"] },
   "include": ["./**/*.ts", "../playwright.config.ts"]
 }
