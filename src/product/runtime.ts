@@ -1,6 +1,7 @@
 import type { Ports } from "./ports";
 import { makeStandInAgent } from "./standins/agent";
 import { makeStandInAuth, randomCode } from "./standins/auth";
+import { tryOutClock } from "./standins/clock";
 import { makeStandInMeetings } from "./standins/meetings";
 import { makeStandInPayments } from "./standins/payments";
 import { makeStandInStore } from "./standins/store";
@@ -13,7 +14,8 @@ import type { Context } from "./usecases/context";
  */
 export function browserContext(): Context {
   const kv = window.localStorage;
-  const now = (): Date => new Date();
+  const clock = tryOutClock(kv, () => Date.now());
+  const now = (): Date => clock.now();
   const newId = (): string => crypto.randomUUID();
   const ports: Ports = {
     auth: makeStandInAuth({ kv, now, newCode: randomCode, newId }),
@@ -22,5 +24,5 @@ export function browserContext(): Context {
     payments: makeStandInPayments(kv),
     meetings: makeStandInMeetings(),
   };
-  return { ports, now, newId };
+  return { ports, now, newId, clock };
 }

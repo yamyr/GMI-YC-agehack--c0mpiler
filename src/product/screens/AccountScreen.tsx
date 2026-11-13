@@ -8,6 +8,8 @@ import type { ScreenProps } from "./shared";
 export function AccountScreen({ ctx, account, refresh }: ScreenProps) {
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [ahead, setAhead] = useState(() => ctx.clock?.offsetMinutes() ?? 0);
+  const days = Math.round(ahead / 1440);
 
   async function onDelete() {
     const result = await deleteAccount(ctx);
@@ -40,6 +42,42 @@ export function AccountScreen({ ctx, account, refresh }: ScreenProps) {
           </li>
         ))}
       </ul>
+
+      {ctx.clock !== undefined && (
+        <>
+          <h3>Trying out what happens later</h3>
+          <div className="stand-in" data-stand-in="clock">
+            <p>
+              <strong>Try-out clock.</strong> A stand-in for waiting: move Agely's clock forward to see what happens after a session has taken place.
+            </p>
+            <p>{ahead === 0 ? "The clock shows the real time." : `The clock is ${days} ${days === 1 ? "day" : "days"} ahead of the real time.`}</p>
+            <div className="actions">
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => {
+                  ctx.clock?.advance(1440);
+                  setAhead(ctx.clock?.offsetMinutes() ?? 0);
+                }}
+              >
+                Move the clock forward one day
+              </button>
+              {ahead > 0 && (
+                <button
+                  type="button"
+                  className="quiet"
+                  onClick={() => {
+                    ctx.clock?.reset();
+                    setAhead(0);
+                  }}
+                >
+                  Set the clock back to the real time
+                </button>
+              )}
+            </div>
+          </div>
+        </>
+      )}
 
       <h3>Leaving Agely</h3>
       {!deleting ? (

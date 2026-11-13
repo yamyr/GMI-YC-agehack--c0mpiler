@@ -35,6 +35,8 @@ export interface SessionView {
   readonly problem: string;
   readonly units: number;
   readonly pricePerUnit: number;
+  /** Where the session stands now. "awaiting" is a confirmed session whose end has passed. */
+  readonly phase: "upcoming" | "awaiting" | "held" | "cancelled";
 }
 
 const endOf = (proposal: Pick<Proposal, "startsAt" | "units">): number => new Date(proposal.startsAt).getTime() + proposal.units * 15 * 60_000;
@@ -167,13 +169,14 @@ export async function myProposals(ctx: Context): Promise<Result<ProposalView[], 
   return ok(views.sort((a, b) => b.proposal.startsAt.localeCompare(a.proposal.startsAt)));
 }
 
-async function sessionView(ctx: Context, session: Session): Promise<SessionView | null> {
+export async function sessionView(ctx: Context, session: Session): Promise<SessionView | null> {
   const { store } = ctx.ports;
   const payment = await store.get("payment", session.proposalId);
   const proposal = await store.get("proposal", session.proposalId);
   if (payment === null || proposal === null) return null;
   const brief = await store.get("brief", proposal.briefId);
-  return { session, payment, buyerName: await nameOf(ctx, session.buyerId), expertName: await nameOf(ctx, session.expertId), problem: brief?.problem ?? "", units: proposal.units, pricePerUnit: proposal.pricePerUnit };
+  const phase = session.state === "held" ? "held" : session.state === "cancelled" ? "cancelled" : ctx.now().getTime() >= new Date(session.endsAt).getTime() ? "awaiting" : "upcoming";
+  return { session, payment, buyerName: await nameOf(ctx, session.buyerId), expertName: await nameOf(ctx, session.expertId), problem: brief?.problem ?? "", units: proposal.units, pricePerUnit: proposal.pricePerUnit, phase };
 }
 
 /** One session, for its buyer or its expert only (FR-004). */
