@@ -6,7 +6,11 @@ called only from a button the person pressed; no agent output and no effect call
 
 | Use case | Who may call it | What it does | Refuses when |
 | --- | --- | --- | --- |
-| `addRole(role)` | the account | Adds `expert` or `buyer` and makes it active | |
+| `requestSignInCode(email)` | anyone | Asks the sign-in service for a code | not an email address |
+| `signIn(email, code)` | anyone | Confirms the code and creates the account record the first time, with no role yet | wrong, expired or used code |
+| `signOut()` | the account | Ends the session | |
+| `chooseRole(role)` *explicit* | the account | Adds `expert` or `buyer` if missing and makes it active | |
+| `setName(name)` | the account | Stores what the person asks to be called (R13) | empty after trimming |
 | `saveProfileDraft(draft)` | the profile's owner | Stores an agent draft or an edit as `draft` or keeps `published` | not signed in; not the owner |
 | `publishProfile()` *explicit* | the owner | `draft → published` | fewer than 1 or more than 5 skills; an empty skill label |
 | `unpublishProfile()` *explicit* | the owner | `published → draft` | |
@@ -21,7 +25,7 @@ called only from a button the person pressed; no agent output and no effect call
 | `cancelSession(id)` *explicit* | its buyer or its expert | `confirmed → cancelled`, lifts the hold | already started |
 | `markSessionHeld(id)` *explicit* | its expert | `confirmed → held`, releases the payment | before the session's end |
 | `listMySessions()`, `earnings()` | the account | Only sessions and payments the account is part of | |
-| `deleteAccount()` *explicit* | the account | Removes the account and its data as the data model describes | a confirmed session has not finished |
+| `deleteAccount()` *explicit* | the account | Removes the account and its data as the data model describes, then calls `AuthPort.forget` (R17) | a confirmed session has not finished |
 
 ## Rules every use case follows
 
@@ -34,7 +38,9 @@ called only from a button the person pressed; no agent output and no effect call
 
 ## Routes
 
-Hash routes under `#/app`. A route a person may not open redirects to their role's home.
+Hash routes under `#/app`, resolved by the table in `src/product/routes.ts` (R15). A route a
+person may not open redirects to their role's home. Built so far: `#/app` only; the first four
+use cases above are implemented in `src/product/usecases/account.ts`.
 
 | Route | Who | Screen |
 | --- | --- | --- |

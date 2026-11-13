@@ -112,3 +112,91 @@ Each decision resolves a question the spec or the technical context left open.
   clock, nobody could try that step without waiting, and tests would depend on the wall clock.
 - **Alternatives considered**: Letting a session be marked held at any time removes a rule the
   real product needs.
+
+---
+
+The decisions below were added by the plan review of 2026-11-14, after phases 1 and 2 were built.
+
+## R12. Reusing the matching rule for people who are not Margaret
+
+- **Decision**: Keep `matchBrief` as the single matching rule. Widen its input from the
+  walkthrough's `Expert` to a smaller `MatchCandidate` shape (id, name, years of experience,
+  skills with tags, price range, published) that both `Expert` and a stored profile satisfy, and
+  make the function generic so the result carries whichever type went in. `validateProposal`
+  takes the other person's name as an argument instead of naming Margaret.
+- **Rationale**: FR-010 says the existing rule is the rule. The walkthrough's `Expert` requires an
+  age, which the product does not collect, and one message has a fictional person's name in it.
+  Widening two signatures is smaller and safer than a second copy of the rule.
+- **Alternatives considered**: Filling in a made-up age to satisfy the type is a lie in the data.
+  Copying the rule into `src/product/` lets the two drift.
+
+## R13. No age, and where the name comes from
+
+- **Decision**: The product does not ask for or store a person's age. The interview's first
+  question becomes "What should people call you?", and its answer is the account's name.
+- **Rationale**: Age is personal data the matching rule does not use. The headline metric
+  (dollars earned by people over 65) will need it eventually, but collecting it belongs with real
+  storage and a privacy notice, not with a stand-in that says nothing is private.
+- **Alternatives considered**: Asking for a year of birth now would store sensitive data in a
+  browser with no protection.
+
+## R14. Order of work with internationalization (pull request #20)
+
+- **Decision**: Stories 1 to 5 are built after #20 is merged and this branch is rebased on it.
+  New screens use that feature's `t("English sentence", ...)` call from the first line, and
+  `src/product/copy.ts` becomes a list of registered source sentences.
+- **Rationale**: #20 changes `src/App.tsx`, `src/main.tsx` and four of the domain files this
+  feature must also change (R12), and adds a `locale` argument to them. Building the screens
+  first would mean rewriting every string and resolving the same conflicts twice.
+- **Open point for the owner**: #20's checks expect every source sentence to have a draft in each
+  language. If that applies to `src/product/`, each new screen needs about 18 draft translations
+  of every sentence. Recommended: the product's sentences are registered but exempt from the
+  completeness check until story 5, then translated in one pass. This needs the owner's yes,
+  because it leaves the product English-only for a while inside an app that offers other
+  languages.
+- **Alternatives considered**: Merging this branch first forces #20 to absorb the conflicts and
+  translate a moving target.
+
+## R15. Moving between product screens
+
+- **Decision**: A small hash router in `src/product/routes.ts`: a table of route patterns, the
+  role each needs, and the screen to render. `ProductApp` reads `location.hash`, checks the
+  signed-in account against the table, and redirects to the role's home when a route is not
+  allowed. The shell's current single-component state machine is split into the screens the
+  contract lists.
+- **Rationale**: The contract in `use-cases.md` promises addressable routes (a session has an
+  address both people can open), and the access rule in FR-004 must hold for a pasted address.
+  The shell built in phase 2 has no addresses below `#/app`.
+- **Alternatives considered**: A router library is a dependency for a dozen routes. Keeping one
+  state machine cannot give a session its own address.
+
+## R16. Choosing a time for a session
+
+- **Decision**: The buyer picks from a short list of suggested times (the next three weekdays at
+  10:00 and 14:00 in their own time zone) or uses the browser's own date and time control.
+  Tests pin the browser's time zone and the product clock.
+- **Rationale**: Proposing is the buyer's step, so a control is acceptable under principle I,
+  and suggested times keep it to one tap. The native control is accessible and needs no library.
+- **Alternatives considered**: A calendar widget is a dependency and an accessibility risk.
+  Reading the expert's availability needs a calendar connection, which is out of scope.
+
+## R17. Forgetting an account
+
+- **Decision**: `AuthPort` gains `forget(accountId)`, which signs the person out and removes the
+  link between their email and their account id. `deleteAccount` calls it after removing the
+  stored data.
+- **Rationale**: FR-003. Without it, deleting an account leaves the email-to-account link in the
+  sign-in stand-in, so signing in again would quietly return to the "deleted" id.
+- **Alternatives considered**: Leaving the link and treating a missing account record as new
+  works by accident and would not survive a real sign-in service.
+
+## R18. What the stand-ins cannot show
+
+- **Decision**: State three limits on screen and in the quickstart, and do not work around them:
+  two browser tabs writing at once can overwrite each other; a proposal reaches the expert only
+  when they next open their inbox, because nothing sends a message; and anyone can sign in as
+  any address on the same device.
+- **Rationale**: Principle III. Each limit disappears with a real service, and pretending
+  otherwise in the stand-in would hide exactly what the real adapters must provide.
+- **Alternatives considered**: Cross-tab locking and fake notifications are code that the real
+  adapters would throw away.

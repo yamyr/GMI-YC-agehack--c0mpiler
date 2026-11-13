@@ -112,9 +112,73 @@ walkthrough and the product cannot disagree about what a match is. Ports and sta
 separate folders so a real adapter is added as a new file that passes the existing contract
 suite, with no change to `usecases/` or `screens/`.
 
+## Plan Review (2026-11-14)
+
+Re-run of the planning workflow after phases 1 and 2 were built, to check the plan against the
+code and close gaps before the stories. The plan above stands; this section records what changed.
+
+### Where the build is
+
+Tasks T001 to T012 and the sign-in part of T016 are done on pull request #19: model, money,
+skill catalogue, five ports with contract suites and stand-ins, the sign-in and role use cases,
+and a shell at `#/app`. 60 unit tests and 8 browser tests cover them.
+
+### Drift found between the documents and the code, now corrected
+
+| Document | Was | Now matches the code |
+| --- | --- | --- |
+| `contracts/ports.md` | `confirmCode` returned only an account id | Also returns the email in its normal form |
+| `contracts/ports.md` | `hold` could fail two ways | Four: adds `amount-mismatch` and `invalid-amount` |
+| `contracts/ports.md` | A draft with no skill "says so" | `unmatched: true` with no skills, or `skillTag: null` |
+| `contracts/use-cases.md` | `addRole` | `chooseRole`; sign-in use cases listed |
+| `data-model.md` | An account has at least one role | Roles are empty until the person chooses |
+
+### Gaps closed by new decisions
+
+| Gap | Decision |
+| --- | --- |
+| `matchBrief` needs an age and `validateProposal` names Margaret | R12: widen both signatures; one rule, no copy |
+| Where a real person's name comes from; whether to ask their age | R13: first interview question; no age stored |
+| Pull request #20 rewrites files this feature must change | R14: stories start after #20 merges; screens use `t()` from the start |
+| The shell has no addresses below `#/app` | R15: a route table in `src/product/routes.ts` |
+| How a buyer chooses a time | R16: suggested times plus the browser's own control |
+| Deleting an account left its sign-in link behind | R17: `AuthPort.forget` |
+| What the stand-ins cannot do | R18: three limits, stated on screen, not worked around |
+
+### Constitution Check, re-evaluated
+
+| Principle | Finding | Status |
+| --- | --- | --- |
+| I. Older Adults First | The shell passes axe, the 16px floor and overflow checks in all three states. Asking for a name is one more spoken answer, not a field. The time control (R16) is on the buyer's side. | Pass |
+| II. People Decide, Agents Propose | `AgentPort` returns drafts only, and its contract forbids a published or confirmed state. An unmatched draft cannot be published. | Pass |
+| III. Honest by Default | Every stand-in is labelled and a browser test asserts all five. R18 adds three stated limits. | Pass |
+| IV. Test-First | **Deviation in phase 2**: contract suites were written before their adapters, but the model and use-case tests were written with their code, not seen failing first. No code is affected, so nothing is redone. From story 1 on, each test task is committed failing before the task that passes it. | Pass with a recorded deviation |
+| V. Simple Until Proven Otherwise | Still no backend, network call or dependency. R12 changes two existing signatures instead of adding a parallel rule. | Pass |
+| VI. Owned and Attributed | Nothing added. | Pass |
+
+No violation needs an entry in Complexity Tracking.
+
+### What this means for the task list
+
+`tasks.md` predates this review. Before story 1, re-run `/speckit-tasks` so it includes:
+
+- A prerequisite: rebase on main after pull request #20 merges (R14).
+- R12: widen `matchBrief` and `validateProposal`, with the walkthrough's tests unchanged and green.
+- R13: the name question, `setName`, and removing any use of age.
+- R15: the route table and splitting the shell into screens, before T017.
+- R17: `AuthPort.forget` with contract tests, before `deleteAccount`.
+- R16 and R18 inside the booking and honesty stories.
+- Adding `/demo/#/app` to `scripts/site-check.mjs`, so the product is in the website check.
+
+### Decision needed from the owner
+
+One: whether the product's sentences may be exempt from #20's translation-completeness check
+until story 5 (R14). Everything else in this review is decided.
+
 ## Phases
 
-- **Phase 0, research**: [research.md](research.md). Ten decisions, none left open.
+- **Phase 0, research**: [research.md](research.md). Eighteen decisions; one point in R14 waits
+  on the owner.
 - **Phase 1, design**: [data-model.md](data-model.md), [contracts/ports.md](contracts/ports.md),
   [contracts/use-cases.md](contracts/use-cases.md), [quickstart.md](quickstart.md).
 - **Phase 2, tasks**: `/speckit-tasks`, ordered by user story so each story can ship alone.

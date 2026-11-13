@@ -38,6 +38,12 @@ Run `bun run dev` and open `http://localhost:1420/#/app`.
 5. **Story 5.** Sign out and open `http://localhost:1420/`: the scripted walkthrough runs as
    before. On every product screen from steps 1 to 4, a stand-in label was visible.
 
+## Limits of the stand-ins (R18)
+
+- Use one browser tab. Two tabs writing at once can overwrite each other.
+- A proposal appears in the expert's inbox when they next open it. Nothing is sent to them.
+- Anyone can sign in as any address on this device. The stand-in proves nothing about identity.
+
 ## Expected failures worth seeing
 
 - A second expert account cannot open the first one's session by its address.

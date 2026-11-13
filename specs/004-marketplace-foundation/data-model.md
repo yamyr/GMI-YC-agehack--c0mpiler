@@ -9,7 +9,7 @@ Money is integer cents unless marked "whole dollars per 15 minutes".
 | --- | --- | --- |
 | id | string | |
 | email | string | Lower-cased and trimmed; unique |
-| name | string | What the person asks to be called; may be empty until the interview |
+| name | string | What the person asks to be called, from the interview's first question (R13); empty until then. No age or date of birth is stored. |
 | roles | set of `expert`, `buyer` | Empty until the person chooses one after their first sign-in; adding a role is an explicit action (FR-002) |
 | activeRole | `expert` or `buyer` | Must be in `roles`; always shown |
 | createdAt | instant | |
@@ -38,6 +38,10 @@ Extends the walkthrough's `Expert` shape so the existing matching rule accepts i
 
 **Matchable** means `state = published` and `priceConfirmed` and a valid `priceRange` (FR-009).
 
+To be matched, a profile and its account are presented to `matchBrief` as a `MatchCandidate`
+(R12): `id` and `name` from the account, `yearsExperience`, `competencies` from `skills`,
+`priceRange`, and `published` set from *matchable*. Nothing else leaves the profile.
+
 State transitions: `draft → published` (needs 1 to 5 skills), `published → draft` (unpublish).
 Editing a published profile keeps it published.
 
@@ -61,7 +65,7 @@ moment, then kept with the brief so the buyer can reopen it.
 | --- | --- |
 | briefId | string |
 | computedAt | instant |
-| result | the walkthrough's `MatchResult` (chosen expert, shared range, reasons, others) |
+| result | `MatchResult` over `MatchCandidate` (chosen expert, shared range, reasons, others). It is a snapshot: it holds only the public fields listed above, never an email address. |
 
 A stored match is **stale** when its chosen expert is no longer matchable or their price range no
 longer overlaps the budget. A stale match is shown as unavailable and can be recomputed.
