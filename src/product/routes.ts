@@ -13,7 +13,7 @@ export function isProductRoute(hash: string): boolean {
 /** Who may open a page: anyone signed in, or only someone acting in a role. */
 type Access = "signed-in" | Role;
 
-export type RouteName = "sign-in" | "home" | "account" | "expert-interview" | "expert-profile" | "expert-price" | "buyer-brief" | "buyer-brief-new" | "buyer-match" | "buyer-proposal" | "expert-inbox" | "session";
+export type RouteName = "sign-in" | "home" | "account" | "expert-interview" | "expert-profile" | "expert-price" | "buyer-brief" | "buyer-brief-new" | "buyer-match" | "buyer-proposal" | "expert-inbox" | "expert-earnings" | "session";
 
 const ROUTES: Readonly<Record<RouteName, { readonly path: string; readonly access: Access | null }>> = {
   "sign-in": { path: "", access: null },
@@ -27,6 +27,7 @@ const ROUTES: Readonly<Record<RouteName, { readonly path: string; readonly acces
   "buyer-match": { path: "/buyer/match", access: "buyer" },
   "buyer-proposal": { path: "/buyer/proposal", access: "buyer" },
   "expert-inbox": { path: "/expert/inbox", access: "expert" },
+  "expert-earnings": { path: "/expert/earnings", access: "expert" },
   session: { path: "/session/:id", access: "signed-in" },
 };
 export type RouteParams = Readonly<Record<string, string>>;

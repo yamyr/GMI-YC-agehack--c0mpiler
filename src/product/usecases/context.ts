@@ -1,12 +1,15 @@
 import type { Account } from "../model/types";
 import { type Result, ok, refuse } from "../model/types";
 import type { Ports } from "../ports";
+import type { TryOutClock } from "../standins/clock";
 
 /** Everything a use case needs from outside: the services and the time (research R7, R11). */
 export interface Context {
   readonly ports: Ports;
   readonly now: () => Date;
   readonly newId: () => string;
+  /** The try-out clock behind `now`, when the product runs on stand-ins (R11). */
+  readonly clock?: TryOutClock;
 }
 
 export type AccessError = "not-signed-in" | "not-yours";

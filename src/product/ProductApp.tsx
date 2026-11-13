@@ -9,6 +9,7 @@ import { AccountScreen } from "./screens/AccountScreen";
 import { BuyerBriefScreen } from "./screens/BuyerBriefScreen";
 import { BuyerMatchScreen } from "./screens/BuyerMatchScreen";
 import { BuyerProposalScreen } from "./screens/BuyerProposalScreen";
+import { ExpertEarningsScreen } from "./screens/ExpertEarningsScreen";
 import { ExpertInboxScreen } from "./screens/ExpertInboxScreen";
 import { ExpertInterviewScreen } from "./screens/ExpertInterviewScreen";
 import { ExpertPriceScreen } from "./screens/ExpertPriceScreen";
@@ -31,6 +32,7 @@ const SCREENS: Record<Exclude<RouteName, "sign-in">, ComponentType<ScreenProps>>
   "buyer-match": BuyerMatchScreen,
   "buyer-proposal": BuyerProposalScreen,
   "expert-inbox": ExpertInboxScreen,
+  "expert-earnings": ExpertEarningsScreen,
   session: SessionScreen,
 };
 
@@ -83,6 +85,16 @@ export function ProductApp() {
           <a href={href("home")} aria-current={page?.name === "home" ? "page" : undefined}>
             Home
           </a>
+          {account.roles.includes("expert") && account.activeRole === "expert" && (
+            <>
+              <a href={href("expert-inbox")} aria-current={page?.name === "expert-inbox" ? "page" : undefined}>
+                Inbox
+              </a>
+              <a href={href("expert-earnings")} aria-current={page?.name === "expert-earnings" ? "page" : undefined}>
+                Earnings
+              </a>
+            </>
+          )}
           <a href={href("account")} aria-current={page?.name === "account" ? "page" : undefined}>
             Account
           </a>

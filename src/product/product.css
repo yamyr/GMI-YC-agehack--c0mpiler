@@ -190,3 +190,36 @@
   color: var(--color-accent-strong);
   font-weight: 600;
 }
+
+.table-scroll {
+  overflow-x: auto;
+  margin: var(--space-4) 0;
+}
+
+.earnings {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.earnings th,
+.earnings td {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+}
+
+.earnings th:first-child {
+  text-align: left;
+}
+
+.earnings thead th {
+  color: var(--text-muted);
+}
+
+.earnings tfoot th,
+.earnings tfoot td {
+  border-top: 2px solid var(--text);
+  border-bottom: 0;
+  font-weight: 600;
+}

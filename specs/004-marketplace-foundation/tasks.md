@@ -67,10 +67,10 @@ previous one.
 
 **Independent test**: a held session releases its payment and shows on earnings; a cancelled one lifts its hold.
 
-- [ ] T032 [P] [US4] Use-case tests: `cancelSession`, `markSessionHeld`, `earnings`, with a fixed clock (R11).
-- [ ] T033 [P] [US4] Extend `e2e/product-booking.spec.ts`: cancel before the start, mark held after the end using the try-out clock.
-- [ ] T034 [US4] Implement `src/product/usecases/session.ts` (FR-018, FR-019).
-- [ ] T035 [US4] Earnings screen (price, fee, owed, payouts by hand); try-out clock on the account screen.
+- [x] T032 [P] [US4] Use-case tests: `cancelSession`, `markSessionHeld`, `earnings`, with a fixed clock (R11).
+- [x] T033 [P] [US4] Extend `e2e/product-booking.spec.ts`: cancel before the start, mark held after the end using the try-out clock.
+- [x] T034 [US4] Implement `src/product/usecases/session.ts` (FR-018, FR-019).
+- [x] T035 [US4] Earnings screen (price, fee, owed, payouts by hand); try-out clock on the account screen.
 
 ## Phase 8: User Story 5 and polish
 
