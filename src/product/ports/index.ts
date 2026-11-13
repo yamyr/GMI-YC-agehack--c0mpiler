@@ -27,6 +27,8 @@ export interface AuthPort {
   /** The signed-in account id, or null. */
   current(): Promise<string | null>;
   signOut(): Promise<void>;
+  /** Removes the link between an email and this account id, and signs it out if it is current (R17). */
+  forget(accountId: string): Promise<void>;
   readonly status: ServiceStatus;
 }
 
@@ -123,6 +125,11 @@ export interface PaymentsPort {
 export interface MeetingsPort {
   createLink(sessionId: string, startsAt: Instant, endsAt: Instant): Promise<MeetingLink>;
   readonly status: ServiceStatus;
+}
+
+/** The status of every service, in the order the product lists them. */
+export function serviceStatuses(ports: Ports): readonly ServiceStatus[] {
+  return [ports.auth.status, ports.store.status, ports.agent.status, ports.payments.status, ports.meetings.status];
 }
 
 export interface Ports {

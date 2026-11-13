@@ -24,6 +24,17 @@ export function signOut(ctx: Context): Promise<void> {
   return ctx.ports.auth.signOut();
 }
 
+/** Stores what the person asks to be called (R13). */
+export async function setName(ctx: Context, name: string): Promise<Result<Account, "not-signed-in" | "empty-name">> {
+  const acting = await actingAccount(ctx);
+  if (!acting.ok) return acting;
+  const trimmed = name.trim();
+  if (trimmed === "") return refuse("empty-name");
+  const updated: Account = { ...acting.value, name: trimmed };
+  await ctx.ports.store.put("account", updated);
+  return ok(updated);
+}
+
 /** Explicit: adds a role if the account lacks it and makes it the active one (FR-002). */
 export async function chooseRole(ctx: Context, role: Role): Promise<Result<Account, "not-signed-in">> {
   const acting = await actingAccount(ctx);

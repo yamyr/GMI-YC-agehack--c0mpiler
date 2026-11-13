@@ -75,5 +75,12 @@ export function makeStandInAuth(options: StandInAuthOptions): AuthPort {
     async signOut() {
       write({ ...read(), current: null });
     },
+
+    async forget(accountId) {
+      const doc = read();
+      const emails = Object.keys(doc.accounts).filter((email) => doc.accounts[email] === accountId);
+      const without = <T,>(record: Record<string, T>): Record<string, T> => Object.fromEntries(Object.entries(record).filter(([email]) => !emails.includes(email)));
+      write({ codes: without(doc.codes), accounts: without(doc.accounts), current: doc.current === accountId ? null : doc.current });
+    },
   };
 }

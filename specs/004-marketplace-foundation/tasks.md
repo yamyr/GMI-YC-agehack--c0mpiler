@@ -28,10 +28,10 @@ previous one.
 
 ## Phase 3: Groundwork from the plan review
 
-- [ ] T013 [P] Tests: route table resolves each address to a screen and redirects by role (R15); `AuthPort.forget` contract tests (R17); `setName` use case (R13).
-- [ ] T014 Route table in `src/product/routes.ts`; split the shell into `src/product/screens/` (sign-in, home) behind it; a shared `Standin` label component.
-- [ ] T015 `AuthPort.forget` in the stand-in; `setName`; make `Expert.age` optional in `src/demo/domain/types.ts` (R19).
-- [ ] T016 Add the product to `scripts/site-check.mjs` and move the shell browser tests onto routes.
+- [x] T013 [P] Tests: route table resolves each address to a screen and redirects by role (R15); `AuthPort.forget` contract tests (R17); `setName` use case (R13).
+- [x] T014 Route table in `src/product/routes.ts`; split the shell into `src/product/screens/` (sign-in, home) behind it; a shared `Standin` label component.
+- [x] T015 `AuthPort.forget` in the stand-in; `setName`; make `Expert.age` optional in `src/demo/domain/types.ts` (R19).
+- [x] T016 Add the product to `scripts/site-check.mjs` and move the shell browser tests onto routes.
 
 ## Phase 4: User Story 1 - An expert's profile is kept (P1)
 
