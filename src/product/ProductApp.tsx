@@ -6,6 +6,9 @@ import "./product.css";
 import { type RouteName, type RouteParams, href, resolve } from "./routes";
 import { browserContext } from "./runtime";
 import { AccountScreen } from "./screens/AccountScreen";
+import { ExpertInterviewScreen } from "./screens/ExpertInterviewScreen";
+import { ExpertPriceScreen } from "./screens/ExpertPriceScreen";
+import { ExpertProfileScreen } from "./screens/ExpertProfileScreen";
 import { HomeScreen } from "./screens/HomeScreen";
 import { SignInScreen } from "./screens/SignInScreen";
 import type { ScreenProps } from "./screens/shared";
@@ -15,6 +18,9 @@ import { actingAccount } from "./usecases/context";
 const SCREENS: Record<Exclude<RouteName, "sign-in">, ComponentType<ScreenProps>> = {
   home: HomeScreen,
   account: AccountScreen,
+  "expert-interview": ExpertInterviewScreen,
+  "expert-profile": ExpertProfileScreen,
+  "expert-price": ExpertPriceScreen,
 };
 
 /** The signed-in product, running on stand-ins: a frame around whichever page the address names. */
