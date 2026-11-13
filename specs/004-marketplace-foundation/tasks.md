@@ -57,11 +57,11 @@ previous one.
 
 **Independent test**: a proposal accepted once holds one payment and yields a session with a link; a decline holds nothing.
 
-- [ ] T027 [P] [US3] Use-case tests: `sendProposal`, `withdrawProposal`, `acceptProposal`, `declineProposal`: range checks, double accept, failed hold, overlapping proposals, wrong expert.
-- [ ] T028 [P] [US3] `.ics` tests in `src/product/calendar/ics.test.ts` (R10).
-- [ ] T029 [P] [US3] Browser journey `e2e/product-booking.spec.ts`: propose, accept, held payment, meeting link and calendar download from both accounts; decline path. Time zone pinned (R16).
-- [ ] T030 [US3] Implement `src/product/usecases/booking.ts` (acceptance as one transaction) and `src/product/calendar/ics.ts` (FR-013 to FR-017).
-- [ ] T031 [US3] Proposal screen with suggested times (R16), expert inbox, session screen with times in the viewer's time zone.
+- [x] T027 [P] [US3] Use-case tests: `sendProposal`, `withdrawProposal`, `acceptProposal`, `declineProposal`: range checks, double accept, failed hold, overlapping proposals, wrong expert.
+- [x] T028 [P] [US3] `.ics` tests in `src/product/calendar/ics.test.ts` (R10).
+- [x] T029 [P] [US3] Browser journey `e2e/product-booking.spec.ts`: propose, accept, held payment, meeting link and calendar download from both accounts; decline path. Time zone pinned (R16).
+- [x] T030 [US3] Implement `src/product/usecases/booking.ts` (acceptance as one transaction) and `src/product/calendar/ics.ts` (FR-013 to FR-017).
+- [x] T031 [US3] Proposal screen with suggested times (R16), expert inbox, session screen with times in the viewer's time zone.
 
 ## Phase 7: User Story 4 - The session ends and the expert is paid (P4)
 

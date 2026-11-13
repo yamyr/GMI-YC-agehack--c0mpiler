@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import type { Brief, ExpertProfile, Role } from "../model/types";
 import { href } from "../routes";
 import { chooseRole } from "../usecases/account";
+import { formatWhen } from "../model/times";
+import { type ProposalView, type SessionView, myProposals, mySessions } from "../usecases/booking";
 import { myCurrentBrief } from "../usecases/brief";
 import { myProfile } from "../usecases/profile";
 import type { ScreenProps } from "./shared";
@@ -31,10 +33,14 @@ export function HomeScreen({ ctx, account, refresh }: ScreenProps) {
   const chosen = account.roles.length > 0;
   const [profile, setProfile] = useState<ExpertProfile | null | undefined>(undefined);
   const [brief, setBrief] = useState<Brief | null | undefined>(undefined);
+  const [proposals, setProposals] = useState<readonly ProposalView[]>([]);
+  const [sessions, setSessions] = useState<readonly SessionView[]>([]);
 
   useEffect(() => {
     void myProfile(ctx).then((result) => setProfile(result.ok ? result.value : null));
     void myCurrentBrief(ctx).then((result) => setBrief(result.ok ? result.value : null));
+    void myProposals(ctx).then((result) => setProposals(result.ok ? result.value : []));
+    void mySessions(ctx).then((result) => setSessions(result.ok ? result.value : []));
   }, [ctx, account]);
 
   async function onRole(role: Role) {
@@ -80,6 +86,8 @@ export function HomeScreen({ ctx, account, refresh }: ScreenProps) {
 
   const next = account.activeRole === "expert" ? (profile !== undefined ? expertNext(profile) : null) : brief !== undefined ? buyerNext(brief) : null;
   const other: Role = account.activeRole === "expert" ? "buyer" : "expert";
+  const waitingForMe = proposals.filter((p) => p.proposal.expertId === account.id && p.proposal.state === "waiting").length;
+  const mineForBrief = brief != null && proposals.some((p) => p.proposal.briefId === brief.id && p.proposal.buyerId === account.id);
 
   return (
     <div>
@@ -94,6 +102,39 @@ export function HomeScreen({ ctx, account, refresh }: ScreenProps) {
             </a>
           </div>
         </div>
+      )}
+      {account.activeRole === "expert" && waitingForMe > 0 && (
+        <div className="card">
+          <p>
+            You have {waitingForMe} {waitingForMe === 1 ? "proposal" : "proposals"} waiting for your answer.
+          </p>
+          <div className="actions">
+            <a className="button-link" href={href("expert-inbox")}>
+              Open my inbox
+            </a>
+          </div>
+        </div>
+      )}
+      {account.activeRole === "buyer" && mineForBrief && (
+        <div className="actions">
+          <a className="button-link" href={href("buyer-proposal")}>
+            See my proposal
+          </a>
+        </div>
+      )}
+      {sessions.length > 0 && (
+        <>
+          <h3>Your sessions</h3>
+          <ul className="plain-list">
+            {sessions.map((view) => (
+              <li key={view.session.id}>
+                <a href={href("session", { id: view.session.id })}>
+                  Session with {view.session.buyerId === account.id ? view.expertName : view.buyerName} on {formatWhen(view.session.startsAt)}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
       <div className="actions">
         <button type="button" className="quiet" onClick={() => void onRole(other)}>

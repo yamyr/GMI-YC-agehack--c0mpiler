@@ -59,4 +59,15 @@ describe("product routes", () => {
       expect(href(name)).toBe(`#/app${path}`);
     }
   });
+
+  it("opens booking pages by role, and a session by its address for anyone signed in", () => {
+    expect(resolve("#/app/buyer/proposal", account(["buyer"], "buyer"))).toMatchObject({ name: "buyer-proposal" });
+    expect(resolve("#/app/buyer/proposal", account(["expert"], "expert"))).toMatchObject({ name: "home" });
+    expect(resolve("#/app/expert/inbox", account(["expert"], "expert"))).toMatchObject({ name: "expert-inbox" });
+    expect(resolve("#/app/expert/inbox", account(["buyer"], "buyer"))).toMatchObject({ name: "home" });
+    expect(resolve("#/app/session/abc-123", account(["buyer"], "buyer"))).toEqual({ name: "session", params: { id: "abc-123" }, href: "#/app/session/abc-123" });
+    expect(resolve("#/app/session/abc-123", account(["expert"], "expert"))).toMatchObject({ name: "session", params: { id: "abc-123" } });
+    expect(resolve("#/app/session/abc-123", null)).toMatchObject({ name: "sign-in" });
+    expect(href("session", { id: "a b" })).toBe("#/app/session/a%20b");
+  });
 });

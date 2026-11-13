@@ -118,7 +118,11 @@ export function BuyerMatchScreen({ ctx }: ScreenProps) {
       </ul>
       <p className="notice notice--info">Credentials are self-declared. Agely has not checked this expert's profile against any record.</p>
       {others}
-      <p className="notice notice--info">Proposing a session is the next part of this build.</p>
+      <div className="actions">
+        <a className="button-link button-link--primary" href={href("buyer-proposal")}>
+          Propose a session
+        </a>
+      </div>
       {links}
     </div>
   );

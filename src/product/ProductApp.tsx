@@ -8,10 +8,13 @@ import { browserContext } from "./runtime";
 import { AccountScreen } from "./screens/AccountScreen";
 import { BuyerBriefScreen } from "./screens/BuyerBriefScreen";
 import { BuyerMatchScreen } from "./screens/BuyerMatchScreen";
+import { BuyerProposalScreen } from "./screens/BuyerProposalScreen";
+import { ExpertInboxScreen } from "./screens/ExpertInboxScreen";
 import { ExpertInterviewScreen } from "./screens/ExpertInterviewScreen";
 import { ExpertPriceScreen } from "./screens/ExpertPriceScreen";
 import { ExpertProfileScreen } from "./screens/ExpertProfileScreen";
 import { HomeScreen } from "./screens/HomeScreen";
+import { SessionScreen } from "./screens/SessionScreen";
 import { SignInScreen } from "./screens/SignInScreen";
 import type { ScreenProps } from "./screens/shared";
 import { signOut } from "./usecases/account";
@@ -26,6 +29,9 @@ const SCREENS: Record<Exclude<RouteName, "sign-in">, ComponentType<ScreenProps>>
   "buyer-brief": BuyerBriefScreen,
   "buyer-brief-new": BuyerBriefScreen,
   "buyer-match": BuyerMatchScreen,
+  "buyer-proposal": BuyerProposalScreen,
+  "expert-inbox": ExpertInboxScreen,
+  session: SessionScreen,
 };
 
 /** The signed-in product, running on stand-ins: a frame around whichever page the address names. */
