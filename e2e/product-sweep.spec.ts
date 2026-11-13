@@ -33,8 +33,8 @@ async function check(page: Page, route: RouteName): Promise<void> {
   // Every page: the try-out notice, and the list of what is connected with all five stand-ins.
   await expect(page.getByText(/try-out version of Agely/), `try-out notice on ${route}`).toBeVisible();
   const services = page.getByRole("region", { name: "What is connected" });
-  for (const label of ["Stand-in sign-in", "Stand-in storage", "Stand-in agent", "Stand-in payments", "Stand-in meeting link"]) {
-    await expect(services.getByText(label, { exact: false }), `${label} listed on ${route}`).toBeVisible();
+  for (const [service, label] of [["sign-in", "Stand-in sign-in"], ["storage", "Stand-in storage"], ["agent", "Stand-in agent"], ["payments", "Stand-in payments"], ["meetings", "Stand-in meeting link"]] as const) {
+    await expect(services.locator(`li[data-stand-in="${service}"]`), `${label} listed on ${route}`).toContainText(label);
   }
   // The three things this version cannot do are stated, not hidden (R18).
   for (const limit of ["Use one browser tab", "Nothing is sent to the other person", "Anyone can sign in as any address on this device"]) {
@@ -77,7 +77,7 @@ test("every product page is honest about its stand-ins and meets the Older Adult
   await page.getByLabel("Your email address").fill("sam@example.com");
   await page.getByRole("button", { name: "Send me a code" }).click();
   await check(page, "sign-in");
-  await page.goto("/#/app");
+  await page.getByRole("button", { name: "Use a different address" }).click();
 
   // The buyer's pages.
   await buyerMatchedWithRuth(page, "sam@example.com");

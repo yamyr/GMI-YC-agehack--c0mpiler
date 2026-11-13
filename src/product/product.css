@@ -223,3 +223,11 @@
   border-bottom: 0;
   font-weight: 600;
 }
+
+/* The date and time control has several keyboard stops inside it. On its calendar button the
+   browser reports neither :focus-visible nor :focus on the field, so :focus-within carries it. */
+.product input[type="datetime-local"]:focus,
+.product input[type="datetime-local"]:focus-within {
+  outline: var(--focus-ring-width) solid var(--color-accent-strong);
+  outline-offset: var(--focus-ring-offset);
+}

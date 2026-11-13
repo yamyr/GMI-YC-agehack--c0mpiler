@@ -87,8 +87,8 @@ test("every service says it is a stand-in, on every state of the shell", async (
   await page.goto("/#/app");
   const services = page.getByRole("region", { name: "What is connected" });
   for (const state of ["signed out", "signed in"]) {
-    for (const label of ["Stand-in sign-in", "Stand-in storage", "Stand-in agent", "Stand-in payments: no money has moved", "Stand-in meeting link"]) {
-      await expect(services.getByText(label, { exact: false }), `${label} when ${state}`).toBeVisible();
+    for (const [service, label] of [["sign-in", "Stand-in sign-in"], ["storage", "Stand-in storage"], ["agent", "Stand-in agent"], ["payments", "Stand-in payments: no money has moved"], ["meetings", "Stand-in meeting link"]] as const) {
+      await expect(services.locator(`li[data-stand-in="${service}"]`), `${label} when ${state}`).toContainText(label);
     }
     if (state === "signed out") await signIn(page, "ruth@example.com");
   }

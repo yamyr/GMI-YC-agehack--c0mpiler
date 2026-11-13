@@ -13,6 +13,13 @@ export const STAND_IN_LABELS = {
 export const TRY_OUT_NOTICE =
   "This is a try-out version of Agely. Accounts are for trying it out, your data stays on this device, and nothing you enter is private or permanent.";
 
+/** What the stand-ins cannot do. Stated on every page and not worked around (research R18). */
+export const TRY_OUT_LIMITS = [
+  "Use one browser tab. Two tabs writing at once can overwrite each other.",
+  "Nothing is sent to the other person. They see a proposal or an answer the next time they open Agely.",
+  "Anyone can sign in as any address on this device. The stand-in sign-in proves nothing about who someone is.",
+] as const;
+
 /** Plain sentences for each refusal a sign-in can give. */
 export const SIGN_IN_ERRORS = {
   "invalid-email": "That doesn't look like an email address. Check it and try again.",
