@@ -1,0 +1,102 @@
+{
+  "asOf": "2026-11-13",
+  "currency": "USD",
+  "kinds": {
+    "paid": "Money that left someone's account. Needs a receipt or invoice reference.",
+    "estimate": "Calculated, not billed. The method is written next to the figure.",
+    "free": "A service used on a free plan. Listed so nothing is hidden behind a zero.",
+    "missing": "A real cost whose amount we have not written down yet."
+  },
+  "entries": [
+    {
+      "date": "2026-11-13",
+      "item": "Claude Code, Claude Opus 5.5",
+      "category": "AI coding agents",
+      "kind": "estimate",
+      "amount": 30.08,
+      "method": "386 responses in local session logs, priced at Anthropic's API list prices. Run under a subscription, so this is not a cash charge."
+    },
+    {
+      "date": "2026-11-13",
+      "item": "Claude Code, Claude Fable 5.2",
+      "category": "AI coding agents",
+      "kind": "estimate",
+      "amount": 6.71,
+      "method": "49 responses in local session logs, priced at Anthropic's API list prices. Counted part-way through the session that built this page."
+    },
+    {
+      "date": "2026-11-13",
+      "item": "Claude Code, Claude Sonnet 5.5",
+      "category": "AI coding agents",
+      "kind": "estimate",
+      "amount": 0.06,
+      "method": "6 responses in local session logs, priced at Anthropic's API list prices."
+    },
+    {
+      "date": "2026-11-11",
+      "item": "Codex CLI, GPT-6.1 Sol",
+      "category": "AI coding agents",
+      "kind": "estimate",
+      "amount": 1.82,
+      "method": "3 sessions with token counts in local logs, priced at $2 input, $0.10 cached input and $10 output per million tokens. Those prices come from press coverage, not OpenAI's own price list. Used through a ChatGPT sign-in, so this is not a cash charge."
+    },
+    {
+      "date": null,
+      "item": "AI subscriptions used for the work (Claude, ChatGPT)",
+      "category": "AI coding agents",
+      "kind": "missing",
+      "amount": null,
+      "method": "The plans and the share of each month spent on Agely still need writing down. This is the cash behind the estimates above."
+    },
+    {
+      "date": null,
+      "item": "Demo video production",
+      "category": "Media",
+      "kind": "missing",
+      "amount": null,
+      "method": "The 83-second demo video was made outside this repository. The tools used and what they cost are not recorded yet."
+    },
+    {
+      "date": null,
+      "item": "Domain name agely.dev",
+      "category": "Infrastructure",
+      "kind": "missing",
+      "amount": null,
+      "method": "Registration fee and renewal date to be added from the registrar's receipt."
+    },
+    {
+      "date": null,
+      "item": "Cloudflare Pages hosting for agely.dev",
+      "category": "Infrastructure",
+      "kind": "missing",
+      "amount": null,
+      "method": "The plan the site runs on has not been checked against the Cloudflare account yet."
+    },
+    {
+      "date": "2026-11-11",
+      "item": "GitHub repository and Actions",
+      "category": "Infrastructure",
+      "kind": "free",
+      "amount": 0,
+      "method": "The repository is public, and GitHub does not charge public repositories for hosting or standard Actions runners."
+    },
+    {
+      "date": null,
+      "item": "People's time",
+      "category": "People",
+      "kind": "missing",
+      "amount": null,
+      "method": "The prototype was built during a hackathon. Hours were not tracked, and nobody's time has been given a price."
+    }
+  ],
+  "aiUsage": {
+    "source": "scripts/ai-usage.mjs, run against the Claude Code and Codex session logs on one contributor's computer",
+    "coverage": "Sessions on 11 and 13 November 2026 on one computer. Work done on other machines or in other tools is not included.",
+    "models": [
+      { "tool": "Claude Code", "model": "Claude Opus 5.5", "responses": 386, "input": 830, "cacheWrite": 932491, "cacheRead": 79043802, "output": 367557, "listPriceUsd": 30.08 },
+      { "tool": "Claude Code", "model": "Claude Fable 5.2", "responses": 49, "input": 112, "cacheWrite": 167049, "cacheRead": 5665099, "output": 72611, "listPriceUsd": 6.71 },
+      { "tool": "Claude Code", "model": "Claude Sonnet 5.5", "responses": 6, "input": 12, "cacheWrite": 18820, "cacheRead": 33384, "output": 1047, "listPriceUsd": 0.06 },
+      { "tool": "Codex CLI", "model": "GPT-6.1 Sol", "responses": null, "input": 403332, "cacheWrite": 0, "cacheRead": 7528960, "output": 26373, "listPriceUsd": 1.82 }
+    ]
+  }
+}
