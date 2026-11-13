@@ -1,5 +1,5 @@
 import { type ComponentType, useCallback, useEffect, useMemo, useState } from "react";
-import { SERVICE_NAMES, TRY_OUT_NOTICE } from "./copy";
+import { SERVICE_NAMES, TRY_OUT_LIMITS, TRY_OUT_NOTICE } from "./copy";
 import type { Account } from "./model/types";
 import { serviceStatuses } from "./ports";
 import "./product.css";
@@ -117,6 +117,12 @@ export function ProductApp() {
             <li key={status.service} data-stand-in={status.connected ? undefined : status.service}>
               <strong>{SERVICE_NAMES[status.service]}:</strong> {status.connected ? "connected" : status.label}
             </li>
+          ))}
+        </ul>
+        <h3>What this try-out version can't do</h3>
+        <ul className="plain-list">
+          {TRY_OUT_LIMITS.map((limit) => (
+            <li key={limit}>{limit}</li>
           ))}
         </ul>
       </section>

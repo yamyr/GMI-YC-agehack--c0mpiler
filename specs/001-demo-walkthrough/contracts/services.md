@@ -4,6 +4,11 @@ Module: `src/demo/services/types.ts`. The demo ships scripted implementations on
 (`src/demo/services/scripted.ts`). Real adapters (Stripe, Google Meet / Zoom) must implement the
 same interfaces later.
 
+> The signed-in product (spec 004) does not use these two interfaces. It has its own ports, with
+> idempotent holds, releases and lifts, in `src/product/ports/`; see
+> `specs/004-marketplace-foundation/contracts/ports.md`. Real Stripe and meeting adapters will
+> implement those. This contract still describes the walkthrough.
+
 ```ts
 interface PaymentHold {
   readonly status: "none" | "held" | "released";

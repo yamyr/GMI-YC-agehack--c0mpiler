@@ -30,6 +30,9 @@ const ROUTES: Readonly<Record<RouteName, { readonly path: string; readonly acces
   "expert-earnings": { path: "/expert/earnings", access: "expert" },
   session: { path: "/session/:id", access: "signed-in" },
 };
+/** Every page of the product. The browser sweep in e2e/product-sweep.spec.ts must cover each one. */
+export const ROUTE_NAMES = Object.keys(ROUTES) as readonly RouteName[];
+
 export type RouteParams = Readonly<Record<string, string>>;
 
 export interface Resolved {
