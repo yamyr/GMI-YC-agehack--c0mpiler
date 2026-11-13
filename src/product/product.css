@@ -84,3 +84,39 @@
   margin: 0;
   font-weight: 600;
 }
+
+/* A link that goes to another page but carries the weight of a button. */
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-h);
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-accent-strong);
+  color: var(--color-accent-strong);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.button-link:hover {
+  background: var(--color-accent-soft);
+}
+
+.button-link--quiet {
+  border-color: transparent;
+  color: var(--text-muted);
+  text-decoration: underline;
+}
+
+.type-instead {
+  margin: var(--space-3) 0;
+}
+
+.type-instead summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-accent-strong);
+  font-weight: 600;
+  cursor: pointer;
+}

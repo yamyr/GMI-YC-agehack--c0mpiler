@@ -37,12 +37,12 @@ previous one.
 
 **Independent test**: create an expert, publish with a price, start a new session, find it unchanged.
 
-- [ ] T017 [P] [US1] Use-case tests: `saveProfileDraft`, `publishProfile`, `unpublishProfile`, `confirmPrice`, `deleteAccount`, including not-owner and not-signed-in refusals.
-- [ ] T018 [P] [US1] Browser journey `e2e/product-expert.spec.ts`: interview, edit a skill, publish, confirm a price, reload, sign in again, unpublish and republish, delete the account.
-- [ ] T019 [US1] Implement the profile and account use cases in `src/product/usecases/` (FR-003, FR-005, FR-006).
-- [ ] T020 [US1] Interview screen: name question first, suggested replies or typing, an unmatched draft asks for more (R5, R13; principle I).
-- [ ] T021 [US1] Profile screen (edit skill labels, remove a skill, publish, unpublish, self-declared marker) and price screen (suggestion with reasons, confirm).
-- [ ] T022 [US1] Expert home (what to do next) and account screen (roles, sign out, delete).
+- [x] T017 [P] [US1] Use-case tests: `saveProfileDraft`, `publishProfile`, `unpublishProfile`, `confirmPrice`, `deleteAccount`, including not-owner and not-signed-in refusals.
+- [x] T018 [P] [US1] Browser journey `e2e/product-expert.spec.ts`: interview, edit a skill, publish, confirm a price, reload, sign in again, unpublish and republish, delete the account.
+- [x] T019 [US1] Implement the profile and account use cases in `src/product/usecases/` (FR-003, FR-005, FR-006).
+- [x] T020 [US1] Interview screen: name question first, suggested replies or typing, an unmatched draft asks for more (R5, R13; principle I).
+- [x] T021 [US1] Profile screen (edit skill labels, remove a skill, publish, unpublish, self-declared marker) and price screen (suggestion with reasons, confirm).
+- [x] T022 [US1] Expert home (what to do next) and account screen (roles, sign out, delete).
 
 ## Phase 5: User Story 2 - A buyer is matched with real experts (P2)
 

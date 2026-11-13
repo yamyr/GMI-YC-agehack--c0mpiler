@@ -42,4 +42,13 @@ describe("product routes", () => {
   it("ignores a trailing slash", () => {
     expect(resolve("#/app/account/", account(["expert"]))).toMatchObject({ name: "account" });
   });
+
+  it("opens the expert's pages only for someone acting as an expert", () => {
+    for (const [path, name] of [["/expert/interview", "expert-interview"], ["/expert/profile", "expert-profile"], ["/expert/price", "expert-price"]] as const) {
+      expect(resolve(`#/app${path}`, account(["expert"], "expert"))).toMatchObject({ name, href: `#/app${path}` });
+      expect(resolve(`#/app${path}`, account(["expert", "buyer"], "buyer"))).toMatchObject({ name: "home" });
+      expect(resolve(`#/app${path}`, null)).toMatchObject({ name: "sign-in" });
+      expect(href(name)).toBe(`#/app${path}`);
+    }
+  });
 });
