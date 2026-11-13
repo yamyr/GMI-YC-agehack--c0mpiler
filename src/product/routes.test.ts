@@ -70,4 +70,9 @@ describe("product routes", () => {
     expect(resolve("#/app/session/abc-123", null)).toMatchObject({ name: "sign-in" });
     expect(href("session", { id: "a b" })).toBe("#/app/session/a%20b");
   });
+
+  it("opens earnings for someone acting as an expert", () => {
+    expect(resolve("#/app/expert/earnings", account(["expert"], "expert"))).toMatchObject({ name: "expert-earnings" });
+    expect(resolve("#/app/expert/earnings", account(["buyer"], "buyer"))).toMatchObject({ name: "home" });
+  });
 });

@@ -120,3 +120,89 @@ test("a buyer can withdraw a proposal that has not been answered", async ({ page
   await productSignIn(page, "seed-ruth@example.com");
   await expect(page.getByText(/proposals? waiting for your answer/)).toHaveCount(0);
 });
+
+// Story 4: the session ends and the expert is paid.
+
+async function booked(page: Page): Promise<string> {
+  await propose(page);
+  await productSignOut(page);
+  await productSignIn(page, "seed-ruth@example.com");
+  await page.getByRole("link", { name: "Open my inbox" }).click();
+  await page.locator(".card").filter({ hasText: "Sam Ortiz" }).getByRole("button", { name: "Accept" }).click();
+  await expect(page.getByRole("heading", { name: "Session confirmed" })).toBeVisible();
+  return page.url();
+}
+
+test("either person can cancel before the session starts, and the hold is lifted", async ({ page }) => {
+  const sessionUrl = await booked(page);
+  await productSignOut(page);
+  await productSignIn(page, "sam@example.com");
+  await page.goto(sessionUrl);
+  await page.getByRole("button", { name: "Cancel this session" }).click();
+  await expect(page.getByText(/Cancelling lifts the hold/)).toBeVisible();
+  await productAudit(page, "cancel confirmation");
+  await page.getByRole("button", { name: "Yes, cancel it" }).click();
+  await expect(page.getByRole("heading", { name: "Session cancelled" })).toBeVisible();
+  await expect(page.getByText("The hold on $150 was lifted. Nothing was charged.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Cancel this session" })).toHaveCount(0);
+
+  await productSignOut(page);
+  await productSignIn(page, "seed-ruth@example.com");
+  await page.goto(sessionUrl);
+  await expect(page.getByRole("heading", { name: "Session cancelled" })).toBeVisible();
+});
+
+test("after the session, the expert marks it as held and sees what she is owed", async ({ page }) => {
+  test.slow();
+  const sessionUrl = await booked(page);
+  // Before the end, it cannot be marked as held.
+  await expect(page.getByRole("button", { name: "The session took place" })).toHaveCount(0);
+  await page.getByRole("navigation", { name: "Your Agely" }).getByRole("link", { name: "Earnings" }).click();
+  await expect(page.getByText("Nothing has been released to you yet.")).toBeVisible();
+  await expect(page.getByText("$150 is held for sessions that have not been marked as held.")).toBeVisible();
+
+  // The try-out clock stands in for waiting: the first suggested time is at most four days away.
+  await page.getByRole("navigation", { name: "Your Agely" }).getByRole("link", { name: "Account" }).click();
+  await expect(page.locator(".demo-stage .stand-in").filter({ hasText: "Try-out clock" })).toBeVisible();
+  for (let day = 0; day < 5; day += 1) await page.getByRole("button", { name: "Move the clock forward one day" }).click();
+  await expect(page.getByText("The clock is 5 days ahead of the real time.")).toBeVisible();
+  await productAudit(page, "account with try-out clock");
+
+  await page.goto(sessionUrl);
+  await expect(page.getByRole("heading", { name: "Waiting to be marked as held" })).toBeVisible();
+  await expect(page.getByText("$150 is held until the session has taken place.")).toBeVisible();
+  await page.getByRole("button", { name: "The session took place" }).click();
+  await expect(page.getByRole("heading", { name: "Session held" })).toBeVisible();
+  await expect(page.getByText("$150 was released. Ruth Adeyemi is owed $135 after Agely's fee of $15.")).toBeVisible();
+  await productAudit(page, "session held");
+
+  await page.getByRole("navigation", { name: "Your Agely" }).getByRole("link", { name: "Earnings" }).click();
+  await expect(page).toHaveURL(/#\/app\/expert\/earnings$/);
+  const row = page.getByRole("row").filter({ hasText: "Sam Ortiz" });
+  await expect(row).toContainText("$150");
+  await expect(row).toContainText("$15");
+  await expect(row).toContainText("$135");
+  await expect(page.getByText("You are owed $135.")).toBeVisible();
+  await expect(page.getByText("Payouts are made by hand in this version. Nothing has been sent to you.")).toBeVisible();
+  await expect(page.locator('.demo-stage [data-stand-in="payments"]')).toContainText("no money has moved");
+  await productAudit(page, "earnings");
+
+  // The buyer sees the session as held too; it is the expert's step, not theirs.
+  await productSignOut(page);
+  await productSignIn(page, "sam@example.com");
+  await page.goto(sessionUrl);
+  await expect(page.getByRole("heading", { name: "Session held" })).toBeVisible();
+});
+
+test("a buyer waiting on a finished session cannot mark it as held", async ({ page }) => {
+  const sessionUrl = await booked(page);
+  await productSignOut(page);
+  await productSignIn(page, "sam@example.com");
+  await page.getByRole("navigation", { name: "Your Agely" }).getByRole("link", { name: "Account" }).click();
+  for (let day = 0; day < 5; day += 1) await page.getByRole("button", { name: "Move the clock forward one day" }).click();
+  await page.goto(sessionUrl);
+  await expect(page.getByRole("heading", { name: "Waiting to be marked as held" })).toBeVisible();
+  await expect(page.getByText("Ruth Adeyemi confirms that the session took place.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "The session took place" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Cancel this session" })).toHaveCount(0);
+});
