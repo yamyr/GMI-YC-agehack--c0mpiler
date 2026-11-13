@@ -52,7 +52,8 @@
       <section class="block" aria-labelledby="ai-title">
         <h2 id="ai-title">AI used to write Agely</h2>
         <p class="lead-in" id="ai-note"></p>
-        <div class="table-scroll">
+        <!-- Focusable so keyboard users can scroll the table sideways on a narrow screen. -->
+        <div class="table-scroll" tabindex="0" role="region" aria-labelledby="ai-title">
           <table class="ledger" id="ai-table"></table>
         </div>
         <p class="lead-in">

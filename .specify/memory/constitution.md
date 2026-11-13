@@ -7,7 +7,7 @@ what ran), Product & Technical Constraints (the website), Development Workflow (
 AGENTS.md, guards)
 Added: VI. Owned and Attributed
 Templates: plan-template.md reads this file at run time; no template edits needed
-Follow-ups: choose a licence for the repository (owner decision, see principle VI)
+Follow-ups: none
 -->
 
 # Agely Constitution
@@ -77,7 +77,9 @@ Rationale: a prototype must stay easy to change while the product is found.
   openly licensed, and MUST be listed in `ATTRIBUTION.md` in the change that adds it.
 - A new dependency's licence MUST be on the allowlist in `src-tauri/deny.toml` (Rust) or be a
   permissive licence of the same kind (JavaScript). CI checks the Rust side.
-- Content made with a generative model MUST be recorded as such in `ATTRIBUTION.md`.
+- Content made with a generative model MUST be recorded as such in `ATTRIBUTION.md`, with the
+  terms of the service that made it.
+- The repository is MIT licensed. The Ajentik logo is the owner's mark and is not covered.
 
 Rationale: a product about credible expertise cannot be careless about whose work it uses.
 

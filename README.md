@@ -155,3 +155,8 @@ Features follow Spec Kit: specify, clarify, plan, tasks, analyze, and implement.
 The three conversations can already run live through the optional Codex agent. The next step is to generate the profile, brief and workflow drafts live as well, still behind human confirmation and with a scripted fallback. Voice input, real payments and calendars, persistent storage, and expert-owned AI workflows beyond the demo need further implementation and validation.
 
 The outcome we want to measure is dollars earned by people over 65.
+
+## Licence
+
+The code is under the [MIT License](LICENSE). The Ajentik logo is not covered by it. Fonts, the
+demo video and other assets are listed with their terms in [ATTRIBUTION.md](ATTRIBUTION.md).

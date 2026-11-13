@@ -1,6 +1,7 @@
 {
   "name": "agely",
   "private": true,
+  "license": "MIT",
   "version": "0.0.1",
   "packageManager": "bun@1.3.10",
   "type": "module",

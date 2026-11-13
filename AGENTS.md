@@ -59,11 +59,16 @@ Run from the repository root. Bun is the package manager.
 | Website build (`dist/` plus `dist/demo/`) | `bun run build:site` |
 | Rust checks | `cargo fmt --check`, `cargo clippy --all-targets -- -D warnings`, `cargo test`, all in `src-tauri/` |
 | Licence and advisory check | `cargo deny check` in `src-tauri/` |
+| Website check (after `build:site`) | `bun scripts/site-check.mjs [screenshot-dir]` |
 
 `bun run build` and `bun run build:site` both write `dist/` and each clears the other's output.
 Build the one you are about to serve or test.
 
 Done means all of the above pass. `/gstack-verify` runs the full set in a fix loop.
+
+Project skills in `.claude/skills/`: `/site-check` after changing the website, `/a11y-check`
+after changing a screen or page, `/costs-update` to record a cost, and the `speckit-*` and
+`gstack-*` sets.
 
 ## Where things are
 

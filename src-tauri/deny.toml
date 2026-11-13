@@ -25,11 +25,6 @@ allow = [
 ]
 confidence-threshold = 0.9
 
-# The app's own crate has no licence yet (an owner decision). It is marked `publish = false`
-# in Cargo.toml, which is what lets this setting skip it.
-[licenses.private]
-ignore = true
-
 [bans]
 multiple-versions = "allow"
 wildcards = "deny"

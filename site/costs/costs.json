@@ -50,11 +50,11 @@
     },
     {
       "date": "2026-11-13",
-      "item": "Demo video, generated with Seedance 2.5 at 720p",
+      "item": "Demo video, Seedance 2.5 at 720p on Higgsfield",
       "category": "Media",
       "kind": "estimate",
       "amount": 19.09,
-      "method": "83 seconds of finished video at about $0.23 a second. Resellers list 720p between $0.13 and $0.47 a second, and takes that were not used are not counted, so the real figure is probably higher."
+      "method": "83 seconds of finished video at about $0.23 a second. It was made on Higgsfield, which sells credits; the credits spent were not recorded, so this uses the per-second prices resellers list for the same model ($0.13 to $0.47). Takes that were not used are not counted, so the real figure is probably higher."
     },
     {
       "date": null,
