@@ -13,20 +13,21 @@ describe("cost ledger", () => {
     }
   });
 
-  it("has an amount and a date for everything except missing entries", () => {
+  it("has an amount for everything except missing entries", () => {
     for (const e of costs.entries) {
       if (e.kind === "missing") {
         expect(e.amount, e.item).toBeNull();
       } else {
         expect(typeof e.amount, e.item).toBe("number");
         expect(e.amount, e.item).toBeGreaterThanOrEqual(0);
-        expect(e.date, e.item).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        // A payment whose date is not known yet stays null until the receipt is attached.
+        if (e.date !== null) expect(e.date, e.item).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       }
       if (e.kind === "free") expect(e.amount, e.item).toBe(0);
     }
   });
 
-  it("requires a receipt reference for money actually paid", () => {
+  it("requires a receipt or source note for money actually paid", () => {
     for (const e of costs.entries.filter((x) => x.kind === "paid")) {
       expect(e.evidence, e.item).toBeTruthy();
     }

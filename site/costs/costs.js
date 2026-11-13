@@ -24,11 +24,13 @@ function render(costs) {
   const missing = entries.filter((e) => e.kind === "missing");
   $("as-of").textContent = `Last updated ${day(costs.asOf)}.`;
 
-  const paid = entries.filter((e) => e.kind === "paid");
+  const paid = sum(entries, "paid");
+  const estimated = sum(entries, "estimate");
   $("totals").replaceChildren(
-    total("Paid in cash", usd(sum(entries, "paid")), paid.length ? `${paid.length} receipts recorded` : "No receipts recorded yet"),
-    total("AI and other estimates", usd(sum(entries, "estimate")), "At public list prices; not a cash charge"),
-    total("Not yet recorded", String(missing.length), missing.length === 1 ? "known cost without an amount" : "known costs without an amount"),
+    total("Total cost so far", usd(paid + estimated), "Cash paid plus estimates"),
+    total("Paid in cash", usd(paid), "Domain and hosting, paid up front"),
+    total("Estimated", usd(estimated), "AI tokens, video and time, priced by the methods below"),
+    ...(missing.length ? [total("Not yet recorded", String(missing.length), "known costs without an amount")] : []),
   );
 
   $("kinds").replaceChildren(
@@ -37,7 +39,7 @@ function render(costs) {
     ),
   );
 
-  // Dated lines newest first, then the ones still waiting for an amount.
+  // Dated lines newest first, then the ones whose date is not recorded yet.
   const ordered = [...entries].sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
   $("ledger").replaceChildren(
     el("thead", {}, el("tr", {}, ...["Date", "What", "Kind", "Amount"].map((h) => el("th", { scope: "col", text: h })))),
@@ -58,7 +60,7 @@ function render(costs) {
   );
 
   const ai = costs.aiUsage;
-  $("ai-note").textContent = `${ai.coverage} Dollar figures are what the same tokens would cost on the pay-as-you-go API.`;
+  $("ai-note").textContent = ai.coverage;
   $("ai-table").replaceChildren(
     el("thead", {}, el("tr", {}, ...["Tool and model", "Responses", "New input", "Cache writes", "Cache reads", "Output", "At list price"].map((h) => el("th", { scope: "col", text: h })))),
     el(
