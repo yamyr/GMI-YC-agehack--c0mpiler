@@ -109,3 +109,9 @@ After these changes both TypeScript checks, Vitest (398 tests in 38 files), the 
 builds, Rust formatting, Clippy, 22 Rust tests, cargo deny and workflow lint passed. The
 105-combination website sweep passed after the site and storage changes. The final parser
 revision passed focused built-site checks for Tamil phone and German desktop.
+
+The website checker now accepts any supported locale for a targeted run. The default matrix
+passed all 105 combinations on the final build. All 11 additional languages passed on the same
+five pages at desktop and phone widths, bringing the total to 215 combinations across all 18
+languages. The unit suite passed 399 tests after the new checker regression. The plain app
+build was restored after these checks.
