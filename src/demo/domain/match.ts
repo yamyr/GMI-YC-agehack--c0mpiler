@@ -1,3 +1,4 @@
+import { createTranslator, formatList, type Locale } from "../../../site/i18n/core.js";
 import { formatRange, overlap } from "./price";
 import type { Brief, Competency, Expert, MatchResult, NotMatched, PriceRange } from "./types";
 
@@ -16,7 +17,8 @@ function firstName(expert: Expert): string {
  * confirmed price, holding the brief's competency, with a price range that
  * overlaps the budget. Ranked by overlap width, then years of experience.
  */
-export function matchBrief(brief: Brief, experts: readonly Expert[]): MatchResult {
+export function matchBrief(brief: Brief, experts: readonly Expert[], locale: Locale = "en"): MatchResult {
+  const t = createTranslator(locale);
   const rejected: NotMatched[] = [];
   const candidates: Candidate[] = [];
 
@@ -51,8 +53,8 @@ export function matchBrief(brief: Brief, experts: readonly Expert[]): MatchResul
       kind: "none",
       reason: priceGap ? "price" : "competency",
       explanation: priceGap
-        ? `Experts with “${brief.competencyLabel}” charge outside your budget of ${formatRange(brief.budget)} per 15 minutes. Widening the budget would let Agely match you.`
-        : `No published expert lists “${brief.competencyLabel}” yet.`,
+        ? t("Experts with “{0}” charge outside your budget of {1} per 15 minutes. Widening the budget would let Agely match you.", brief.competencyLabel, formatRange(brief.budget, locale))
+        : t("No published expert lists “{0}” yet.", brief.competencyLabel),
       others: rejected,
     };
   }
@@ -64,9 +66,9 @@ export function matchBrief(brief: Brief, experts: readonly Expert[]): MatchResul
     matchedCompetencies: best.competencies,
     overlap: best.overlap,
     explanation: [
-      `${firstName(best.expert)} lists ${best.competencies.map((c) => `“${c.label}”`).join(", ")}, which covers what you need: “${brief.competencyLabel}”.`,
-      `Your budget is ${formatRange(brief.budget)} per 15 minutes and ${firstName(best.expert)} charges ${formatRange(price)}. You overlap at ${formatRange(best.overlap)}.`,
-      `${best.expert.yearsExperience} years of experience.`,
+      t("{0} lists {1}, which covers what you need: “{2}”.", firstName(best.expert), formatList(best.competencies.map((c) => t("“{0}”", c.label)), locale), brief.competencyLabel),
+      t("Your budget is {0} per 15 minutes and {1} charges {2}. You overlap at {3}.", formatRange(brief.budget, locale), firstName(best.expert), formatRange(price, locale), formatRange(best.overlap, locale)),
+      t("{0} years of experience.", best.expert.yearsExperience),
     ],
     others: [...runnersUp.map((c): NotMatched => ({ expert: c.expert, reason: "ranked" })), ...rejected],
   };

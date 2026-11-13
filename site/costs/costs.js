@@ -1,19 +1,22 @@
+import { initialLocale, createTranslator, formatMoney, formatNumber, formatDate } from "../i18n/core.js";
+const locale = initialLocale();
+const t = createTranslator(locale);
 // Draws the cost ledger from costs.json. Edit that file, not this page, to record a cost.
 
 const KIND_LABELS = { paid: "Paid", estimate: "Estimate", free: "Free plan", missing: "Not yet recorded" };
 const $ = (id) => document.getElementById(id);
-const usd = (n) => `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-const count = (n) => (n === null ? "not logged" : n.toLocaleString("en-US"));
-const day = (iso) => new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+const usd = (n) => formatMoney(n, locale, 2);
+const count = (n) => (n === null ? t("not logged") : formatNumber(n, locale));
+const day = (iso) => formatDate(new Date(`${iso}T00:00:00Z`), locale, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 
 function el(tag, attrs = {}, ...children) {
   const node = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
     if (k === "class") node.className = v;
-    else if (k === "text") node.textContent = v;
+    else if (k === "text") node.textContent = t(v);
     else node.setAttribute(k, v);
   }
-  node.append(...children);
+  node.append(...children.map((child) => typeof child === "string" ? t(child) : child));
   return node;
 }
 
@@ -22,7 +25,7 @@ const sum = (entries, kind) => entries.filter((e) => e.kind === kind).reduce((n,
 function render(costs) {
   const { entries } = costs;
   const missing = entries.filter((e) => e.kind === "missing");
-  $("as-of").textContent = `Last updated ${day(costs.asOf)}.`;
+  $("as-of").textContent = t("Last updated {0}.", day(costs.asOf));
 
   const paid = sum(entries, "paid");
   const estimated = sum(entries, "estimate");
@@ -30,7 +33,7 @@ function render(costs) {
     total("Total cost so far", usd(paid + estimated), "Cash paid plus estimates"),
     total("Paid in cash", usd(paid), "Domain and hosting, paid up front"),
     total("Estimated", usd(estimated), "AI tokens, video and time, priced by the methods below"),
-    ...(missing.length ? [total("Not yet recorded", String(missing.length), "known costs without an amount")] : []),
+    ...(missing.length ? [total("Not yet recorded", formatNumber(missing.length, locale), "known costs without an amount")] : []),
   );
 
   $("kinds").replaceChildren(
@@ -51,7 +54,7 @@ function render(costs) {
           "tr",
           {},
           el("td", { class: "nowrap", text: e.date ? day(e.date) : "" }),
-          el("td", {}, el("strong", { text: e.item }), el("span", { class: "category", text: e.category }), el("p", { text: e.method }), ...(e.evidence ? [el("p", { class: "evidence", text: `Receipt: ${e.evidence}` })] : [])),
+          el("td", {}, el("strong", { text: e.item }), el("span", { class: "category", text: e.category }), el("p", { text: e.method }), ...(e.evidence ? [el("p", { class: "evidence" }, t("Receipt: {0}", e.evidence))] : [])),
           el("td", {}, el("span", { class: `kind kind--${e.kind}`, text: KIND_LABELS[e.kind] })),
           el("td", { class: "amount", text: e.amount === null ? "" : usd(e.amount) }),
         ),
@@ -60,7 +63,7 @@ function render(costs) {
   );
 
   const ai = costs.aiUsage;
-  $("ai-note").textContent = ai.coverage;
+  $("ai-note").textContent = t(ai.coverage);
   $("ai-table").replaceChildren(
     el("thead", {}, el("tr", {}, ...["Tool and model", "Responses", "New input", "Cache writes", "Cache reads", "Output", "At list price"].map((h) => el("th", { scope: "col", text: h })))),
     el(

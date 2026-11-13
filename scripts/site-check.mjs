@@ -2,7 +2,7 @@
 // Checks the built website the way a reviewer would: opens every page at desktop and phone
 // width, in light and dark, and reports anything a visitor would trip over.
 //
-//   bun run build:site && bun scripts/site-check.mjs [screenshot-dir]
+//   bun run build:site && bun scripts/site-check.mjs [screenshot-dir] [--language=uk] [--view=phone]
 //
 // For each page it reports failed requests, script errors, horizontal overflow, text smaller
 // than 16px (constitution principle I) and axe WCAG 2.1 AA violations. Screenshots are written
@@ -15,11 +15,20 @@ import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "@playwright/test";
 
 const PAGES = ["/", "/simulator/", "/costs/", "/demo/"];
+// These cover long Latin text, CJK glyphs and Cyrillic without weakening the English gate.
+const LANGUAGES = ["en", "de", "fi", "zh-Hans", "uk", "ta", "hi"];
 const VIEWS = [
   { name: "desktop", width: 1440, height: 900, colorScheme: "light" },
   { name: "phone", width: 390, height: 844, colorScheme: "light" },
   { name: "desktop-dark", width: 1440, height: 900, colorScheme: "dark" },
 ];
+const args = process.argv.slice(2);
+const languageFilter = args.find((arg) => arg.startsWith("--language="))?.slice(11);
+const viewFilter = args.find((arg) => arg.startsWith("--view="))?.slice(7);
+if (languageFilter !== undefined && !LANGUAGES.includes(languageFilter)) throw new Error("Unknown language filter");
+if (viewFilter !== undefined && !VIEWS.some(({ name }) => name === viewFilter)) throw new Error("Unknown view filter");
+const languages = LANGUAGES.filter((language) => languageFilter === undefined || language === languageFilter);
+const views = VIEWS.filter(({ name }) => viewFilter === undefined || name === viewFilter);
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".mp4": "video/mp4", ".txt": "text/plain" };
 
 const dist = fileURLToPath(new URL("../dist", import.meta.url));
@@ -27,7 +36,7 @@ if (!existsSync(join(dist, "demo", "index.html"))) {
   console.error("dist/ does not hold the website build. Run `bun run build:site` first.");
   process.exit(1);
 }
-const shots = process.argv[2];
+const shots = args.find((arg) => !arg.startsWith("--"));
 if (shots) mkdirSync(shots, { recursive: true });
 
 const server = createServer((req, res) => {
@@ -43,16 +52,18 @@ const base = `http://127.0.0.1:${server.address().port}`;
 
 const browser = await chromium.launch();
 const problems = [];
-for (const view of VIEWS) {
+for (const language of languages) {
+for (const view of views) {
   for (const path of PAGES) {
     // axe needs a context of its own, not the browser's implicit one.
     const context = await browser.newContext({ viewport: { width: view.width, height: view.height }, colorScheme: view.colorScheme });
     const page = await context.newPage();
-    const where = `${path} (${view.name})`;
+    const where = `${path} (${language}, ${view.name})`;
     const note = (text) => problems.push(`${where}: ${text}`);
     page.on("pageerror", (e) => note(`script error: ${e.message}`));
     page.on("response", (r) => r.status() >= 400 && note(`${r.status()} ${new URL(r.url()).pathname}`));
-    await page.goto(base + path, { waitUntil: "networkidle" });
+    await page.goto(`${base}${path}?lang=${language}`, { waitUntil: "networkidle" });
+    if (await page.locator("html").getAttribute("lang") !== language) note("document language does not match the selected language");
 
     const layout = await page.evaluate(() => {
       const small = new Set();
@@ -67,6 +78,22 @@ for (const view of VIEWS) {
     });
     if (layout.overflow > 0) note(`page is ${layout.overflow}px wider than the window`);
     for (const s of layout.small) note(`text below 16px: ${s}`);
+    // A number can spill over another card without increasing the document width.
+    const clippedValues = await page.locator(".tile-value").evaluateAll((values) => values.filter((value) => value.scrollWidth > value.clientWidth).map((value) => value.textContent));
+    for (const value of clippedValues) note(`statistic does not fit its card: ${value}`);
+    const overlappingBudget = await page.evaluate(() => {
+      const budget = document.querySelector(".ranges-budget-label");
+      if (budget === null) return false;
+      const bounds = budget.getBoundingClientRect();
+      return [...document.querySelectorAll(".range-name")].some((name) => {
+        const text = document.createRange();
+        text.selectNodeContents(name);
+        const other = text.getBoundingClientRect();
+        return Math.min(bounds.right, other.right) - Math.max(bounds.left, other.left) > 1 &&
+          Math.min(bounds.bottom, other.bottom) - Math.max(bounds.top, other.top) > 1;
+      });
+    });
+    if (overlappingBudget) note("budget caption overlaps an expert's price label");
 
     const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
     for (const v of violations) {
@@ -76,13 +103,14 @@ for (const view of VIEWS) {
         note(`axe ${v.id}: ${n.target.join(" ")}${detail}`);
       }
     }
-    if (shots) await page.screenshot({ path: join(shots, `${path.replaceAll("/", "") || "home"}-${view.name}.png`), fullPage: true });
+    if (shots) await page.screenshot({ path: join(shots, `${path.replaceAll("/", "") || "home"}-${language}-${view.name}.png`), fullPage: true });
     await context.close();
   }
+}
 }
 await browser.close();
 server.close();
 
 const unique = [...new Set(problems)];
-console.log(unique.length ? unique.join("\n") : `No problems on ${PAGES.length} pages in ${VIEWS.length} views.`);
+console.log(unique.length ? unique.join("\n") : `No problems on ${PAGES.length} pages in ${views.length} views and ${languages.length} languages.`);
 process.exit(unique.length ? 1 : 0);

@@ -1,3 +1,4 @@
+import { useI18n } from "../../i18n";
 import type { ConversationTurn, Speaker } from "../domain/types";
 
 const PEOPLE: Readonly<Record<Exclude<Speaker, "agent">, string>> = {
@@ -33,18 +34,18 @@ interface ConversationProps {
 
 /** FR-005: scripted turns revealed one at a time; stands in for a voice interview. */
 export function Conversation({ turns, shown, agentName, onNextTurn }: ConversationProps) {
+  const { t } = useI18n();
+
   const done = shown >= turns.length;
   return (
     <div>
       <Transcript turns={turns.slice(0, shown)} agentName={agentName} />
-      <p className="conversation-caption">This conversation stands in for a voice interview.</p>
+      <p className="conversation-caption">{t("This conversation stands in for a voice interview.")}</p>
       <div className="actions">
         <button type="button" className={done ? "secondary" : "primary"} onClick={onNextTurn} disabled={done}>
-          {shown === 0 ? "Start the conversation" : done ? "Conversation finished" : "Next line"}
+          {shown === 0 ? t("Start the conversation") : done ? t("Conversation finished") : t("Next line")}
         </button>
-        <span className="muted" aria-hidden="true">
-          {Math.min(shown, turns.length)} of {turns.length} lines
-        </span>
+        <span className="muted" aria-hidden="true">{t("{0} of {1} lines", Math.min(shown, turns.length), turns.length)}</span>
       </div>
     </div>
   );

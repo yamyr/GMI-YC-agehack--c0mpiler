@@ -16,11 +16,81 @@ pub struct TranscriptLine {
     pub text: String,
 }
 
+/// Canonical language IDs shared with `site/i18n/core.js`. IPC rejects other values.
+#[derive(Debug, Clone, Copy, Default, Deserialize)]
+pub enum Locale {
+    #[default]
+    #[serde(rename = "en")]
+    English,
+    #[serde(rename = "fr")]
+    French,
+    #[serde(rename = "es")]
+    Spanish,
+    #[serde(rename = "de")]
+    German,
+    #[serde(rename = "it")]
+    Italian,
+    #[serde(rename = "zh-Hans")]
+    SimplifiedChinese,
+    #[serde(rename = "ko")]
+    Korean,
+    #[serde(rename = "ja")]
+    Japanese,
+    #[serde(rename = "da")]
+    Danish,
+    #[serde(rename = "uk")]
+    Ukrainian,
+    #[serde(rename = "pl")]
+    Polish,
+    #[serde(rename = "ro")]
+    Romanian,
+    #[serde(rename = "nb")]
+    NorwegianBokmal,
+    #[serde(rename = "fi")]
+    Finnish,
+    #[serde(rename = "id")]
+    Indonesian,
+    #[serde(rename = "tl")]
+    Tagalog,
+    #[serde(rename = "ta")]
+    Tamil,
+    #[serde(rename = "hi")]
+    Hindi,
+}
+
+impl Locale {
+    pub fn language(self) -> &'static str {
+        match self {
+            Self::English => "English",
+            Self::French => "French",
+            Self::Spanish => "Spanish",
+            Self::German => "German",
+            Self::Italian => "Italian",
+            Self::SimplifiedChinese => "Simplified Chinese",
+            Self::Korean => "Korean",
+            Self::Japanese => "Japanese",
+            Self::Danish => "Danish",
+            Self::Ukrainian => "Ukrainian",
+            Self::Polish => "Polish",
+            Self::Romanian => "Romanian",
+            Self::NorwegianBokmal => "Norwegian Bokmål",
+            Self::Finnish => "Finnish",
+            Self::Indonesian => "Indonesian",
+            Self::Tagalog => "Tagalog",
+            Self::Tamil => "Tamil",
+            Self::Hindi => "Hindi",
+        }
+    }
+}
+
 /// Per-conversation instructions supplied by the frontend (`src/demo/live/briefs.ts`).
 /// Extra fields the frontend sends (e.g. `conversation`) are ignored.
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AgentBrief {
+    /// Older clients omit this field and retain English responses.
+    #[serde(default)]
+    pub locale: Locale,
     pub agent_role: String,
     pub goal: String,
     pub background: String,

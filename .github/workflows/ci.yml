@@ -41,6 +41,10 @@ jobs:
       - name: unit tests
         run: bun run test
 
+      # A missing draft or interpolation slot can hide a name, amount or human action.
+      - name: translation catalog integrity
+        run: bun run check:i18n
+
       - name: production build
         run: bun run build
 
