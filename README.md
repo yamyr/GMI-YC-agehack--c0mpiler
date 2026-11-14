@@ -4,6 +4,8 @@
 
 ▶ **[Watch the demo](https://agely.dev/)** on the Agely landing page (source in `site/`), **[try it in your browser](https://agely.dev/demo/)**, or **[run a whole market in the simulator](https://agely.dev/simulator/)**.
 
+Get the Apple Silicon Mac app from the [releases page](https://agely.dev/releases/) or browse the [changelog](CHANGELOG.md).
+
 Agely is an expert network where older adults turn decades of experience into paid, 15-minute sessions. Our longer-term goal is an AI engine each expert owns: a growing collection of their approved questions, checks, and workflows.
 
 This hackathon prototype follows Margaret, a retired procurement director, and Dev, a hardware founder, from their first conversations to a completed session and Margaret's first saved workflow.
@@ -55,7 +57,7 @@ Conversations stand in for a future voice interview; there is no microphone. Con
 
 ## The try-out product
 
-Beside the walkthrough there is the start of the real product, at [agely.dev/app](https://agely.dev/app) or `#/app` when run locally. Two people can go from sign-in to a released payment:
+Open the browser marketplace try-out at [agely.dev/app](https://agely.dev/app) or `#/app` when running the browser build locally. You can try both roles from sign-in to a simulated payment release.
 
 1. An expert signs in, is interviewed, publishes a profile and confirms a price.
 2. A buyer signs in, describes a problem, confirms a brief and is matched with the experts who are really published.
@@ -66,7 +68,7 @@ Nothing outside the browser is connected yet. Sign-in, storage, the drafting age
 
 ## Designed for older adults
 
-The expert's main path uses a conversation with suggested replies. Typing is available as an alternative. Shared design tokens set a minimum text size of 16px and primary control height of 56px. The interface provides visible keyboard focus and names the person whose turn it is.
+The try-out interview offers suggested replies and optional free text. Experts type their sign-in details and display name. Shared design tokens set a minimum text size of 16px and primary control height of 56px. The interface provides visible keyboard focus and names the person whose turn it is.
 
 Drafts remain drafts until the person confirms them. Every match explains its reasoning, and scripted data stays visibly labelled. The demo also declines requests for legal, medical, or financial advice.
 
@@ -75,7 +77,7 @@ These principles are recorded in the [project constitution](.specify/memory/cons
 ## Built with
 
 - Tauri 2 and Rust for the desktop shell and native commands.
-- React 19, TypeScript, and Vite 7 for the interface and client-side domain logic.
+- React 19, TypeScript, and Vite 8 for the interface and client-side domain logic.
 - Bun for dependency management and scripts.
 - Vitest for unit tests and Playwright for browser journeys at desktop and minimum window sizes.
 - GitHub Actions for frontend, browser, workflow, and Rust checks.
@@ -87,8 +89,8 @@ The foundation was ported from `yademy/elderwise-hbs`.
 Install [Bun](https://bun.sh). Version `1.3.10` matches `package.json` and CI.
 
 ```sh
-git clone https://github.com/yamyr/GMI-YC-agehack--c0mpiler.git
-cd GMI-YC-agehack--c0mpiler
+git clone https://github.com/yamyr/agely.git
+cd agely
 bun install --frozen-lockfile
 bun run dev
 ```
