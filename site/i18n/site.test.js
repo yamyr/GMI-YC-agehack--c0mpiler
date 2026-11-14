@@ -73,7 +73,7 @@ describe("static website localization", () => {
   });
   it("marks all page prose and metadata explicitly", () => {
     const inventory = JSON.parse(readFileSync(new URL("./messages/website.json", import.meta.url), "utf8"));
-    for (const page of ['index.html','simulator/index.html','costs/index.html']) {
+    for (const page of ['index.html','simulator/index.html','costs/index.html','releases/index.html']) {
       const document = new Window().document;
       document.write(readFileSync(new URL(`../${page}`, import.meta.url), 'utf8'));
       const walker = document.createTreeWalker(document.body, 4);

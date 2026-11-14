@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title data-i18n>Agely releases</title>
+    <meta name="description" content="Desktop downloads and release notes for Agely." data-i18n-attrs="content" />
+    <link rel="canonical" href="https://agely.dev/releases/" />
+    <link rel="icon" type="image/png" href="../assets/icon.png" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="../i18n/site.css" />
+    <link rel="stylesheet" href="releases.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="../" aria-label="Agely home" data-i18n-attrs="aria-label">
+        <img src="../assets/icon.png" alt="" width="36" height="36" />
+        <span data-i18n-ignore>Agely</span>
+      </a>
+      <nav class="topbar-nav">
+        <a class="topbar-link" href="https://github.com/yamyr/agely/blob/main/CHANGELOG.md"><span data-i18n>Full changelog (English)</span></a>
+      </nav>
+    </header>
+
+    <main class="wrap release-history">
+      <h1 data-i18n>Agely releases</h1>
+
+      <article class="card release" id="v0.1.0" aria-labelledby="v010-title">
+        <h2 id="v010-title" data-i18n-ignore>0.1.0</h2>
+        <ul>
+          <li data-i18n>First desktop installer, available only for Macs with Apple silicon.</li>
+          <li data-i18n>English and 17 draft translations for the website and app.</li>
+          <li data-i18n>Marketplace prototype with expert profiles, matching, and booking. Accounts, meetings, and payments are simulated.</li>
+        </ul>
+        <div class="actions release-actions">
+          <a class="button" href="https://github.com/yamyr/agely/releases/tag/v0.1.0"><span data-i18n>macOS installer on GitHub</span></a>
+          <a href="../demo/#/app"><span data-i18n>Try the marketplace prototype</span></a>
+        </div>
+        <p class="install-note">
+          <span data-i18n>This developer preview has no Apple notarization. </span>
+          <span data-i18n>macOS may ask you to approve Agely under Privacy &amp; Security in System Settings. </span><a href="https://support.apple.com/102445"><span data-i18n>Apple's guide to opening Mac apps</span></a>
+        </p>
+      </article>
+
+      <article class="card release" id="v0.0.1" aria-labelledby="v001-title">
+        <h2 id="v001-title" data-i18n-ignore>0.0.1</h2>
+        <ul>
+          <li data-i18n>First website and interactive walkthrough.</li>
+          <li data-i18n>Market simulator and public cost ledger.</li>
+        </ul>
+      </article>
+    </main>
+
+    <footer class="footer">
+      <p data-i18n>Agely is a hackathon prototype. The outcome we want to measure is dollars earned by people over 65.</p>
+    </footer>
+    <script type="module" src="../i18n/site.js"></script>
+  </body>
+</html>

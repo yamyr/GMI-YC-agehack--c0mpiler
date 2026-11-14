@@ -16,7 +16,7 @@ import { chromium } from "@playwright/test";
 import { localizedUrl, siteCheckLanguages } from "./site-check-url.js";
 
 const PRODUCT_SIGN_IN = "/demo/#/app";
-const PAGES = ["/", "/simulator/", "/costs/", "/demo/", PRODUCT_SIGN_IN];
+const PAGES = ["/", "/simulator/", "/costs/", "/releases/", "/demo/", PRODUCT_SIGN_IN];
 const VIEWS = [
   { name: "desktop", width: 1440, height: 900, colorScheme: "light" },
   { name: "phone", width: 390, height: 844, colorScheme: "light" },
