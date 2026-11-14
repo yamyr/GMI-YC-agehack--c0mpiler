@@ -1,10 +1,11 @@
+import { parseDollars } from "../../i18n/digits";
 import { useI18n } from "../../i18n";
 import { useState } from "react";
 import { formatUsd } from "../domain/money";
 import { formatRange } from "../domain/price";
 import { proposalTotal, validateProposal } from "../domain/proposal";
 import { currentMatch } from "../state/reducer";
-import { NoticeLine, type ScreenProps, parseDollars } from "./shared";
+import { NoticeLine, type ScreenProps } from "./shared";
 
 const LENGTHS = [1, 2, 3, 4] as const;
 

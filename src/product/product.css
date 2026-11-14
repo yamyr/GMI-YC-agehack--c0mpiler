@@ -1,0 +1,237 @@
+/* The signed-in product. Uses the walkthrough's classes and src/ui/tokens.css; only what is new
+   lives here. */
+
+.product-notice {
+  margin-bottom: var(--space-4);
+}
+
+/* A dashed border marks a stand-in, as it marks drafts and demo data elsewhere in Agely. */
+.stand-in {
+  margin: var(--space-4) 0;
+  padding: var(--space-3) var(--space-4);
+  border: 2px dashed var(--text-muted);
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+}
+
+.stand-in p {
+  margin: 0;
+}
+
+.product .big-price {
+  overflow-wrap: anywhere;
+}
+
+.stand-in__code {
+  margin-top: var(--space-2);
+  font-size: var(--text-lg);
+}
+
+.stand-in__code strong {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+.services {
+  margin-top: var(--space-6);
+}
+
+.services h2 {
+  font-size: var(--text-lg);
+}
+
+.services li + li {
+  margin-top: var(--space-2);
+}
+
+.product-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-5);
+  margin-bottom: var(--space-4);
+}
+
+.product-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-accent-strong);
+  font-weight: 600;
+}
+
+/* The current page is marked by weight and an underline bar, not by colour alone. */
+.product-nav a[aria-current="page"] {
+  color: var(--text);
+  text-decoration: none;
+  box-shadow: inset 0 -3px 0 var(--text);
+}
+
+.product-nav button {
+  margin-left: auto;
+}
+
+.facts-list {
+  margin: 0 0 var(--space-5);
+}
+
+.facts-list div {
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--border);
+}
+
+.facts-list dt {
+  color: var(--text-muted);
+}
+
+.facts-list dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* A link that goes to another page but carries the weight of a button. */
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-h);
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-accent-strong);
+  color: var(--color-accent-strong);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.button-link:hover {
+  background: var(--color-accent-soft);
+}
+
+.button-link--quiet {
+  border-color: transparent;
+  color: var(--text-muted);
+  text-decoration: underline;
+}
+
+.type-instead {
+  margin: var(--space-3) 0;
+}
+
+.type-instead summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-accent-strong);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button-link--primary {
+  background: var(--color-accent-strong);
+  color: var(--surface);
+}
+
+.button-link--primary:hover {
+  background: var(--text);
+  border-color: var(--text);
+}
+
+/* A short list of choices where one tap is enough (research R16). */
+.choices {
+  margin: var(--space-4) 0;
+  padding: 0;
+  border: 0;
+}
+
+.choices legend {
+  padding: 0;
+  margin-bottom: var(--space-2);
+  font-weight: 600;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--control-h);
+  padding: 0 var(--space-4);
+  margin-bottom: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.choice input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--color-accent-strong);
+}
+
+/* The chosen time is marked by a heavier border as well as the filled radio. */
+.choice:has(input:checked) {
+  border: 2px solid var(--text);
+}
+
+.choices .field {
+  margin-top: var(--space-4);
+}
+
+/* The browser's date and time control, brought up to the same size as every other field. */
+.product input[type="datetime-local"] {
+  width: 100%;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  min-height: var(--control-h);
+}
+
+/* Links in running text, such as the meeting link. */
+.product .demo-stage a:not(.button-link) {
+  color: var(--color-accent-strong);
+  font-weight: 600;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  margin: var(--space-4) 0;
+}
+
+.earnings {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.earnings th,
+.earnings td {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+}
+
+.earnings th:first-child {
+  text-align: left;
+}
+
+.earnings thead th {
+  color: var(--text-muted);
+}
+
+.earnings tfoot th,
+.earnings tfoot td {
+  border-top: 2px solid var(--text);
+  border-bottom: 0;
+  font-weight: 600;
+}
+
+/* The date and time control has several keyboard stops inside it. On its calendar button the
+   browser reports neither :focus-visible nor :focus on the field, so :focus-within carries it. */
+.product input[type="datetime-local"]:focus,
+.product input[type="datetime-local"]:focus-within {
+  outline: var(--focus-ring-width) solid var(--color-accent-strong);
+  outline-offset: var(--focus-ring-offset);
+}

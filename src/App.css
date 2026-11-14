@@ -51,6 +51,7 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-3);
   min-height: 64px;
   padding: var(--space-2) var(--stage-pad-x);
   background: var(--surface);
@@ -63,6 +64,15 @@ h3 {
   font-size: var(--text-xl);
   font-weight: 600;
   color: var(--color-accent-strong);
+}
+
+.app-switch {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-h);
+  text-align: end;
+  color: var(--color-accent-strong);
+  font-weight: 600;
 }
 
 .app-main {

@@ -27,7 +27,8 @@ function supportedLocale(input) {
   try {
     const parsed = new Intl.Locale(input.trim());
     if (parsed.language === "zh") {
-      if (parsed.script === "Hant" || ["TW", "HK", "MO"].includes(parsed.region)) return null;
+      if (parsed.script !== undefined) return parsed.script === "Hans" ? "zh-Hans" : null;
+      if (["TW", "HK", "MO"].includes(parsed.region)) return null;
       return "zh-Hans";
     }
     const language = parsed.language === "no" ? "nb" : parsed.language === "fil" ? "tl" : parsed.language;

@@ -1,6 +1,6 @@
 [package]
 name = "agely"
-version = "0.0.1"
+version = "0.1.0"
 description = "Agely — a 15-minute expert that helps adults nearing or in retirement find meaning"
 authors = ["Volodymyr IER", "Agely core contributors"]
 edition = "2021"

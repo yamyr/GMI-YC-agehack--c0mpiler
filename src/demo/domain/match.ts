@@ -1,4 +1,4 @@
-import { createTranslator, formatList, type Locale } from "../../../site/i18n/core.js";
+import { createTranslator, formatList, formatNumber, type Locale } from "../../../site/i18n/core.js";
 import { formatRange, overlap } from "./price";
 import type { Brief, Competency, Expert, MatchResult, NotMatched, PriceRange } from "./types";
 
@@ -12,13 +12,30 @@ function firstName(expert: Expert): string {
   return expert.name.split(" ")[0] ?? expert.name;
 }
 
+export function explainNoMatch(brief: Brief, reason: "price" | "competency", locale: Locale): string {
+  const t = createTranslator(locale);
+  return reason === "price"
+    ? t("Experts with “{0}” charge outside your budget of {1} per 15 minutes. Widening the budget would let Agely match you.", brief.competencyLabel, formatRange(brief.budget, locale))
+    : t("No published expert lists “{0}” yet.", brief.competencyLabel);
+}
+
+export function explainMatch(brief: Brief, candidate: Candidate, locale: Locale): readonly string[] {
+  const t = createTranslator(locale);
+  const { expert, competencies, overlap: shared } = candidate;
+  const price = expert.priceRange ?? shared;
+  return [
+    t("{0} lists {1}, which covers what you need: “{2}”.", firstName(expert), formatList(competencies.map((c) => t("“{0}”", c.label)), locale), brief.competencyLabel),
+    t("Your budget is {0} per 15 minutes and {1} charges {2}. You overlap at {3}.", formatRange(brief.budget, locale), firstName(expert), formatRange(price, locale), formatRange(shared, locale)),
+    t("{0} years of experience.", formatNumber(expert.yearsExperience, locale)),
+  ];
+}
+
 /**
  * FR-016–FR-018 / research R3: an expert qualifies when published with a
  * confirmed price, holding the brief's competency, with a price range that
  * overlaps the budget. Ranked by overlap width, then years of experience.
  */
 export function matchBrief(brief: Brief, experts: readonly Expert[], locale: Locale = "en"): MatchResult {
-  const t = createTranslator(locale);
   const rejected: NotMatched[] = [];
   const candidates: Candidate[] = [];
 
@@ -48,28 +65,21 @@ export function matchBrief(brief: Brief, experts: readonly Expert[], locale: Loc
 
   const [best, ...runnersUp] = candidates;
   if (best === undefined) {
-    const priceGap = rejected.some((r) => r.reason === "price");
+    const reason = rejected.some((r) => r.reason === "price") ? "price" : "competency";
     return {
       kind: "none",
-      reason: priceGap ? "price" : "competency",
-      explanation: priceGap
-        ? t("Experts with “{0}” charge outside your budget of {1} per 15 minutes. Widening the budget would let Agely match you.", brief.competencyLabel, formatRange(brief.budget, locale))
-        : t("No published expert lists “{0}” yet.", brief.competencyLabel),
+      reason,
+      explanation: explainNoMatch(brief, reason, locale),
       others: rejected,
     };
   }
 
-  const price = best.expert.priceRange ?? best.overlap;
   return {
     kind: "match",
     expert: best.expert,
     matchedCompetencies: best.competencies,
     overlap: best.overlap,
-    explanation: [
-      t("{0} lists {1}, which covers what you need: “{2}”.", firstName(best.expert), formatList(best.competencies.map((c) => t("“{0}”", c.label)), locale), brief.competencyLabel),
-      t("Your budget is {0} per 15 minutes and {1} charges {2}. You overlap at {3}.", formatRange(brief.budget, locale), firstName(best.expert), formatRange(price, locale), formatRange(best.overlap, locale)),
-      t("{0} years of experience.", best.expert.yearsExperience),
-    ],
+    explanation: explainMatch(brief, best, locale),
     others: [...runnersUp.map((c): NotMatched => ({ expert: c.expert, reason: "ranked" })), ...rejected],
   };
 }

@@ -28,14 +28,3 @@ export function ScriptedDraftNote({ state, after }: { readonly state: DemoState;
     <p className="notice notice--info">{t("This is the scripted draft. Drafting it from the live conversation comes later.")}</p>
   );
 }
-
-/** Ungrouped whole USD only: ambiguous locale separators are rejected, never reinterpreted. */
-export function parseDollars(text: string): number {
-  // Hindi and Tamil decimal digits keep their numeric value; grouping remains disallowed.
-  const normalized = text.normalize("NFKC").replace(/[\u0966-\u096f\u0be6-\u0bef]/g, (digit) => {
-    const code = digit.charCodeAt(0);
-    return String(code - (code >= 0x0be6 ? 0x0be6 : 0x0966));
-  });
-  const trimmed = normalized.trim().replace(/^\$/, "");
-  return /^\d+$/.test(trimmed) ? Number(trimmed) : Number.NaN;
-}

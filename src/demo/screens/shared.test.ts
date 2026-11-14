@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseDollars } from "./shared";
+import { parseDollars } from "../../i18n/digits";
 
 describe("whole-dollar input", () => {
   // A French/German grouping or decimal mark must never silently change a USD amount.

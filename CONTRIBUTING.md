@@ -46,10 +46,12 @@ The current catalogs are model-generated drafts and need human language review. 
 malformed entries fall back to the English source. Keep the visible draft/fallback disclosure
 until the language-review process changes. Update `ATTRIBUTION.md` when adding generated text.
 
-The app asks before restarting the walkthrough in another language. A cancelled change must
-preserve edits; a confirmed change must prevent pending replies from entering the new story.
-Exercise those cases in `e2e/i18n.spec.ts` when changing locale state. Run the existing chapter
-accessibility/layout checks and inspect long translations and CJK/Cyrillic glyphs in a browser.
+The walkthrough asks before restarting in another language. Cancelling preserves edits.
+Confirming starts a fresh story and discards pending replies from the previous run. The
+marketplace changes language in place, including during sign-in or while editing a brief.
+Keep the fixed reply values and skill tags stable when editing their translations. Use
+`e2e/i18n.spec.ts` and `e2e/product-i18n.spec.ts` to verify both behaviors. Run the
+accessibility checks and inspect long translations in a browser.
 
 The offline restricted-advice guard recognizes example keywords in the supported languages.
 It is a demo rule, not a complete classifier. Add both positive business examples and negative

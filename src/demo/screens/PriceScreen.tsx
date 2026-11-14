@@ -1,9 +1,10 @@
+import { parseDollars } from "../../i18n/digits";
 import { useI18n } from "../../i18n";
 import { useState } from "react";
 import { Transcript } from "../chrome/Conversation";
 import { formatRange } from "../domain/price";
 import { PRICE_PROMPT, PRICE_REPLIES, PRICE_SUGGESTION } from "../script/margaret";
-import { NoticeLine, type ScreenProps, parseDollars } from "./shared";
+import { NoticeLine, type ScreenProps } from "./shared";
 
 /** FR-010, FR-011: agent suggests with reasons; Margaret answers and decides. */
 export function PriceScreen({ state, dispatch }: ScreenProps) {

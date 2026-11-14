@@ -4,6 +4,8 @@
 
 ▶ **[Watch the demo](https://agely.dev/)** on the Agely landing page (source in `site/`), **[try it in your browser](https://agely.dev/demo/)**, or **[run a whole market in the simulator](https://agely.dev/simulator/)**.
 
+Get the Apple Silicon Mac app from the [releases page](https://agely.dev/releases/) or browse the [changelog](CHANGELOG.md).
+
 Agely is an expert network where older adults turn decades of experience into paid, 15-minute sessions. Our longer-term goal is an AI engine each expert owns: a growing collection of their approved questions, checks, and workflows.
 
 This hackathon prototype follows Margaret, a retired procurement director, and Dev, a hardware founder, from their first conversations to a completed session and Margaret's first saved workflow.
@@ -53,9 +55,20 @@ The [presenter guide](specs/001-demo-walkthrough/quickstart.md) includes a full 
 
 Conversations stand in for a future voice interview; there is no microphone. Conversations are scripted unless the optional live agent is available, and the profile, brief and workflow drafts are always scripted. Payments, meeting links, and earnings are simulated; no money moves and no meeting is created. Identity and credentials are self-declared. Demo edits stay in memory and reset when the app restarts.
 
+## The try-out product
+
+Open the browser marketplace try-out at [agely.dev/app](https://agely.dev/app) or `#/app` when running the browser build locally. You can try both roles from sign-in to a simulated payment release.
+
+1. An expert signs in, is interviewed, publishes a profile and confirms a price.
+2. A buyer signs in, describes a problem, confirms a brief and is matched with the experts who are really published.
+3. The buyer proposes a session; the expert accepts; the payment is held and both get a meeting link and a calendar file.
+4. After the session the expert marks it as held and sees what they are owed.
+
+Nothing outside the browser is connected yet. Sign-in, storage, the drafting agent, payments and meetings are stand-ins, each labelled on screen, and every page says what this version can't do: data stays in one browser, nothing is sent to the other person, anyone can sign in as any address on that device, and no money moves. Each stand-in sits behind an interface with a shared test suite, so a real service can replace it without changing the screens or the rules. See [spec 004](specs/004-marketplace-foundation/spec.md).
+
 ## Designed for older adults
 
-The expert's main path uses a conversation with suggested replies. Typing is available as an alternative. Shared design tokens set a minimum text size of 16px and primary control height of 56px. The interface provides visible keyboard focus and names the person whose turn it is.
+The try-out interview offers suggested replies and optional free text. Experts type their sign-in details and display name. Shared design tokens set a minimum text size of 16px and primary control height of 56px. The interface provides visible keyboard focus and names the person whose turn it is.
 
 Drafts remain drafts until the person confirms them. Every match explains its reasoning, and scripted data stays visibly labelled. The demo also declines requests for legal, medical, or financial advice.
 
@@ -64,7 +77,7 @@ These principles are recorded in the [project constitution](.specify/memory/cons
 ## Built with
 
 - Tauri 2 and Rust for the desktop shell and native commands.
-- React 19, TypeScript, and Vite 7 for the interface and client-side domain logic.
+- React 19, TypeScript, and Vite 8 for the interface and client-side domain logic.
 - Bun for dependency management and scripts.
 - Vitest for unit tests and Playwright for browser journeys at desktop and minimum window sizes.
 - GitHub Actions for frontend, browser, workflow, and Rust checks.
@@ -76,8 +89,8 @@ The foundation was ported from `yademy/elderwise-hbs`.
 Install [Bun](https://bun.sh). Version `1.3.10` matches `package.json` and CI.
 
 ```sh
-git clone https://github.com/yamyr/GMI-YC-agehack--c0mpiler.git
-cd GMI-YC-agehack--c0mpiler
+git clone https://github.com/yamyr/agely.git
+cd agely
 bun install --frozen-lockfile
 bun run dev
 ```
@@ -146,6 +159,8 @@ For a frontend-only production preview, run `bun run build` followed by `bun run
 | `docs/tooling/` | Notes on the project's optional development tools. |
 | `site/` | Static landing page with the demo video, served at agely.dev; the app is at `/demo/` (`bun run build:site`). |
 | `site/costs/` | Open cost ledger at agely.dev/costs/. Record a cost by adding a line to `costs.json`; `scripts/ai-usage.mjs` totals AI tokens from local agent logs. |
+| `src/product/` | The try-out product at `#/app`: `ports/` (the outside services as interfaces, with contract suites), `standins/` (in-browser adapters), `usecases/` (the rules), `screens/`. |
+| `specs/004-marketplace-foundation/` | Specification, plan, contracts, tasks and verification for the try-out product. |
 | `site/simulator/` | Marketplace simulator at agely.dev/simulator/: the demo's matching rule run over a made-up market, with adjustable parameters. `engine.js` is the model and has unit tests. |
 
 Features follow Spec Kit: specify, clarify, plan, tasks, analyze, and implement. Use `src/ui/tokens.css` for shared visual values. Keep versions in `package.json`, `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml` in sync; a unit test checks them.

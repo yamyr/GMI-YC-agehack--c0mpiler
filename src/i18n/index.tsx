@@ -15,24 +15,37 @@ export function I18nProvider({ children }: { readonly children: ReactNode }) {
   useEffect(() => {
     document.documentElement.lang = locale;
     saveLocale(locale);
-    const url = new URL(window.location.href);
-    url.searchParams.set("lang", locale);
-    window.history.replaceState(null, "", url);
+    const syncUrl = () => {
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("lang") === locale) return;
+      url.searchParams.set("lang", locale);
+      window.history.replaceState(window.history.state, "", url);
+    };
+    syncUrl();
+    // Same-document Back/Forward entries may still carry the old language.
+    window.addEventListener("popstate", syncUrl);
+    return () => window.removeEventListener("popstate", syncUrl);
   }, [locale]);
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }
 
 export function useI18n(): I18n { return useContext(Context); }
 
-/** Locale changes always start a fresh story; cancellation never touches demo state. */
-export function LanguageSelector() {
+/** The walkthrough asks before restarting. The marketplace changes language in place. */
+export function LanguageSelector({ restartWalkthrough }: { readonly restartWalkthrough: boolean }) {
   const { locale, t, setLocale } = useI18n();
   const [proposed, propose] = useState<Locale | null>(null);
   return <div className="language-settings">
     <label htmlFor="language">{t("Language")}</label>
     <select id="language" name="language" value={proposed ?? locale} onChange={(event) => {
       const next = LOCALES.find((entry) => entry.id === event.target.value);
-      if (next !== undefined) propose(next.id === locale ? null : next.id);
+      if (next === undefined || next.id === locale) {
+        propose(null);
+      } else if (restartWalkthrough) {
+        propose(next.id);
+      } else {
+        setLocale(next.id);
+      }
     }}>
       {LOCALES.map((entry) => <option key={entry.id} value={entry.id} lang={entry.id}>{entry.label}</option>)}
     </select>

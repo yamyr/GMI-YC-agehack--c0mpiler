@@ -19,6 +19,14 @@ describe("language negotiation", () => {
     expect(resolveLocale(["zh-TW", "nn-NO", "fr-CA"])).toBe("fr");
     expect(resolveLocale(["bad!!", "en_US", "xx"])).toBe("en");
   });
+  it("honors an explicit Chinese script before inferring it from the region", () => {
+    for (const preference of ["zh-Hans-HK", "zh-Hans-MO", "zh-Hans-TW"]) {
+      expect(resolveLocale([preference, "fr"])).toBe("zh-Hans");
+    }
+    for (const preference of ["zh-Hant-CN", "zh-Hant-SG", "zh-HK", "zh-MO", "zh-TW"]) {
+      expect(resolveLocale([preference, "fr"])).toBe("fr");
+    }
+  });
   it("prefers explicit query then saved language then browser then English", () => {
     const getItem = vi.fn(() => "de");
     vi.stubGlobal("window", { location: { search: "?lang=ja" }, localStorage: { getItem } });

@@ -13,10 +13,10 @@ import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "@playwright/test";
+import { localizedUrl, siteCheckLanguages } from "./site-check-url.js";
 
-const PAGES = ["/", "/simulator/", "/costs/", "/demo/"];
-// These cover long Latin text, CJK glyphs and Cyrillic without weakening the English gate.
-const LANGUAGES = ["en", "de", "fi", "zh-Hans", "uk", "ta", "hi"];
+const PRODUCT_SIGN_IN = "/demo/#/app";
+const PAGES = ["/", "/simulator/", "/costs/", "/releases/", "/demo/", PRODUCT_SIGN_IN];
 const VIEWS = [
   { name: "desktop", width: 1440, height: 900, colorScheme: "light" },
   { name: "phone", width: 390, height: 844, colorScheme: "light" },
@@ -25,9 +25,8 @@ const VIEWS = [
 const args = process.argv.slice(2);
 const languageFilter = args.find((arg) => arg.startsWith("--language="))?.slice(11);
 const viewFilter = args.find((arg) => arg.startsWith("--view="))?.slice(7);
-if (languageFilter !== undefined && !LANGUAGES.includes(languageFilter)) throw new Error("Unknown language filter");
 if (viewFilter !== undefined && !VIEWS.some(({ name }) => name === viewFilter)) throw new Error("Unknown view filter");
-const languages = LANGUAGES.filter((language) => languageFilter === undefined || language === languageFilter);
+const languages = siteCheckLanguages(languageFilter);
 const views = VIEWS.filter(({ name }) => viewFilter === undefined || name === viewFilter);
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".mp4": "video/mp4", ".txt": "text/plain" };
 
@@ -62,8 +61,9 @@ for (const view of views) {
     const note = (text) => problems.push(`${where}: ${text}`);
     page.on("pageerror", (e) => note(`script error: ${e.message}`));
     page.on("response", (r) => r.status() >= 400 && note(`${r.status()} ${new URL(r.url()).pathname}`));
-    await page.goto(`${base}${path}?lang=${language}`, { waitUntil: "networkidle" });
+    await page.goto(localizedUrl(base, path, language), { waitUntil: "networkidle" });
     if (await page.locator("html").getAttribute("lang") !== language) note("document language does not match the selected language");
+    if (path === PRODUCT_SIGN_IN && !await page.locator("#product-email").isVisible()) note("product sign-in did not open");
 
     const layout = await page.evaluate(() => {
       const small = new Set();

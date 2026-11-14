@@ -45,7 +45,7 @@ export function ProfileScreen({ state, dispatch }: ScreenProps) {
 
       <ScriptedDraftNote state={state} after="interview" />
       <div className="card">
-        <h3>{t("{0}, {1}", margaret.name, margaret.age)}</h3>
+        <h3>{margaret.age === undefined ? margaret.name : t("{0}, {1}", margaret.name, margaret.age)}</h3>
         <p>{margaret.headline}</p>
         <p className="muted">{t("{0} years of experience · {1} · Credentials are self-declared", margaret.yearsExperience, margaret.location)}</p>
         <h3>{t("Skills")}</h3>

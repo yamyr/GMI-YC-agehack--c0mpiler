@@ -75,6 +75,7 @@ after changing a screen or page, `/costs-update` to record a cost, and the `spec
 | Path | What it is |
 | --- | --- |
 | `src/demo/` | The walkthrough app: `domain/` is pure logic, `script/` the scripted story, `state/` the reducer, `screens/` the UI, `live/` the optional Codex agent. |
+| `src/product/` | The signed-in product at `#/app`, on stand-ins: `ports/` are the outside services as interfaces with shared contract suites, `standins/` the in-browser adapters, `usecases/` the rules. Screens call use cases only. Spec 004. |
 | `src-tauri/` | Rust shell and native commands. |
 | `e2e/` | Playwright journeys, layout and accessibility checks, and the Tauri IPC stub. |
 | `site/` | The website: landing page, `simulator/` and `costs/`. Plain HTML, CSS and JS modules. |

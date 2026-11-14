@@ -51,24 +51,30 @@ function formatValue(def, value) {
 
 // ---- State: the scenario lives in the URL, so any scenario can be shared as a link. ----
 
-function readHash() {
-  const raw = Object.fromEntries(new URLSearchParams(location.hash.slice(1)));
-  return normalise(raw);
-}
-
 function writeHash() {
   const q = new URLSearchParams();
   for (const d of PARAMS) q.set(d.key, params[d.key]);
   for (const t of TOGGLES) q.set(t.key, params[t.key] ? "1" : "0");
   q.set("seed", params.seed);
+  if (week !== params.weeks) q.set("week", week);
+  if (selectedExpert !== null) q.set("expert", selectedExpert);
   history.replaceState(null, "", `#${q}`);
 }
 
-let params = readHash();
+const savedScenario = Object.fromEntries(new URLSearchParams(location.hash.slice(1)));
+let params = normalise(savedScenario);
 let result = simulate(params);
-let week = params.weeks;
+const savedWeek = Number(savedScenario.week);
+let week = Number.isInteger(savedWeek) && savedWeek >= 1 && savedWeek <= params.weeks ? savedWeek : params.weeks;
 let timer = null;
-let selectedExpert = null;
+const savedExpert = /^\d+$/.test(savedScenario.expert) ? Number(savedScenario.expert) : -1;
+let selectedExpert = result.experts[savedExpert]?.id ?? null;
+
+function showWeek(nextWeek) {
+  week = nextWeek;
+  writeHash();
+  render();
+}
 
 // ---- Controls ----
 
@@ -132,8 +138,7 @@ function buildControls() {
   $("play").addEventListener("click", () => (timer ? stop() : play()));
   $("week").addEventListener("input", () => {
     stop();
-    week = Number($("week").value);
-    render();
+    showWeek(Number($("week").value));
   });
 }
 
@@ -164,12 +169,10 @@ function rerun() {
 // ---- Playback ----
 
 function play() {
-  week = week >= params.weeks ? 1 : week + 1;
-  render();
+  showWeek(week >= params.weeks ? 1 : week + 1);
   timer = setInterval(() => {
     if (week >= params.weeks) return stop();
-    week++;
-    render();
+    showWeek(week + 1);
   }, STEP_MS);
   $("play").textContent = t("Pause");
 }
@@ -246,8 +249,7 @@ function renderWeeks() {
       }
       col.addEventListener("click", () => {
         stop();
-        week = n;
-        render();
+        showWeek(n);
       });
       col.addEventListener("pointerenter", () => highlightWeek(n));
       return col;
@@ -324,6 +326,7 @@ function renderExperts(s) {
       });
       const show = () => {
         selectedExpert = e.id;
+        writeHash();
         describeExpert(e, earned);
         for (const other of $("expert-grid").children) other.classList.remove("expert--selected");
         cell.classList.add("expert--selected");

@@ -141,6 +141,19 @@ a {
   font-weight: 600;
 }
 
+.topbar-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0 var(--gutter);
+}
+
+.topbar-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--control-h);
+}
+
 /* Hero */
 .hero {
   max-width: var(--content-max);

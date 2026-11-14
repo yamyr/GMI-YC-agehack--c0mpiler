@@ -1,8 +1,9 @@
+import { parseDollars } from "../../i18n/digits";
 import { useI18n } from "../../i18n";
 import { useState } from "react";
 import { formatRange } from "../domain/price";
 import { BRIEF_NOTE } from "../script/dev";
-import { NoticeLine, type ScreenProps, ScriptedDraftNote, parseDollars } from "./shared";
+import { NoticeLine, type ScreenProps, ScriptedDraftNote } from "./shared";
 
 /** FR-013–FR-015: the agent's draft brief, editable, confirmed by Dev. */
 export function BriefScreen({ state, dispatch }: ScreenProps) {

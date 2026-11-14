@@ -48,7 +48,8 @@ export interface PriceSuggestion {
 export interface Expert {
   readonly id: string;
   readonly name: string;
-  readonly age: number;
+  /** Known for the walkthrough's fictional people. The product does not collect it (spec 004, R13). */
+  readonly age?: number;
   readonly headline: string;
   readonly yearsExperience: number;
   readonly location: string;
