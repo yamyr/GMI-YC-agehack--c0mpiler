@@ -47,7 +47,7 @@ screens, 5 ports, 5 stand-ins, about 12 use cases.
 
 | Principle | Gate | Status |
 | --- | --- | --- |
-| I. Older Adults First | Experts reach every input by conversation; typing is the alternative. New screens join the 16px, focus and axe checks in the same change. | Pass. The interview is a conversation with suggested replies; sign-in asks for one email address, which SC-001 allows. |
+| I. Older Adults First | Apply the browser try-out exception in constitution 2.0.0. New screens join the 16px, focus and axe checks. | The expert types an email address, the stand-in code and a display name. Other required answers have suggested replies or preset choices. |
 | II. People Decide, Agents Propose | Publishing, confirming a price, confirming a brief, proposing, accepting and marking a session held are separate use cases that only a signed-in person's action can call. | Pass. The drafting port returns drafts only; no use case it can reach changes a published or confirmed state. |
 | III. Honest by Default | Every stand-in is labelled where it appears; payments say no money moved; the first screen says data stays on this device. | Pass. `ServiceStatus` is rendered on every screen that touches a stand-in, and a test asserts it. |
 | IV. Test-First | Contract suites and use-case tests are written and seen failing before each adapter and use case. One Playwright journey per story. | Pass. |
@@ -149,14 +149,14 @@ and a shell at `#/app`. 60 unit tests and 8 browser tests cover them.
 
 | Principle | Finding | Status |
 | --- | --- | --- |
-| I. Older Adults First | The shell passes axe, the 16px floor and overflow checks in all three states. Asking for a name is one more spoken answer, not a field. The time control (R16) is on the buyer's side. | Pass |
+| I. Older Adults First | The shell passes axe, the 16px floor and overflow checks in all three states. The expert types a display name in the interview. The time control (R16) is on the buyer's side. | Covered by the browser try-out exception. Voice is required before a real service is connected. |
 | II. People Decide, Agents Propose | `AgentPort` returns drafts only, and its contract forbids a published or confirmed state. An unmatched draft cannot be published. | Pass |
 | III. Honest by Default | Every stand-in is labelled and a browser test asserts all five. R18 adds three stated limits. | Pass |
 | IV. Test-First | **Deviation in phase 2**: contract suites were written before their adapters, but the model and use-case tests were written with their code, not seen failing first. No code is affected, so nothing is redone. From story 1 on, each test task is committed failing before the task that passes it. | Pass with a recorded deviation |
 | V. Simple Until Proven Otherwise | Still no backend, network call or dependency. R12 changes two existing signatures instead of adding a parallel rule. | Pass |
 | VI. Owned and Attributed | Nothing added. | Pass |
 
-No violation needs an entry in Complexity Tracking.
+Complexity Tracking records the try-out exception and the phase 2 test-first deviation.
 
 ### What this means for the task list
 
@@ -186,9 +186,14 @@ check until story 5, and the shell says it is English-only when another language
 
 ## Complexity Tracking
 
-No constitution violations to justify.
-
 | Choice that adds structure | Why it is needed | Simpler alternative rejected because |
 | --- | --- | --- |
 | A use-case layer between screens and ports | FR-004 and FR-016 are rules that must hold whatever the adapter; SC-005 tests them directly | Checking permissions in each screen would have to be redone, and re-proved, for every real adapter |
 | Async port methods although `localStorage` is synchronous | A real adapter is a network call | Sync ports would force a rewrite of every caller when the first real service arrives |
+
+The browser try-out uses the exception in constitution 2.0.0 to demonstrate the full journey
+locally with typed sign-in and display-name inputs. Any release that connects a real marketplace
+service must provide voice input for every expert-side input.
+
+In phase 2, the model and use-case tests were added with their implementation. The contract
+tests and subsequent story tests followed the test-first sequence described above.

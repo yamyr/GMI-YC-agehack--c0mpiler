@@ -19,7 +19,7 @@ macOS. Only what was run is listed (constitution principle IV).
 
 | Criterion | How it was checked | Result |
 | --- | --- | --- |
-| SC-001 Expert to a published, priced profile without typing more than an address | `e2e/product-expert.spec.ts`: one email address, one name, and picked replies | Met for typing. The 10-minute limit was not timed with a person. |
+| SC-001 Expert to a published, priced profile | `e2e/product-expert.spec.ts` exercises typed email, stand-in code and display name, plus suggested replies and optional text edits. | Browser try-out inputs verified. The 10-minute limit was not timed with a person. |
 | SC-002 A published profile is found unchanged later, 20 times | `sweep.test.ts`: 20 sign-out and sign-in rounds, each also read through a new adapter | Met |
 | SC-003 Match shown within 2 seconds with 20 experts | `brief.test.ts` times `runMatch` over 20 stored experts | Met |
 | SC-004 One held payment per accepted proposal across 50, with repeats and interruptions | `sweep.test.ts`: 50 acceptances, every second submitted three times, every third interrupted after the hold | Met |

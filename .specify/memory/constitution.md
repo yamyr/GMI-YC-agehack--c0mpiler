@@ -1,13 +1,10 @@
 <!--
 Sync Impact Report
-Version: 1.0.0 → 1.1.0 (MINOR: new principle VI, materially expanded guidance in I, III, IV and
-the workflow)
-Modified: I (accessibility is tested), III (published numbers), IV (website checks, report only
-what ran), Product & Technical Constraints (the website), Development Workflow (Spec Kit scope,
-AGENTS.md, guards)
-Added: VI. Owned and Attributed
+Version: 1.1.0 → 2.0.0 (MAJOR: scope of the voice requirement in principle I)
+Modified: I (exception for the browser-only marketplace try-out in spec 004)
+Affected: spec 004 specification, plan and verification record
 Templates: plan-template.md reads this file at run time; no template edits needed
-Follow-ups: none
+Follow-ups: meet the voice requirement before connecting real marketplace services
 -->
 
 # Agely Constitution
@@ -18,6 +15,9 @@ Follow-ups: none
 Agely is built for people over 65 before anyone else.
 - The expert MUST never be required to fill in a form; every expert-side input MUST be reachable
   by talking to an agent (voice), with typing offered only as an alternative.
+- The browser-only marketplace try-out in spec 004 MAY require typed sign-in and display-name
+  fields and use suggested replies. This exception applies only while all marketplace services
+  are stand-ins. The voice requirement applies before any real marketplace service is connected.
 - Text MUST NOT render below 16px (`--text-xs`); primary controls MUST be at least 56px tall
   (`--control-h`); pinch zoom MUST NOT be disabled.
 - Copy MUST use plain language, one decision per screen, and visible keyboard focus.
@@ -118,4 +118,4 @@ principles, MINOR for new principles or sections, PATCH for clarifications. Ever
 include a Constitution Check against the principles above, and any justified violation MUST be
 recorded in the plan's Complexity Tracking table.
 
-**Version**: 1.1.0 | **Ratified**: 2026-11-11 | **Last Amended**: 2026-11-13
+**Version**: 2.0.0 | **Ratified**: 2026-11-11 | **Last Amended**: 2026-11-14

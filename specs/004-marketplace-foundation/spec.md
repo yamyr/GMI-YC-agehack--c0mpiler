@@ -317,8 +317,10 @@ stand-ins active, find a visible label on each screen that depends on one.
 ### Measurable Outcomes
 
 - **SC-001**: A new expert can go from opening Agely to a published profile with a confirmed
-  price in under 10 minutes, without typing anything except, at most, the address or number their
-  sign-in is sent to.
+  price in under 10 minutes. In the browser try-out, the expert types an email address, the
+  displayed stand-in code and a display name. The remaining steps have suggested replies or
+  preset choices. The voice requirement in constitution principle I applies before any real
+  marketplace service is connected.
 - **SC-002**: A profile published in one session is found unchanged in a later session, in 100%
   of attempts across a test run of at least 20.
 - **SC-003**: With a mixed set of at least 20 stored experts, a confirmed brief shows its match
@@ -358,5 +360,5 @@ stand-ins active, find a visible label on each screen that depends on one.
   and languages other than those the app already supports.
 - The marketplace uses the walkthrough's shared translation system. Its interface uses English
   and the 17 additional locales in spec 003. Names and user-entered text keep their original language.
-- A constitution amendment is expected: principle V says no backend is added until a spec
-  requires it, and this spec is that requirement.
+- Constitution 2.0.0 permits required typing in the browser try-out under principle I. This
+  feature uses only stand-ins and does not require a backend under principle V.
